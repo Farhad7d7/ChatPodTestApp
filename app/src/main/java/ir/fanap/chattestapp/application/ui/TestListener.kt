@@ -65,4 +65,39 @@ interface TestListener {
 
 
     }
+
+    fun onClearHistory(chatResponse: ChatResponse<ResultClearHistory>?) {
+
+    }
+
+    fun onGetAdminList(content: ChatResponse<ResultParticipant>?) {
+
+
+    }
+
+    fun onSetRole(outputSetRoleToUser: ChatResponse<ResultSetAdmin>?) {
+
+    }
+
+    fun onGetSeenMessageList(response: ChatResponse<ResultParticipant>?) {
+
+
+    }
+
+    fun onGetDeliverMessageList(response: ChatResponse<ResultParticipant>?) {
+
+
+    }
+
+    fun onGetSearchContactResult(response: ChatResponse<ResultContact>?) {
+
+
+    }
+
+    fun onGetStaticMap(response: ChatResponse<ResultStaticMapImage>?) {
+
+
+    }
+
+
 }

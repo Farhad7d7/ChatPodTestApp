@@ -5,6 +5,12 @@ import android.support.annotation.StringDef
 class ConstantMsgType {
 
     companion object {
+        const val SEND_LOCATION_MESSAGE = "SEND_LOCATION_MESSAGE"
+        const val SEARCH_CONTACT = "SEARCH_CONTACT"
+        const val GET_DELIVER_LIST = "GET_DELIVER_LIST"
+        const val GET_SEEN_LIST = "GET_SEEN_LIST"
+        const val CREATE_THREAD_WITH_MSG_MESSAGE = "CREATE_THREAD_WITH_MSG_MESSAGE"
+        const val CREATE_THREAD_WITH_MSG = "CREATE_THREAD_WITH_MSG"
         const val UPDATE_CONTACT = "UPDATE_CONTACT"
         const val SEND_MESSAGE = "SEND_MESSAGE"
         const val GET_THREAD = "GET_THREAD"
@@ -40,6 +46,11 @@ class ConstantMsgType {
         const val CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID = "CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID"
         const val CREATE_THREAD_WITH_FORW_MSG_ID = "CREATE_THREAD_WITH_FORW_MSG_ID"
         const val GET_PARTICIPANT = "GET_PARTICIPANT"
+        const val CLEAR_HISTORY = "CLEAR_HISTORY"
+        const val GET_ADMINS_LIST = "GET_ADMINS_LIST"
+        const val ADD_ADMIN_ROLES = "ADD_ADMIN_ROLES"
+        const val REMOVE_ADMIN_ROLES = "REMOVE_ADMIN_ROLES"
+        const val DELETE_MULTIPLE_MESSAGE = "DELETE_MULTIPLE_MESSAGE"
     }
 
     @StringDef(
@@ -73,7 +84,18 @@ class ConstantMsgType {
         CREATE_THREAD_WITH_FORW_MSG,
         CREATE_THREAD_WITH_FORW_MSG_ID,
         GET_PARTICIPANT,
-        DELETE_MESSAGE
+        DELETE_MESSAGE,
+        CLEAR_HISTORY,
+        GET_ADMINS_LIST,
+        ADD_ADMIN_ROLES,
+        REMOVE_ADMIN_ROLES,
+        DELETE_MULTIPLE_MESSAGE,
+        CREATE_THREAD_WITH_MSG,
+        CREATE_THREAD_WITH_MSG_MESSAGE,
+        GET_SEEN_LIST,
+        GET_DELIVER_LIST,
+        SEARCH_CONTACT,
+        SEND_LOCATION_MESSAGE
     )
 
     @Retention(AnnotationRetention.SOURCE)

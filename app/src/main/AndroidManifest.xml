@@ -17,7 +17,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
-            tools:ignore="GoogleAppIndexingWarning">
+            android:networkSecurityConfig="@xml/network_config"
+            tools:ignore="GoogleAppIndexingWarning" tools:targetApi="n">
 
         <activity android:name=".application.ui.MainActivity">
             <!--<meta-data-->

@@ -10,6 +10,7 @@ import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
 import com.fanap.podchat.mainmodel.Invitee
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
+import com.fanap.podchat.mainmodel.SearchContact
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import rx.subjects.PublishSubject
@@ -23,11 +24,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var observableLog: PublishSubject<String> = PublishSubject.create()
 
     init {
+
         chat.isLoggable(true)
+
         chat.addListener(object : ChatListener {
+
             override fun onChatState(state: String?) {
+
                 super.onChatState(state)
+
                 observable.onNext(state)
+
             }
 
             override fun onGetThreadParticipant(content: String?, response: ChatResponse<ResultParticipant>?) {
@@ -37,6 +44,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onNewMessage(content: String?, response: ChatResponse<ResultNewMessage>?) {
                 super.onNewMessage(content, response)
+
                 testListener.onNewMessage(response)
 
             }
@@ -151,6 +159,53 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onGetHistory(response)
             }
 
+            override fun OnClearHistory(content: String?, chatResponse: ChatResponse<ResultClearHistory>?) {
+                super.OnClearHistory(content, chatResponse)
+                testListener.onClearHistory(chatResponse)
+            }
+
+
+
+            override fun onGetThreadAdmin(content: String?, chatResponse: ChatResponse<ResultParticipant>?) {
+                super.onGetThreadAdmin(content, chatResponse)
+
+                testListener.onGetAdminList(chatResponse)
+
+            }
+
+            override fun OnSetRule(outputSetRoleToUser: ChatResponse<ResultSetAdmin>?) {
+                super.OnSetRule(outputSetRoleToUser)
+
+                testListener.onSetRole(outputSetRoleToUser)
+
+            }
+
+            override fun OnSeenMessageList(content: String?, response: ChatResponse<ResultParticipant>?) {
+                super.OnSeenMessageList(content, response)
+
+                testListener.onGetSeenMessageList(response)
+            }
+
+            override fun OnDeliveredMessageList(content: String?, response: ChatResponse<ResultParticipant>?) {
+                super.OnDeliveredMessageList(content, response)
+
+                testListener.onGetDeliverMessageList(response)
+
+            }
+
+
+            override fun onSearchContact(content: String?, response: ChatResponse<ResultContact>?) {
+                super.onSearchContact(content, response)
+
+                testListener.onGetSearchContactResult(response)
+            }
+
+
+            override fun OnStaticMap(response: ChatResponse<ResultStaticMapImage>?) {
+                super.OnStaticMap(response)
+
+                testListener.onGetStaticMap(response)
+            }
         })
     }
 
@@ -162,12 +217,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         socketAddress: String, appId: String, severName: String, token: String,
         ssoHost: String, platformHost: String, fileServer: String, typeCode: String?
     ) {
-        chat.connect(socketAddress, appId, severName, token, ssoHost, platformHost, fileServer, typeCode)
-        chat.addListener(object : ChatListener {
-            override fun onUserInfo(content: String?, response: ChatResponse<ResultUserInfo>?) {
-                super.onUserInfo(content, response)
-            }
-        })
+
+        val rb:RequestConnect = RequestConnect.Builder(
+            socketAddress,
+            appId,
+            severName,
+            token,
+            ssoHost,
+            platformHost,
+            fileServer
+        ).build()
+
+        chat.connect(rb)
+
+////
+//        chat.addListener(object : ChatListener {
+//            override fun onUserInfo(content: String?, response: ChatResponse<ResultUserInfo>?) {
+//                super.onUserInfo(content, response)
+//            }
+//        })
     }
 
     fun uploadFile(requestUploadFile: RequestUploadFile): String {
@@ -308,4 +376,49 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getParticipant(requestThreadParticipant: RequestThreadParticipant): String {
         return chat.getThreadParticipants(requestThreadParticipant, null)
     }
+
+    fun clearHistory(requestClearHistory: RequestClearHistory): String {
+        return chat.clearHistory(requestClearHistory)
+    }
+
+    fun getAdminList(requestGetAdmin: RequestGetAdmin) : String {
+
+        return chat.getAdminList(requestGetAdmin)
+    }
+
+    fun addAdmin(addAdmin: RequestAddAdmin?): String {
+
+        return chat.addAdminRoles(addAdmin)
+    }
+    fun removeAdminRoles(addAdmin: RequestAddAdmin?): String {
+
+        return chat.removeAdminRoles(addAdmin)
+    }
+
+    fun getDeliverMessageList(request: RequestDeliveredMessageList): String {
+
+        return chat.getMessageDeliveredList(request)
+
+    }
+
+    fun getSeenMessageList(request: RequestSeenMessageList): String {
+
+        return chat.getMessageSeenList(request)
+    }
+
+    fun searchContact(searchContact: SearchContact) :String {
+
+        return chat.searchContact(searchContact)
+    }
+
+    fun sendLocationMessage(
+        requestLocationMessage: RequestLocationMessage,
+        param: ProgressHandler.sendFileMessage
+    ): String {
+
+        return chat.sendLocationMessage(requestLocationMessage,param)
+
+
+    }
+
 }

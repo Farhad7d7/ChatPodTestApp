@@ -12,11 +12,11 @@ import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import android.support.design.circularreveal.CircularRevealCompat
 import android.support.design.circularreveal.cardview.CircularRevealCardView
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -25,6 +25,7 @@ import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.mainmodel.Contact
 import com.fanap.podchat.mainmodel.Invitee
 import com.fanap.podchat.mainmodel.RequestThreadInnerMessage
+import com.fanap.podchat.mainmodel.Thread
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import com.fanap.podchat.util.ThreadType
@@ -32,9 +33,11 @@ import com.github.javafaker.Faker
 import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
+import kotlinx.android.synthetic.main.fragment_chat.*
 import java.util.ArrayList
 
 class ChatFragment : Fragment(), TestListener {
+
     private lateinit var atach_file: AppCompatImageView
     private lateinit var mainViewModel: MainViewModel
     private var fucCallback: HashMap<String, String> = hashMapOf()
@@ -60,10 +63,6 @@ class ChatFragment : Fragment(), TestListener {
         fun newInstance(): ChatFragment {
             return ChatFragment()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onAttach(context: Context?) {
@@ -92,39 +91,31 @@ class ChatFragment : Fragment(), TestListener {
 }*/
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
+
+
         val cicuralCard: CircularRevealCardView = view.findViewById(R.id.ccv_attachment_reveal)
-        val appCompatImageView_gallery: AppCompatImageView = view.findViewById(R.id.appCompatImageView_gallery)
-        imageView_tickOne = view.findViewById(R.id.checkBox_Send_File_Msg)
-        imageView_tickTwo = view.findViewById(R.id.checkBox_Upload_File)
-        imageView_tickThree = view.findViewById(R.id.checkBox_Reply_File_Msg)
-        imageView_tickFour = view.findViewById(R.id.checkBox_ufil)
-
-        buttonUploadImage = view.findViewById(R.id.buttonUploadImage)
-
-        txtViewFileMsg = view.findViewById(R.id.TxtViewFileMsg)
-        txtViewUploadFile = view.findViewById(R.id.TxtViewUploadFile)
-        txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
-        txtViewReplyFileMsg = view.findViewById(R.id.TxtViewReplyFileMsg)
-
-        prgressbarUploadImg = view.findViewById(R.id.progress_UploadImage)
-
-        txtViewFileMsg.setOnClickListener { fileMsg() }
-        txtViewUploadFile.setOnClickListener { uploadFile() }
-        buttonUploadImage.setOnClickListener {
-            //            uploadImage()
-            uploadImageProgress()
-        }
-        txtViewReplyFileMsg.setOnClickListener { replyFileMsg() }
 
 
-        val appCmpImgViewFolder: AppCompatImageView = view.findViewById(R.id.appCompatImageView_folder)
+        initViews(view)
 
-        appCompatImageView_gallery.setOnClickListener {
+        setListeners()
+
+
+//        val appCmpImgViewFolder: AppCompatImageView = view.findViewById(R.id.appCompatImageView_folder)
+
+        val appCompatImageViewGallery: AppCompatImageView =
+            view.findViewById(R.id.appCompatImageView_gallery)
+
+
+
+        appCompatImageViewGallery.setOnClickListener {
             selectImageInAlbum()
         }
+
+
         var isOpen = false
-        atach_file = view.findViewById(R.id.atach_file)
         atach_file.setOnClickListener {
 
             if (!isOpen) {
@@ -188,7 +179,159 @@ class ChatFragment : Fragment(), TestListener {
                 isOpen = false
             }
         }
+
+
         return view
+    }
+
+    private fun setListeners() {
+
+        txtViewFileMsg.setOnClickListener { fileMsg() }
+        txtViewUploadFile.setOnClickListener { uploadFile() }
+        txtViewReplyFileMsg.setOnClickListener { replyFileMsg() }
+        buttonUploadImage.setOnClickListener {
+            //            uploadImage()
+            uploadImageProgress()
+        }
+
+
+    }
+
+    private fun sendLocationMessage() {
+
+
+
+        val requestThread = RequestThread
+            .Builder()
+            .build()
+
+
+        fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel.getThread(requestThread)
+
+    }
+
+
+    override fun onGetThread(chatResponse: ChatResponse<ResultThreads>?) {
+        super.onGetThread(chatResponse)
+
+
+        if(chatResponse?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]){
+
+
+            prepareSendLocationMessage(chatResponse?.result?.threads)
+
+
+
+
+
+        }
+
+
+    }
+
+
+
+
+
+    private fun prepareSendLocationMessage(threads: List<Thread>?) {
+
+
+        if(threads!!.isNotEmpty()){
+
+
+            val targetThreadId = threads[0].id
+
+            val center = "35.7003510,51.3376472"
+
+            val requestLocationMessage = RequestLocationMessage.Builder()
+                .center(center)
+                .message("This is location ")
+                .activity(activity)
+                .threadId(targetThreadId)
+                .build()
+
+
+            fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel
+                .sendLocationMessage(requestLocationMessage, object : ProgressHandler.sendFileMessage{
+
+                    override fun onProgressUpdate(
+                        uniqueId: String?,
+                        bytesSent: Int,
+                        totalBytesSent: Int,
+                        totalBytesToSend: Int
+                    ) {
+                        super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
+
+                        Log.d("MTAG","update progress: $bytesSent $totalBytesSent $totalBytesToSend")
+
+//                        progressBarLocationMessage.max =totalBytesToSend
+//
+//                        progressBarLocationMessage.progress = totalBytesSent
+
+                        progressBarLocationMessage.incrementProgressBy(totalBytesSent)
+
+
+                    }
+
+                    override fun onFinishImage(json: String?, chatResponse: ChatResponse<ResultImageFile>?) {
+                        super.onFinishImage(json, chatResponse)
+
+                        Log.d("MTAG","finish upload")
+
+                        checkBoxLocationMessage.setImageResource(R.drawable.ic_round_done_all_24px)
+                        checkBoxLocationMessage.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+
+                    }
+
+                    override fun onError(jsonError: String?, error: ErrorOutPut?) {
+                        super.onError(jsonError, error)
+
+                        Log.d("MTAG","upload error $jsonError")
+                    }
+
+                })
+
+
+        }
+
+
+
+
+
+
+
+    }
+
+
+    override fun onGetStaticMap(response: ChatResponse<ResultStaticMapImage>?) {
+        super.onGetStaticMap(response)
+
+
+        if(response?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]){
+
+
+
+
+
+        }
+    }
+
+    private fun initViews(view: View) {
+
+        imageView_tickOne = view.findViewById(R.id.checkBox_Send_File_Msg)
+        imageView_tickTwo = view.findViewById(R.id.checkBox_Upload_File)
+        imageView_tickThree = view.findViewById(R.id.checkBox_Reply_File_Msg)
+        imageView_tickFour = view.findViewById(R.id.checkBox_ufil)
+
+        buttonUploadImage = view.findViewById(R.id.buttonUploadImage)
+
+        txtViewFileMsg = view.findViewById(R.id.TxtViewFileMsg)
+        txtViewUploadFile = view.findViewById(R.id.TxtViewUploadFile)
+        txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
+        txtViewReplyFileMsg = view.findViewById(R.id.TxtViewReplyFileMsg)
+        prgressbarUploadImg = view.findViewById(R.id.progress_UploadImage)
+        atach_file = view.findViewById(R.id.atach_file)
+
     }
 
     override fun onSent(response: ChatResponse<ResultMessage>?) {
@@ -207,15 +350,6 @@ class ChatFragment : Fragment(), TestListener {
                         imageView_tickFour.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
                     }
 
-                    override fun onProgressUpdate(
-                        uniqueId: String?,
-                        bytesSent: Int,
-                        totalBytesSent: Int,
-                        totalBytesToSend: Int
-                    ) {
-                        super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
-
-                    }
                 })
         }
     }
@@ -226,6 +360,19 @@ class ChatFragment : Fragment(), TestListener {
             .create(MainViewModel::class.java)
 
         mainViewModel.setTestListener(this)
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        layoutSendLocationMessage.setOnClickListener {
+
+
+            sendLocationMessage()
+
+
+        }
     }
 
     override fun onGetContact(response: ChatResponse<ResultContact>?) {
