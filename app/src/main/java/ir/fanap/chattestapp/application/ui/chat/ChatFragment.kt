@@ -35,6 +35,8 @@ import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.util.ArrayList
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 class ChatFragment : Fragment(), TestListener {
 
@@ -203,6 +205,12 @@ class ChatFragment : Fragment(), TestListener {
         progressSendLocationMessage.visibility = View.VISIBLE
 
 
+        checkBoxLocationMessage.setImageResource(R.drawable.ic_done_black_24dp)
+        checkBoxLocationMessage.setColorFilter(ContextCompat.getColor(activity!!, R.color.abc_color_highlight_material))
+
+        progressBarLocationMessage.progress = 0
+
+
         val requestThread = RequestThread
             .Builder()
             .build()
@@ -220,13 +228,10 @@ class ChatFragment : Fragment(), TestListener {
 
         progressBarLocationMessage.incrementProgressBy(5)
 
-        if(chatResponse?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]){
+        if (chatResponse?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]) {
 
 
             prepareSendLocationMessage(chatResponse?.result?.threads)
-
-
-
 
 
         }
@@ -235,13 +240,15 @@ class ChatFragment : Fragment(), TestListener {
     }
 
 
-
+    override fun onNewMessage(response: ChatResponse<ResultNewMessage>?) {
+        super.onNewMessage(response)
+    }
 
 
     private fun prepareSendLocationMessage(threads: List<Thread>?) {
 
 
-        if(threads!!.isNotEmpty()){
+        if (threads!!.isNotEmpty()) {
 
 
             val targetThreadId = threads[0].id
@@ -255,10 +262,13 @@ class ChatFragment : Fragment(), TestListener {
                 .threadId(targetThreadId)
                 .build()
 
+
+
+
             progressBarLocationMessage.incrementProgressBy(5)
 
             fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel
-                .sendLocationMessage(requestLocationMessage, object : ProgressHandler.sendFileMessage{
+                .sendLocationMessage(requestLocationMessage, object : ProgressHandler.sendFileMessage {
 
 
                     override fun onProgressUpdate(
@@ -269,8 +279,7 @@ class ChatFragment : Fragment(), TestListener {
                     ) {
                         super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
 
-                        Log.d("MTAG","update progress: $bytesSent $totalBytesSent $totalBytesToSend")
-
+                        Log.d("MTAG", "update progress: $bytesSent $totalBytesSent $totalBytesToSend")
 
                         progressBarLocationMessage.incrementProgressBy(bytesSent)
 
@@ -280,7 +289,7 @@ class ChatFragment : Fragment(), TestListener {
                     override fun onFinishImage(json: String?, chatResponse: ChatResponse<ResultImageFile>?) {
                         super.onFinishImage(json, chatResponse)
 
-                        Log.d("MTAG","finish upload")
+                        Log.d("MTAG", "finish upload")
                         progressBarLocationMessage.incrementProgressBy(100)
 
                         checkBoxLocationMessage.setImageResource(R.drawable.ic_round_done_all_24px)
@@ -291,18 +300,17 @@ class ChatFragment : Fragment(), TestListener {
                     override fun onError(jsonError: String?, error: ErrorOutPut?) {
                         super.onError(jsonError, error)
 
-                        Log.d("MTAG","upload error $jsonError")
+                        Log.d("MTAG", "upload error $jsonError")
+
+                        Toast.makeText(context, jsonError, Toast.LENGTH_LONG).show()
+
+
                     }
 
                 })
 
 
         }
-
-
-
-
-
 
 
     }
@@ -312,14 +320,16 @@ class ChatFragment : Fragment(), TestListener {
         super.onGetStaticMap(response)
 
 
-        if(response?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]){
+        if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]) {
 
 
             progressSendLocationMessage.visibility = View.INVISIBLE
 
+            val size = response?.result?.bitmap?.byteCount
 
+            val toKb = (size?.div(1000f))
 
-
+            val toMb = toKb?.div(1000f)
 
         }
     }

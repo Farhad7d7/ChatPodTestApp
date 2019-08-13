@@ -35,6 +35,9 @@ class MainActivity : AppCompatActivity() {
             view_pager.setCurrentItem(position, true)
         }
         viewPager.offscreenPageLimit = 2
+
+
+
     }
 
     //
