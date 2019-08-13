@@ -200,11 +200,15 @@ class ChatFragment : Fragment(), TestListener {
     private fun sendLocationMessage() {
 
 
+        progressSendLocationMessage.visibility = View.VISIBLE
+
 
         val requestThread = RequestThread
             .Builder()
             .build()
 
+
+        progressBarLocationMessage.incrementProgressBy(5)
 
         fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel.getThread(requestThread)
 
@@ -214,6 +218,7 @@ class ChatFragment : Fragment(), TestListener {
     override fun onGetThread(chatResponse: ChatResponse<ResultThreads>?) {
         super.onGetThread(chatResponse)
 
+        progressBarLocationMessage.incrementProgressBy(5)
 
         if(chatResponse?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]){
 
@@ -250,9 +255,11 @@ class ChatFragment : Fragment(), TestListener {
                 .threadId(targetThreadId)
                 .build()
 
+            progressBarLocationMessage.incrementProgressBy(5)
 
             fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel
                 .sendLocationMessage(requestLocationMessage, object : ProgressHandler.sendFileMessage{
+
 
                     override fun onProgressUpdate(
                         uniqueId: String?,
@@ -264,11 +271,8 @@ class ChatFragment : Fragment(), TestListener {
 
                         Log.d("MTAG","update progress: $bytesSent $totalBytesSent $totalBytesToSend")
 
-//                        progressBarLocationMessage.max =totalBytesToSend
-//
-//                        progressBarLocationMessage.progress = totalBytesSent
 
-                        progressBarLocationMessage.incrementProgressBy(totalBytesSent)
+                        progressBarLocationMessage.incrementProgressBy(bytesSent)
 
 
                     }
@@ -277,6 +281,7 @@ class ChatFragment : Fragment(), TestListener {
                         super.onFinishImage(json, chatResponse)
 
                         Log.d("MTAG","finish upload")
+                        progressBarLocationMessage.incrementProgressBy(100)
 
                         checkBoxLocationMessage.setImageResource(R.drawable.ic_round_done_all_24px)
                         checkBoxLocationMessage.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
@@ -308,6 +313,9 @@ class ChatFragment : Fragment(), TestListener {
 
 
         if(response?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]){
+
+
+            progressSendLocationMessage.visibility = View.INVISIBLE
 
 
 
@@ -502,6 +510,8 @@ class ChatFragment : Fragment(), TestListener {
 //                prgressbarUploadImg.setProgress(10, true)
 //            }
             prgressbarUploadImg.incrementProgressBy(10)
+
+
             mainViewModel.uploadImageProgress(contextFrag, activity, imageUrl, object : ProgressHandler.onProgress {
                 override fun onProgressUpdate(
                     uniqueId: String?,
