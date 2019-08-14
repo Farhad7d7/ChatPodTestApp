@@ -63,6 +63,7 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
+                //changed
 
                 val lastItem = linearLayoutManager.findLastVisibleItemPosition()
 

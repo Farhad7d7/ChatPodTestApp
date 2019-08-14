@@ -19,6 +19,7 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
         viewHolder.textViewLog.text = logs[position]
         viewHolder.logNum.text = "#$position"
 
+        //changed
 //        if (position % 2 == 1) {
 //            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
 //        } else {
@@ -33,6 +34,7 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
         logs.clear()
         filteredLogs.clear()
         notifyDataSetChanged()
+        //changed
 
     }
     override fun getFilter(): Filter {
