@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@color/blue_grey_inactive"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbarLog"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/holo_green_light"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.constraint.ConstraintLayout
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerV_funcLog"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_margin="16dp"
+                android:layout_margin="4dp"
+                android:background="@android:color/transparent"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"/>
+                android:layout_height="wrap_content"/>
 
-        <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fActionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_arrow_downward"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/recyclerV_funcLog"
-                app:layout_constraintEnd_toEndOf="@+id/recyclerV_funcLog"
-                app:layout_constraintStart_toStartOf="@+id/recyclerV_funcLog"/>
-    </android.support.constraint.ConstraintLayout>
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/ic_arrow_downward"
+            android:layout_margin="16dp"
+    />
 
-</android.support.design.widget.CoordinatorLayout>
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabGoTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/ic_arrow_upward_black_24dp"
+            android:layout_centerHorizontal="true"
+
+    />
+
+    <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            app:fabSize="mini"
+            android:id="@+id/fabClearLog"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="16dp"
+            app:srcCompat="@android:drawable/ic_menu_delete"
+            app:backgroundTint="@color/tabLayout_selected_text_color"
+            android:layout_height="wrap_content"/>
+
+
+</RelativeLayout>

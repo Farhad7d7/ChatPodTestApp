@@ -77,7 +77,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
      */
 
     private val sand_name = "SandBox"
-    private val SAND_TOKEN = "a2c0bd39b64b4d508fe1fcdb52c20e54"
+    private val SAND_TOKEN = "51557f6dfbf543fd89425dabbc1ac19f"
     private val sand_socketAddress = "wss://chat-sandbox.pod.land/ws"
     private val sand_serverName = "chat-server"
     private val sand_appId = "POD-Chat"
@@ -349,9 +349,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         recyclerView.childCount
         buttonConect.setOnClickListener { connect() }
-        switchCompat_sandBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            sandbox = true
-        })
+        switchCompat_sandBox.setOnCheckedChangeListener { _, isChecked ->
+            sandbox = isChecked
+        }
 
         return view
     }

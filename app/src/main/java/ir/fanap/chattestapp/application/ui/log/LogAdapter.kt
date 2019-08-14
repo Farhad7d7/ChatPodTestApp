@@ -2,6 +2,7 @@ package ir.fanap.chattestapp.application.ui.log
 
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,15 +16,25 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
     var filteredLogs: MutableList<String> = logs
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.textViewLog.text = logs.get(position)
-        if (position % 2 == 1) {
-            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
-        } else {
-            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFAF8FD"))
-        }
+        viewHolder.textViewLog.text = logs[position]
+        viewHolder.logNum.text = "#$position"
+
+//        if (position % 2 == 1) {
+//            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
+//        } else {
+//            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFAF8FD"))
+//        }
     }
 
 
+
+    fun clearLog(){
+
+        logs.clear()
+        filteredLogs.clear()
+        notifyDataSetChanged()
+
+    }
     override fun getFilter(): Filter {
 
         return object : Filter(){
@@ -66,6 +77,7 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textViewLog: TextView = itemView.findViewById(R.id.textView_log)
+        var logNum: TextView = itemView.findViewById(R.id.tvLogNum)
     }
 
 

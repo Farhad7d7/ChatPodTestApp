@@ -5,21 +5,20 @@ import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
-import android.support.v7.widget.Toolbar
 import android.view.*
 import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.content.Context
+import android.util.Log
 import ir.fanap.chattestapp.application.ui.IOnBackPressed
 
 
-class LogFragment : Fragment(), TestListener,IOnBackPressed {
+class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
 
     private lateinit var mainViewModel: MainViewModel
@@ -36,12 +35,22 @@ class LogFragment : Fragment(), TestListener,IOnBackPressed {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val view: View = inflater.inflate(R.layout.fragment_log, container, false)
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         setHasOptionsMenu(true)
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerV_funcLog)
-        val floatingActionButton: FloatingActionButton = view.findViewById(R.id.fActionButton)
-        val Toolbar: Toolbar = view.findViewById(R.id.toolbarLog)
-        (activity as AppCompatActivity).setSupportActionBar(toolbarLog)
-        recyclerView.setHasFixedSize(true)
+        val fabGoDown: FloatingActionButton = view.findViewById(R.id.fActionButton)
+//        val Toolbar: Toolbar = view.findViewById(R.id.toolbarLog)
+//        (activity as AppCompatActivity).setSupportActionBar(toolbarLog)
+//        recyclerView.setHasFixedSize(true)
+
+        fabGoDown.hide()
+        fabGoTop.hide()
 
         logAdapter = LogAdapter(logs)
         recyclerView.adapter = logAdapter
@@ -50,21 +59,81 @@ class LogFragment : Fragment(), TestListener,IOnBackPressed {
 
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && floatingActionButton.visibility == View.VISIBLE) {
-                    floatingActionButton.hide()
-                } else if (dy < 0 && floatingActionButton.visibility != View.VISIBLE) {
-                    floatingActionButton.show()
+
+
+                val lastItem = linearLayoutManager.findLastVisibleItemPosition()
+
+                val first = linearLayoutManager.findFirstVisibleItemPosition()
+
+                val itemCount = linearLayoutManager.itemCount
+
+                if (dy > 0) {
+
+                    fabGoDown.show()
+                    fabClearLog.show()
+                    fabGoTop.hide()
+
+                } else if (dy < 0) {
+
+                    fabGoDown.hide()
+                    fabClearLog.hide()
+                    fabGoTop.show()
+
                 }
 
+                if((lastItem + 1) == itemCount){
+                    fabGoDown.hide()
+                    fabClearLog.hide()
+                }
+
+                if(first == 0){
+                    fabGoTop.hide()
+                }
+
+
             }
+
+
+
         })
 
-        floatingActionButton.setOnClickListener {
-            recyclerView.scrollToPosition(logs.size - 1)
+        fabGoDown.setOnClickListener {
+
+            recyclerView.smoothScrollToPosition(logs.size - 1)
+
         }
-        return view
+
+        fabGoDown.setOnLongClickListener {
+
+            recyclerView.scrollToPosition(logs.size - 1)
+
+            return@setOnLongClickListener true
+
+        }
+
+        fabGoTop.setOnClickListener {
+
+            recyclerView.smoothScrollToPosition(0)
+
+        }
+
+        fabGoTop.setOnLongClickListener {
+
+            recyclerView.scrollToPosition(0)
+
+            return@setOnLongClickListener true
+        }
+
+        fabClearLog.setOnClickListener {
+
+            logAdapter.clearLog()
+
+        }
+
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,13 +144,15 @@ class LogFragment : Fragment(), TestListener,IOnBackPressed {
         setHasOptionsMenu(true)
 
     }
+
     override fun onBackPressed(): Boolean {
-         if (searchView.isIconified) {
+        if (searchView.isIconified) {
             searchView.setIconifiedByDefault(true)
-             return true
+            return true
         }
         return false
     }
+
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         menu?.clear()
@@ -114,7 +185,6 @@ class LogFragment : Fragment(), TestListener,IOnBackPressed {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
 
     override fun onLogEvent(log: String) {
