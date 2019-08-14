@@ -62,6 +62,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private var gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private var methods: MutableList<Method> = mutableListOf()
     private var fucCallback: HashMap<String, String> = hashMapOf()
+    private var fucCallbacks: HashMap<String, ArrayList<String>> = hashMapOf()
     private lateinit var textView_state: TextView
     private lateinit var textView_log: TextView
     private lateinit var functionAdapter: FunctionAdapter
@@ -77,7 +78,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
      */
 
     private val sand_name = "SandBox"
-    private val SAND_TOKEN = "51557f6dfbf543fd89425dabbc1ac19f"
+    private val SAND_TOKEN = "b4735b4c3e5a4b4798ac3eb523087efc"
     private val sand_socketAddress = "wss://chat-sandbox.pod.land/ws"
     private val sand_serverName = "chat-server"
     private val sand_appId = "POD-Chat"
@@ -254,11 +255,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         changeIconSend(30)
 
-        val searchContact = SearchContact.Builder("0","50")
+        val searchContact = SearchContact.Builder("0", "50")
             .firstName("Pooria")
             .build()
 
-        fucCallback[ConstantMsgType.SEARCH_CONTACT]=mainViewModel.searchContact(searchContact)
+        fucCallback[ConstantMsgType.SEARCH_CONTACT] = mainViewModel.searchContact(searchContact)
 
     }
 
@@ -283,7 +284,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val requestThread = RequestThread.Builder().build()
 
         fucCallback[ConstantMsgType.GET_DELIVER_LIST] = mainViewModel.getThread(requestThread)
-
 
 
     }
@@ -416,15 +416,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     override fun onGetSearchContactResult(response: ChatResponse<ResultContact>?) {
         super.onGetSearchContactResult(response)
 
-        if(fucCallback[ConstantMsgType.SEARCH_CONTACT] == response?.uniqueId){
+        if (fucCallback[ConstantMsgType.SEARCH_CONTACT] == response?.uniqueId) {
 
             changeIconReceive(30)
 
 
             methods[30].methodNameFlag = true
-
-
-
 
 
         }
@@ -612,26 +609,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
 
-
-
-
-
-
-
-
-
-
     }
 
     private fun prepareSendTxtMsgForGetDeliverList(chatResponse: ChatResponse<ResultThreads>?) {
 
-        if(chatResponse?.result!!.threads.size > 0){
+        if (chatResponse?.result!!.threads.size > 0) {
 
             val targetThreadId = chatResponse?.result!!.threads[0].id
 
 
-            val requestMessage =RequestMessage
-                .Builder("test text message ${Date()}",targetThreadId)
+            val requestMessage = RequestMessage
+                .Builder("test text message ${Date()}", targetThreadId)
                 .build()
 
 
@@ -639,23 +627,20 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 mainViewModel.sendTextMsg(requestMessage)
 
 
-
-
         }
-
 
 
     }
 
     private fun prepareSendTxtMsgForGetSeenList(chatResponse: ChatResponse<ResultThreads>?) {
 
-        if(chatResponse?.result!!.threads.size > 0){
+        if (chatResponse?.result!!.threads.size > 0) {
 
             val targetThreadId = chatResponse?.result!!.threads[0].id
 
 
-            val requestMessage =RequestMessage
-                .Builder("test text message ${Date()}",targetThreadId)
+            val requestMessage = RequestMessage
+                .Builder("test text message ${Date()}", targetThreadId)
                 .build()
 
 
@@ -663,10 +648,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 mainViewModel.sendTextMsg(requestMessage)
 
 
-
-
         }
-
 
 
     }
@@ -705,10 +687,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
 
 
-            //todo handle threadId
             TEST_THREAD_ID = threadId
 
-            val requestGetHistory = RequestGetHistory.Builder(threadId).build()
+            val requestGetHistory = RequestGetHistory
+                .Builder(threadId)
+                .offset(0)
+                .count(50)
+                .build()
+
+
+
             fucCallback[ConstantMsgType.DELETE_MULTIPLE_MESSAGE] = mainViewModel.getHistory(requestGetHistory)
 
 
@@ -985,13 +973,29 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             methods[position].methodNameFlag = true
         }
 
-        if (fucCallback[ConstantMsgType.DELETE_MULTIPLE_MESSAGE] == response?.uniqueId) {
+        if (fucCallbacks[ConstantMsgType.DELETE_MULTIPLE_MESSAGE]?.contains(response?.uniqueId)!!) {
+
+
+            handleDeleteMessage(response)
+
+
+        }
+    }
+
+    private fun handleDeleteMessage(response: ChatResponse<ResultDeleteMessage>?) {
+
+
+        fucCallbacks[ConstantMsgType.DELETE_MULTIPLE_MESSAGE]!!.remove(response?.uniqueId)
+
+        if (fucCallbacks[ConstantMsgType.DELETE_MULTIPLE_MESSAGE]!!.size == 0) {
 
             val position = 26
             changeIconReceive(position)
             methods[position].methodNameFlag = true
-            fucCallback.remove(ConstantMsgType.DELETE_MULTIPLE_MESSAGE)
+
         }
+
+
     }
 
     override fun onEditedMessage(response: ChatResponse<ResultNewMessage>?) {
@@ -1239,24 +1243,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
 
-        var threadId = response.subjectId
-
-
-        if (threadId == 0L) {
-
-            threadId = TEST_THREAD_ID
-
-        }
-
-        //todo handle if no deletable found
 
         if (deleteListIds.isEmpty()) {
 
             Toast.makeText(
-                context, "There is no deletable message! Create a thread with message first",
+                activity?.applicationContext, "There is no deletable message! Create a thread with message first",
                 Toast.LENGTH_LONG
             )
                 .show()
+
+            changeIconReceive(26)
 
             return
 
@@ -1266,13 +1262,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         var requestDeleteMessage = RequestDeleteMessage
             .Builder()
             .messageIds(deleteListIds)
-            .threadId(threadId)
             .deleteForAll(true)
-            .typeCode("5")
             .build()
 
-        fucCallback[ConstantMsgType.DELETE_MULTIPLE_MESSAGE] =
-            mainViewModel.deleteMessage(requestDeleteMessage)
+
+        var uniqueIds: ArrayList<String> = mainViewModel.deleteMultipleMessage(requestDeleteMessage)
+
+
+        fucCallbacks[ConstantMsgType.DELETE_MULTIPLE_MESSAGE] = uniqueIds
 
 
     }
@@ -1574,28 +1571,23 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val uniqueId = response?.uniqueId
 
-        if(uniqueId == fucCallback[ConstantMsgType.GET_SEEN_LIST]){
+        if (uniqueId == fucCallback[ConstantMsgType.GET_SEEN_LIST]) {
 
             prepareGetSeenList(response)
 
         }
 
-        if(uniqueId == fucCallback[ConstantMsgType.GET_DELIVER_LIST]){
+        if (uniqueId == fucCallback[ConstantMsgType.GET_DELIVER_LIST]) {
 
             prepareGetDeliveryList(response)
-
 
 
         }
 
 
-
-
-
     }
 
     private fun prepareGetDeliveryList(response: ChatResponse<ResultNewMessage>?) {
-
 
 
         val targetMessageId = response?.result?.messageVO?.id
@@ -1605,8 +1597,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         fucCallback[ConstantMsgType.GET_DELIVER_LIST] =
             mainViewModel.getDeliverMessageList(request)
-
-
 
 
     }
@@ -1629,12 +1619,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onGetSeenMessageList(response)
 
 
-        if(response?.uniqueId == fucCallback[ConstantMsgType.GET_SEEN_LIST]){
+        if (response?.uniqueId == fucCallback[ConstantMsgType.GET_SEEN_LIST]) {
 
             changeIconReceive(29)
 
             methods[29].methodNameFlag = true
-
 
 
         }
@@ -1646,7 +1635,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onGetDeliverMessageList(response)
 
 
-        if(response?.uniqueId == fucCallback[ConstantMsgType.GET_DELIVER_LIST]){
+        if (response?.uniqueId == fucCallback[ConstantMsgType.GET_DELIVER_LIST]) {
 
             changeIconReceive(28)
 

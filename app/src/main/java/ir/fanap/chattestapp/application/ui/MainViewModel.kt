@@ -15,6 +15,7 @@ import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import rx.subjects.PublishSubject
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -419,6 +420,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.sendLocationMessage(requestLocationMessage,param)
 
 
+    }
+
+    fun deleteMultipleMessage(requestDeleteMessage: RequestDeleteMessage): ArrayList<String> {
+
+        return ArrayList(chat.deleteMultipleMessage(requestDeleteMessage,null))
     }
 
 }
