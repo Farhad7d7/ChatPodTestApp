@@ -14,7 +14,6 @@ import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.content.Context
-import android.util.Log
 import ir.fanap.chattestapp.application.ui.IOnBackPressed
 
 
@@ -34,9 +33,7 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val view: View = inflater.inflate(R.layout.fragment_log, container, false)
-
-        return view
+        return inflater.inflate(R.layout.fragment_log, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

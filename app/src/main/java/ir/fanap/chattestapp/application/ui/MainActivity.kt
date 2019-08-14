@@ -2,7 +2,6 @@ package ir.fanap.chattestapp.application.ui
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.view.ViewPager
 import kotlinx.android.synthetic.main.activity_main_bubble.*
 import ir.fanap.chattestapp.R
