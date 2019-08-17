@@ -16,15 +16,22 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
     var filteredLogs: MutableList<String> = logs
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.textViewLog.text = logs[position]
+
+
+        val logText = logs[position]
+
+        var beautifyText: String
+
+        beautifyText = logText.replace("{","\t { \n")
+        beautifyText =beautifyText.replace("[","\t [ \n")
+        beautifyText =beautifyText.replace("}","\n \t }")
+        beautifyText =beautifyText.replace("]","\n \t ]")
+        beautifyText =beautifyText.replace(",",",\n")
+
+        viewHolder.textViewLog.text = beautifyText
+
         viewHolder.logNum.text = "#$position"
 
-        //changed
-//        if (position % 2 == 1) {
-//            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
-//        } else {
-//            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFAF8FD"))
-//        }
     }
 
 
