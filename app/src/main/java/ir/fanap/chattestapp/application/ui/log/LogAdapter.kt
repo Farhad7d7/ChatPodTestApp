@@ -43,6 +43,7 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
         viewHolder.btnCopy.setOnClickListener {
 
+
             setClipboard(context = viewHolder.itemView.context , text = logText)
         }
 
@@ -105,6 +106,7 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
     }
 
 
+    //Added
     private fun setClipboard(context: Context, text: String) {
 
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
