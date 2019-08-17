@@ -37,6 +37,8 @@ import kotlinx.android.synthetic.main.fragment_chat.*
 import java.util.ArrayList
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
+import kotlin.math.hypot
+import kotlin.math.max
 
 class ChatFragment : Fragment(), TestListener {
 
@@ -58,6 +60,7 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var prgressbarUploadImg: ProgressBar
     private lateinit var buttonUploadImage: AppCompatImageView
 
+    var isOpen = false
 
     private val faker: Faker = Faker()
 
@@ -117,7 +120,8 @@ class ChatFragment : Fragment(), TestListener {
         }
 
 
-        var isOpen = false
+
+
         atach_file.setOnClickListener {
 
             if (!isOpen) {
@@ -126,7 +130,7 @@ class ChatFragment : Fragment(), TestListener {
                 val y = cicuralCard.bottom
 
                 val startRadius = 0
-                val endRadius = Math.hypot(cicuralCard.width.toDouble(), cicuralCard.height.toDouble())
+                val endRadius = hypot(cicuralCard.width.toDouble(), cicuralCard.height.toDouble())
 
                 val anim: Animator =
                     CircularRevealCompat.createCircularReveal(
@@ -138,7 +142,7 @@ class ChatFragment : Fragment(), TestListener {
                     )
                 anim.interpolator = AccelerateDecelerateInterpolator()
 //                cicuralCard.visibility = View.VISIBLE
-                anim.duration = 50000
+                anim.duration = 1000
                 anim.start()
 
                 isOpen = true
@@ -148,7 +152,7 @@ class ChatFragment : Fragment(), TestListener {
                 val x = cicuralCard.left
                 val y = cicuralCard.bottom
 
-                val endRadius = Math.max(cicuralCard.width, cicuralCard.height)
+                val endRadius = max(cicuralCard.width, cicuralCard.height)
                 val startRadius = 0
 
 
@@ -176,7 +180,7 @@ class ChatFragment : Fragment(), TestListener {
                     }
                 })
                 anim.interpolator = AccelerateDecelerateInterpolator()
-                anim.duration = 50000
+                anim.duration = 1000
                 anim.start()
                 isOpen = false
             }
@@ -226,11 +230,11 @@ class ChatFragment : Fragment(), TestListener {
     override fun onGetThread(chatResponse: ChatResponse<ResultThreads>?) {
         super.onGetThread(chatResponse)
 
-        progressBarLocationMessage.incrementProgressBy(5)
+
 
         if (chatResponse?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]) {
 
-
+            progressBarLocationMessage.incrementProgressBy(5)
             prepareSendLocationMessage(chatResponse?.result?.threads)
 
 

@@ -1,5 +1,6 @@
 package ir.fanap.chattestapp.application.ui.function
 
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.os.Bundle
@@ -7,12 +8,17 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
+import android.view.inputmethod.InputMethod
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.fanap.podchat.chat.RoleType
 import com.fanap.podchat.mainmodel.*
@@ -35,11 +41,15 @@ import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncO
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncThree
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncTwo
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodNames
+import ir.fanap.chattestapp.application.ui.util.TokenFragment
+import kotlinx.android.synthetic.main.fragment_function.*
+import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.coroutines.suspendCoroutine
 
 class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestListener {
 
@@ -59,6 +69,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private lateinit var recyclerViewSmooth: RecyclerView.SmoothScroller
     private lateinit var bottom_sheet_log: ConstraintLayout
     private lateinit var bottomSheetLog: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var bottomSheetSearch: BottomSheetBehavior<NestedScrollView>
     private var gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private var methods: MutableList<Method> = mutableListOf()
     private var fucCallback: HashMap<String, String> = hashMapOf()
@@ -78,7 +89,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
      */
 
     private val sand_name = "SandBox"
-    private val SAND_TOKEN = "b4735b4c3e5a4b4798ac3eb523087efc"
+    private var SAND_TOKEN = "b4735b4c3e5a4b4798ac3eb523087efc"
     private val sand_socketAddress = "wss://chat-sandbox.pod.land/ws"
     private val sand_serverName = "chat-server"
     private val sand_appId = "POD-Chat"
@@ -110,6 +121,202 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             return FunctionFragment()
         }
     }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        bottomSheetSearch = BottomSheetBehavior.from(bottom_sheet_search)
+
+        bottomSheetSearch.isHideable = true
+
+        appCompatImageView.setOnClickListener {
+
+
+            showTokenDialog()
+
+        }
+
+
+        fltBtnSetToken.setOnClickListener {
+
+            showTokenDialog()
+
+        }
+
+
+        fltBtnSearchMethod.setOnClickListener {
+
+            showSearchInMethods()
+
+        }
+
+
+        btnSearch.setOnClickListener {
+
+            val query = etSearch.text.toString()
+
+
+            if(query.length > 2){
+
+                searchInMethodsWith(query)
+
+
+            }else{
+
+                etSearch.error = "Query must be at least 3 characters"
+
+            }
+
+
+        }
+
+        btnCancel.setOnClickListener {
+
+
+            bottomSheetSearch.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+
+
+        bottomSheetSearch.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+
+
+            override fun onSlide(p0: View, p1: Float) {
+
+            }
+
+            override fun onStateChanged(p0: View, state: Int) {
+
+                when(state){
+
+                    BottomSheetBehavior.STATE_COLLAPSED->{
+
+                        bottomSheetSearch.state = BottomSheetBehavior.STATE_HIDDEN
+
+
+                    }
+
+
+
+                }
+
+            }
+        })
+
+
+
+
+
+
+    }
+
+
+
+    private fun hideKeyboard(context: Context?, view: View){
+
+        val imm:InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        imm.hideSoftInputFromWindow(view.windowToken,0)
+
+
+
+
+    }
+
+
+    private fun searchInMethodsWith(query: String) {
+
+
+        var found = false
+
+        val queryS = query.replace(" ","")
+
+        for(methodIndex in methodNames.indices){
+
+            val methodName = methodNames[methodIndex].replace(" ","")
+
+
+            Log.d("MTAG","Query: $queryS method: $methodName")
+
+            if(methodName.contains(queryS,ignoreCase = true)){
+
+
+                hideKeyboard(context,view!!)
+
+                recyclerView.smoothScrollToPosition(methodIndex)
+
+                bottomSheetSearch.state = BottomSheetBehavior.STATE_COLLAPSED
+
+
+                found = true
+
+                break
+
+
+
+            }
+
+
+        }
+
+        if (!found){
+
+
+            Toast.makeText(context,"Nothing found!" , Toast.LENGTH_LONG)
+                .show()
+
+
+
+        }
+
+
+    }
+
+    private fun showSearchInMethods() {
+
+
+        bottomSheetSearch.state = BottomSheetBehavior.STATE_EXPANDED
+
+
+
+    }
+
+
+    private fun showTokenDialog(){
+
+        val tokenFragment = TokenFragment()
+
+        val tr = childFragmentManager.beginTransaction()
+
+        tokenFragment.show(tr,"TOKEN_FRAG")
+
+
+        tokenFragment.setOnTokenSet(object : TokenFragment.IDialogToken{
+
+            override fun onTokenSet(token: String) {
+
+
+                Log.d("MTAG","new token set: $token")
+
+                SAND_TOKEN = token
+
+
+                tokenFragment.dismiss()
+
+            }
+        })
+
+
+
+
+
+
+
+
+    }
+
 
     override fun onLogClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
         var position = clickedViewHolder.adapterPosition
@@ -299,7 +506,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val buttonClose = view.findViewById(R.id.button_close) as Button
 
-        bottomSheetLog = BottomSheetBehavior.from<ConstraintLayout>(bottom_sheet_log)
+        bottomSheetLog = BottomSheetBehavior.from(bottom_sheet_log)
+
+
+
+
         bottomSheetLog.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(view: View, p1: Float) {
 
@@ -328,6 +539,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         recyclerView.setHasFixedSize(true)
         linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
+
+
+
+
+
+
+
         recyclerViewSmooth = object : LinearSmoothScroller(activity) {
             override fun getVerticalSnapPreference(): Int {
                 return LinearSmoothScroller.SNAP_TO_START
@@ -353,12 +571,50 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             sandbox = isChecked
         }
 
+
+
+
+
+        val menuView = view.findViewById<View>(R.id.relativeMenu)
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+
+                if((linearLayoutManager.findLastVisibleItemPosition() + 1) == linearLayoutManager.itemCount){
+
+
+                    menuView.animate().setDuration(250).scaleX(0f).scaleY(0f).setInterpolator(LinearInterpolator())
+                        .start()
+
+
+
+
+                }else{
+
+
+                    menuView.animate().setDuration(250).scaleX(1.0f).scaleY(1.0f).setInterpolator(LinearInterpolator())
+                        .start()
+
+
+
+                }
+
+
+
+            }
+        })
+
+
         return view
     }
 
     private fun initView(view: View) {
         buttonConect = view.findViewById(R.id.button_Connect)
         recyclerView = view.findViewById(R.id.recyclerV_funcFrag)
+        recyclerView.isNestedScrollingEnabled = true
         textView_state = view.findViewById(R.id.textView_state)
         switchCompat_sandBox = view.findViewById(R.id.switchCompat_sandBox)
         avLoadingIndicatorView = view.findViewById(R.id.AVLoadingIndicatorView)

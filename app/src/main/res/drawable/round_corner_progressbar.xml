@@ -2,7 +2,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners android:radius="8dp"/>
-            <solid android:color="@color/green_bg_light"/>
+            <solid android:color="@color/gery_inactive"/>
         </shape>
     </item>
 

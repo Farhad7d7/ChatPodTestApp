@@ -1,6 +1,10 @@
 package ir.fanap.chattestapp.application.ui.log
 
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Color
+import android.support.design.widget.FloatingActionButton
+import android.support.v4.content.ContextCompat.getSystemService
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,11 +13,15 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
+import android.widget.Toast
 import ir.fanap.chattestapp.R
+
 
 class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>(),Filterable {
 
     var filteredLogs: MutableList<String> = logs
+
+
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
@@ -22,15 +30,21 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
         var beautifyText: String
 
-        beautifyText = logText.replace("{","\t { \n")
-        beautifyText =beautifyText.replace("[","\t [ \n")
-        beautifyText =beautifyText.replace("}","\n \t }")
-        beautifyText =beautifyText.replace("]","\n \t ]")
+        beautifyText = logText.replace("{","\t{\n")
+        beautifyText =beautifyText.replace("[","\t[\n")
+        beautifyText =beautifyText.replace("}","\n\t}")
+        beautifyText =beautifyText.replace("]","\n\t]")
         beautifyText =beautifyText.replace(",",",\n")
 
         viewHolder.textViewLog.text = beautifyText
 
-        viewHolder.logNum.text = "#$position"
+        viewHolder.logNum.text = "#${(position+1)}"
+
+
+        viewHolder.btnCopy.setOnClickListener {
+
+            setClipboard(context = viewHolder.itemView.context , text = logText)
+        }
 
     }
 
@@ -87,10 +101,21 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textViewLog: TextView = itemView.findViewById(R.id.textView_log)
         var logNum: TextView = itemView.findViewById(R.id.tvLogNum)
+        val btnCopy : FloatingActionButton = itemView.findViewById(R.id.btnCopy)
     }
 
 
-    fun additem() {
+    private fun setClipboard(context: Context, text: String) {
+
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = android.content.ClipData.newPlainText("Copied Text", text)
+            clipboard.primaryClip = clip
+
+        Toast.makeText(context,"Text Copied to clipboard",Toast.LENGTH_LONG)
+            .show()
+
 
     }
+
+
 }

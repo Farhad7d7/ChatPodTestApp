@@ -103,8 +103,84 @@
                 android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/button_Connect"
                 android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.275"/>
+
+
+        <RelativeLayout
+                android:id="@+id/relativeMenu"
+                android:visibility="visible"
+                android:padding="16dp"
+                android:background="@drawable/menu_bottom_shape"
+                android:layout_margin="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:orientation="horizontal"
+                          android:weightSum="3"
+                          android:gravity="center"
+                          android:layout_centerInParent="true"
+                          android:layout_height="wrap_content">
+
+
+                <RelativeLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="0dp" android:layout_height="wrap_content">
+
+                    <android.support.design.widget.FloatingActionButton
+                            app:backgroundTint="@color/blue_active"
+                            android:id="@+id/fltBtnSearchMethod"
+                            app:fabSize="mini"
+                            android:layout_centerInParent="true"
+                            app:srcCompat="@drawable/ic_search"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="0dp" android:layout_height="wrap_content">
+
+
+                    <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/fltBtnSetToken"
+                            app:backgroundTint="@color/purple_inactive"
+                            app:fabSize="mini"
+                            android:layout_centerInParent="true"
+                            app:srcCompat="@drawable/ic_key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="0dp" android:layout_height="wrap_content">
+
+                    <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/fltBtnFace"
+                            app:backgroundTint="@color/green_active"
+                            app:fabSize="mini"
+                            android:layout_centerInParent="true"
+                            app:srcCompat="@drawable/ic_round_tag_faces_24px"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
     </android.support.constraint.ConstraintLayout>
 
     <include layout="@layout/bottom_sheet_log"/>
+    <include layout="@layout/search_log_bottom_sheet"/>
 
 </android.support.design.widget.CoordinatorLayout>
