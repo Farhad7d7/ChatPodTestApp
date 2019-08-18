@@ -2986,27 +2986,42 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun changeIconReceive(position: Int) {
+
+
         methods[position].methodNameFlag = true
+
         activity?.runOnUiThread {
-            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
-            viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
-//            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-//                ?.setImageResource(R.drawable.ic_round_done_all_24px)
-//            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-//                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            functionAdapter.deActivateFunction(position)
         }
+
+//        activity?.runOnUiThread {
+//            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
+//            viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
+////            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
+////                ?.setImageResource(R.drawable.ic_round_done_all_24px)
+////            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
+////                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+//        }
     }
 
     /* visibility of progress bar*/
     private fun changeIconSend(position: Int) {
+
+//        activity?.runOnUiThread {
+//
+//            val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
+//            viewHolder.itemView.findViewById<ProgressBar>(R.id.progress_method).visibility = View.VISIBLE
+//
+////            viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
+////                .setImageResource(R.drawable.ic_round_done_all_24px)
+//        }
+//
+//
+//
         activity?.runOnUiThread {
-
-            val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-            viewHolder.itemView.findViewById<ProgressBar>(R.id.progress_method).visibility = View.VISIBLE
-
-//            viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-//                .setImageResource(R.drawable.ic_round_done_all_24px)
+            functionAdapter.activateFunction(position)
         }
+
     }
 /*
 * getContact

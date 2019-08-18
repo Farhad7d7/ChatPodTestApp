@@ -188,6 +188,21 @@ class FunctionAdapter(
         notifyDataSetChanged()
 
     }
+     fun activateFunction(position: Int){
+
+        methods[position].isActive = true
+        notifyDataSetChanged()
+
+    }
+
+    fun deActivateFunction(position: Int){
+
+        methods[position].isActive = false
+        notifyDataSetChanged()
+
+    }
+
+
 
     final inner class ViewHolder(itemView: View, viewHolderListener: ViewHolderListener) :
         RecyclerView.ViewHolder(itemView) {
