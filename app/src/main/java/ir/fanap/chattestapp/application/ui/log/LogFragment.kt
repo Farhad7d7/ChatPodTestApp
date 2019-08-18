@@ -186,6 +186,9 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
 
     override fun onLogEvent(log: String) {
+
+        //todo log should return with more details
+
         super.onLogEvent(log)
         logs.add(log)
         activity?.runOnUiThread {

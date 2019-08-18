@@ -13,10 +13,10 @@ android {
         versionCode 2
         versionName "1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        vectorDrawables.setUseSupportLibrary(true)
+//        vectorDrawables.setUseSupportLibrary(true)
         multiDexEnabled true
 
-        vectorDrawables.useSupportLibrary = true
+//        vectorDrawables.useSupportLibrary = true
 
     }
     buildTypes {

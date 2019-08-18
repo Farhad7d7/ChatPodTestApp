@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content">
 
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                     android:layout_margin="4dp"
                     android:id="@+id/btnCancel"
                     android:layout_width="0dp"
@@ -54,7 +54,7 @@
                     android:background="@drawable/cancel_button_stroke"
             />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                     android:layout_margin="4dp"
                     android:id="@+id/btnSearch"
                     android:layout_width="0dp"

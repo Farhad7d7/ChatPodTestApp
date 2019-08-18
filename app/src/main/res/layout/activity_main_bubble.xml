@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
                                              android:fitsSystemWindows="true"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent">
@@ -13,12 +14,13 @@
     <!--android:theme="@style/AppTheme.AppBarOverlay">-->
 
     <!--</android.support.design.widget.AppBarLayout>-->
+
+
     <com.gauravk.bubblenavigation.BubbleNavigationConstraintView
             android:id="@+id/top_navigation_constraint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="380dp"
-            android:background="@color/white"
+            android:background="@color/blue_grey_active"
             android:padding="12dp"
             app:bnc_mode="spread"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,12 +59,25 @@
                 android:layout_height="wrap_content"
                 app:bt_colorActive="@color/green_active"
                 app:bt_colorInactive="@color/green_inactive"
-                app:bt_icon="@drawable/ic_round_cloud_queue_24px"
+                app:bt_icon="@drawable/round_cloud_queue_black_18dp"
                 app:bt_padding="12dp"
                 app:bt_shape="@drawable/transition_background_drawable_default"
                 app:bt_title="@string/tab_upload"
                 app:bt_titlePadding="8dp"/>
     </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
+
+    <!--<android.support.v7.widget.AppCompatImageView-->
+            <!--android:layout_width="37dp"-->
+            <!--android:layout_height="37dp"-->
+            <!--android:src="@drawable/fanap_logo"-->
+            <!--android:id="@+id/appCompatImageView"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:layout_marginTop="4dp" app:layout_constraintTop_toTopOf="parent"-->
+            <!--app:layout_constraintVertical_bias="0.342"-->
+            <!--app:layout_constraintBottom_toTopOf="@+id/top_navigation_constraint"/>-->
+
 
     <android.support.v4.view.ViewPager
             android:id="@+id/view_pager"

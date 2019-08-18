@@ -25,8 +25,10 @@ import com.fanap.podchat.chat.RoleType
 import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
+import com.fanap.podchat.util.ChatConstant
 import com.fanap.podchat.util.InviteType
 import com.fanap.podchat.util.ThreadType
+import com.fanap.podchat.util.Util
 import com.github.javafaker.Faker
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -132,12 +134,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         bottomSheetSearch.isHideable = true
 
-        appCompatImageView.setOnClickListener {
-
-
-            showTokenDialog()
-
-        }
+//        appCompatImageView.setOnClickListener {
+//
+//
+//            showTokenDialog()
+//
+//        }
 
 
         fltBtnSetToken.setOnClickListener {
@@ -788,6 +790,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             Toast.makeText(activity, chatResponse?.errorMessage, Toast.LENGTH_LONG).show()
         }
         val uniqueId = chatResponse?.uniqueId
+
+        fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]
+
+
 
 //        if (uniqueId == fucCallback[ConstantMsgType.ADD_CONTACT]) {
 //            fucCallback[uniqueId]

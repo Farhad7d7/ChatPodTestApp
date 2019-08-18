@@ -38,6 +38,7 @@
     <color name="grey_bg_light">#fafafa</color>
 
     <color name="white">#ffffff</color>
+    <color name="background">#F1F1F1</color>
     <color name="grey_light">#E7E6E6</color>
     <color name="log_color">#424242</color>
     <color name="black">#000000</color>
