@@ -1,6 +1,8 @@
 package ir.fanap.chattestapp.application.ui.function
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatImageView
@@ -123,6 +125,36 @@ class FunctionAdapter(
             viewHolder.checkBoxFourth.visibility = View.GONE
             viewHolder.textViewFuncFour.visibility = View.GONE
         }
+
+
+        if(methods[position].isActive){
+
+            viewHolder.progress_method.visibility = View.VISIBLE
+
+        }else{
+
+            viewHolder.progress_method.visibility = View.INVISIBLE
+
+        }
+
+        if(methods[position].isSearched) {
+
+            viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item_highlight)
+
+            viewHolder.imgViewArrowToMethod.visibility = View.VISIBLE
+
+        }else{
+
+            viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item)
+
+            viewHolder.imgViewArrowToMethod.visibility = View.GONE
+
+
+
+        }
+
+
+
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -149,6 +181,14 @@ class FunctionAdapter(
         this.pos = position
     }
 
+
+    fun changeSearched(position: Int,isSearched:Boolean){
+
+        methods[position].isSearched = isSearched
+        notifyDataSetChanged()
+
+    }
+
     final inner class ViewHolder(itemView: View, viewHolderListener: ViewHolderListener) :
         RecyclerView.ViewHolder(itemView) {
 //        override fun onClick(v: View?) {
@@ -168,6 +208,9 @@ class FunctionAdapter(
         val checkBoxFourth: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFourth)
         val buttonLog :  AppCompatImageView = itemView.findViewById(R.id.imgView_log)
         val buttonRun: AppCompatImageView = itemView.findViewById(R.id.buttonRun)
+        val funcViewParent: View = itemView.findViewById(R.id.viewFuncParent)
+        val topItemMethod: View = itemView.findViewById(R.id.appCompatImageView4)
+        val imgViewArrowToMethod: View = itemView.findViewById(R.id.imgViewArrowToMethod)
 
         val progress_method = itemView.findViewById(R.id.progress_method) as ProgressBar
 

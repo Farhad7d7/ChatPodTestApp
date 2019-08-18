@@ -2,6 +2,9 @@ package ir.fanap.chattestapp.application.ui.util
 
 class MethodList {
 
+
+
+
     companion object {
         val methodNames: MutableList<String> =
             arrayListOf(
@@ -36,8 +39,6 @@ class MethodList {
                 "28 Get Deliver List",
                 "29 Get Seen List",
                 "30 Search Contact"
-
-
             )
 
 

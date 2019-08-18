@@ -25,4 +25,8 @@ class Method() {
     var desc: String? = null
     lateinit var checkBox: CheckBox
 
+    var isSearched:Boolean =false
+    var isExpanded:Boolean=false
+    var isActive:Boolean=false
+
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
@@ -248,6 +249,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 recyclerView.smoothScrollToPosition(methodIndex)
 
                 bottomSheetSearch.state = BottomSheetBehavior.STATE_COLLAPSED
+
+                functionAdapter.changeSearched(methodIndex,true)
+
+                Handler().postDelayed({
+
+                    functionAdapter.changeSearched(methodIndex,false)
+
+
+                },5000)
 
 
                 found = true
