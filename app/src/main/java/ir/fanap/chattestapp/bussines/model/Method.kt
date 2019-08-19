@@ -28,5 +28,6 @@ class Method() {
     var isSearched:Boolean =false
     var isExpanded:Boolean=false
     var isActive:Boolean=false
+    var hasError:Boolean=false
 
 }

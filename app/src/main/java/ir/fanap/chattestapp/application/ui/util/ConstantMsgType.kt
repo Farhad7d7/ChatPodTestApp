@@ -5,6 +5,7 @@ import android.support.annotation.StringDef
 class ConstantMsgType {
 
     companion object {
+        const val GET_BLOCK_LIST = "GET_BLOCK_LIST"
         const val SEND_LOCATION_MESSAGE = "SEND_LOCATION_MESSAGE"
         const val SEARCH_CONTACT = "SEARCH_CONTACT"
         const val GET_DELIVER_LIST = "GET_DELIVER_LIST"
@@ -95,7 +96,8 @@ class ConstantMsgType {
         GET_SEEN_LIST,
         GET_DELIVER_LIST,
         SEARCH_CONTACT,
-        SEND_LOCATION_MESSAGE
+        SEND_LOCATION_MESSAGE,
+        GET_BLOCK_LIST
     )
 
     @Retention(AnnotationRetention.SOURCE)

@@ -16,19 +16,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
-import android.view.inputmethod.InputMethod
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.fanap.podchat.chat.RoleType
 import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
-import com.fanap.podchat.util.ChatConstant
 import com.fanap.podchat.util.InviteType
 import com.fanap.podchat.util.ThreadType
-import com.fanap.podchat.util.Util
 import com.github.javafaker.Faker
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -52,11 +48,11 @@ import rx.schedulers.Schedulers
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.coroutines.suspendCoroutine
 
 class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestListener {
 
 
+    private var chatReady: Boolean = false
     var TEST_THREAD_ID: Long = 10955L
 
     private lateinit var buttonConect: Button
@@ -161,12 +157,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val query = etSearch.text.toString()
 
 
-            if(query.length > 2){
+            if (query.length > 2) {
 
                 searchInMethodsWith(query)
 
 
-            }else{
+            } else {
 
                 etSearch.error = "Query must be at least 3 characters"
 
@@ -183,7 +179,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
 
-        bottomSheetSearch.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+        bottomSheetSearch.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
 
             override fun onSlide(p0: View, p1: Float) {
@@ -192,15 +188,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             override fun onStateChanged(p0: View, state: Int) {
 
-                when(state){
+                when (state) {
 
-                    BottomSheetBehavior.STATE_COLLAPSED->{
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
 
                         bottomSheetSearch.state = BottomSheetBehavior.STATE_HIDDEN
 
 
                     }
-
 
 
                 }
@@ -209,21 +204,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         })
 
 
-
-
-
-
     }
 
 
+    private fun hideKeyboard(context: Context?, view: View) {
 
-    private fun hideKeyboard(context: Context?, view: View){
+        val imm: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        val imm:InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        imm.hideSoftInputFromWindow(view.windowToken,0)
-
-
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
 
 
     }
@@ -234,32 +222,33 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         var found = false
 
-        val queryS = query.replace(" ","")
+        val queryS = query.replace(" ", "")
 
-        for(methodIndex in methodNames.indices){
+        for (methodIndex in methodNames.indices) {
 
-            val methodName = methodNames[methodIndex].replace(" ","")
-
-
-            Log.d("MTAG","Query: $queryS method: $methodName")
-
-            if(methodName.contains(queryS,ignoreCase = true)){
+            val methodName = methodNames[methodIndex].replace(" ", "")
 
 
-                hideKeyboard(context,view!!)
+            Log.d("MTAG", "Query: $queryS method: $methodName")
+
+            if (methodName.contains(queryS, ignoreCase = true)) {
+
+
+                hideKeyboard(context, view!!)
 
                 recyclerView.smoothScrollToPosition(methodIndex)
 
                 bottomSheetSearch.state = BottomSheetBehavior.STATE_COLLAPSED
 
-                functionAdapter.changeSearched(methodIndex,true)
+                functionAdapter.changeSearched(methodIndex, true)
 
                 Handler().postDelayed({
 
-                    functionAdapter.changeSearched(methodIndex,false)
+
+                    functionAdapter.changeSearched(methodIndex, false)
 
 
-                },5000)
+                }, 5000)
 
 
                 found = true
@@ -267,18 +256,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 break
 
 
-
             }
 
 
         }
 
-        if (!found){
+        if (!found) {
 
 
-            Toast.makeText(context,"Nothing found!" , Toast.LENGTH_LONG)
+            Toast.makeText(context, "Nothing found!", Toast.LENGTH_LONG)
                 .show()
-
 
 
         }
@@ -292,25 +279,24 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         bottomSheetSearch.state = BottomSheetBehavior.STATE_EXPANDED
 
 
-
     }
 
 
-    private fun showTokenDialog(){
+    private fun showTokenDialog() {
 
         val tokenFragment = TokenFragment()
 
         val tr = childFragmentManager.beginTransaction()
 
-        tokenFragment.show(tr,"TOKEN_FRAG")
+        tokenFragment.show(tr, "TOKEN_FRAG")
 
 
-        tokenFragment.setOnTokenSet(object : TokenFragment.IDialogToken{
+        tokenFragment.setOnTokenSet(object : TokenFragment.IDialogToken {
 
             override fun onTokenSet(token: String) {
 
 
-                Log.d("MTAG","new token set: $token")
+                Log.d("MTAG", "new token set: $token")
 
                 SAND_TOKEN = token
 
@@ -319,12 +305,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             }
         })
-
-
-
-
-
-
 
 
     }
@@ -358,7 +338,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     override fun onIconClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
+
         var position = clickedViewHolder.adapterPosition
+
+
+        removeErrorStateOnFunctionInPosition(position)
+
         when (position) {
             0 -> {
                 createThread()
@@ -424,7 +409,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 createThreadWithForwMessage()
             }
             21 -> {
-                getPartitipant()
+                getParticipant()
             }
             22 -> {
 
@@ -584,9 +569,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
 
-
-
-
         val menuView = view.findViewById<View>(R.id.relativeMenu)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -595,25 +577,21 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 super.onScrolled(recyclerView, dx, dy)
 
 
-                if((linearLayoutManager.findLastVisibleItemPosition() + 1) == linearLayoutManager.itemCount){
+                if ((linearLayoutManager.findLastVisibleItemPosition() + 1) == linearLayoutManager.itemCount) {
 
 
-                    menuView.animate().setDuration(250).scaleX(0f).scaleY(0f).setInterpolator(LinearInterpolator())
+                    menuView.animate().setDuration(250).scaleX(0f).scaleY(0f).alpha(0f).setInterpolator(LinearInterpolator())
                         .start()
 
 
+                } else {
 
 
-                }else{
-
-
-                    menuView.animate().setDuration(250).scaleX(1.0f).scaleY(1.0f).setInterpolator(LinearInterpolator())
+                    menuView.animate().setDuration(250).scaleX(1.0f).scaleY(1.0f).alpha(1f).setInterpolator(LinearInterpolator())
                         .start()
-
 
 
                 }
-
 
 
             }
@@ -652,10 +630,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 textView_state.text = it
 
                 if (it == "CHAT_READY") {
+
+                    chatReady = true
                     avLoadingIndicatorView.visibility = View.GONE
                     textView_state.setTextColor(
                         ContextCompat.getColor(activity?.applicationContext!!, R.color.green_active)
                     )
+                } else {
+
+                    chatReady = false
                 }
 
 
@@ -663,18 +646,21 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun getHistory() {
+        changeIconSend(getPositionOf(ConstantMsgType.GET_HISTORY))
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
         fucCallback[ConstantMsgType.GET_HISTORY] = uniqueId
     }
 
     private fun editMessage() {
+        changeIconSend(getPositionOf(ConstantMsgType.EDIT_MESSAGE))
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
         fucCallback[ConstantMsgType.EDIT_MESSAGE] = uniqueId
     }
 
     private fun deleteMessage() {
+        changeIconSend(getPositionOf(ConstantMsgType.DELETE_MESSAGE))
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
         fucCallback[ConstantMsgType.DELETE_MESSAGE] = uniqueId
@@ -791,8 +777,258 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
         val uniqueId = chatResponse?.uniqueId
 
-        fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]
 
+
+
+        fucCallback.forEach {
+
+            if (it.value == uniqueId) {
+
+                setErrorOnFunctionInPosition(getPositionOf(it.key))
+
+            }
+
+        }
+
+        fucCallbacks.forEach {
+
+            if (it.value.contains(uniqueId)) {
+
+                setErrorOnFunctionInPosition(getPositionOf(it.key))
+
+            }
+
+        }
+
+//        for(key in fucCallback.forEach()){
+//            
+//            
+//            
+//        }
+
+//        when (uniqueId) {
+//
+//            fucCallback[ConstantMsgType.CREATE_THREAD] -> {
+//
+//
+//                setErrorOnFunctionInPosition(0)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_CONTACT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(1)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.BLOCK_CONTACT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(2)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.ADD_CONTACT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(3)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_THREAD] -> {
+//
+//
+//                setErrorOnFunctionInPosition(4)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_BLOCK_LIST] -> {
+//
+//
+//                setErrorOnFunctionInPosition(5)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.UNBLOCK_CONTACT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(6)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.UPDATE_CONTACT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(7)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.SEND_MESSAGE] -> {
+//
+//
+//                setErrorOnFunctionInPosition(8)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.REMOVE_CONTACT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(9)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.ADD_PARTICIPANT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(10)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(11)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.FORWARD_MESSAGE] -> {
+//
+//
+//                setErrorOnFunctionInPosition(12)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.REPLY_MESSAGE] -> {
+//
+//
+//                setErrorOnFunctionInPosition(13)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.LEAVE_THREAD] -> {
+//
+//
+//                setErrorOnFunctionInPosition(14)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.MUTE_THREAD] -> {
+//
+//
+//                setErrorOnFunctionInPosition(15)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.UNMUTE_THREAD] -> {
+//
+//
+//                setErrorOnFunctionInPosition(16)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.DELETE_MESSAGE] -> {
+//
+//
+//                setErrorOnFunctionInPosition(17)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.EDIT_MESSAGE] -> {
+//
+//
+//                setErrorOnFunctionInPosition(18)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_HISTORY] -> {
+//
+//
+//                setErrorOnFunctionInPosition(19)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FORW_MSG] -> {
+//
+//
+//                setErrorOnFunctionInPosition(20)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_PARTICIPANT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(21)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.CLEAR_HISTORY] -> {
+//
+//
+//                setErrorOnFunctionInPosition(22)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_ADMINS_LIST] -> {
+//
+//
+//                setErrorOnFunctionInPosition(23)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.ADD_ADMIN_ROLES] -> {
+//
+//
+//                setErrorOnFunctionInPosition(24)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.REMOVE_ADMIN_ROLES] -> {
+//
+//
+//                setErrorOnFunctionInPosition(25)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.DELETE_MULTIPLE_MESSAGE] -> {
+//
+//
+//                setErrorOnFunctionInPosition(26)
+//
+//            }
+//
+//
+//
+//            fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] -> {
+//
+//
+//                setErrorOnFunctionInPosition(27)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_DELIVER_LIST] -> {
+//
+//
+//                setErrorOnFunctionInPosition(28)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.GET_SEEN_LIST] -> {
+//
+//
+//                setErrorOnFunctionInPosition(29)
+//
+//            }
+//
+//            fucCallback[ConstantMsgType.SEARCH_CONTACT] -> {
+//
+//
+//                setErrorOnFunctionInPosition(30)
+//
+//            }
+//
+//
+//        }
 
 
 //        if (uniqueId == fucCallback[ConstantMsgType.ADD_CONTACT]) {
@@ -806,6 +1042,139 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 //                    .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorAccent))
 //            }
 //        }
+    }
+
+    private fun getPositionOf(key: String): Int {
+
+
+        return when (key) {
+
+            "CREATE_THREAD" -> 0
+
+
+            "GET_CONTACT" -> 1
+
+
+            "BLOCK_CONTACT" -> 2
+
+
+            "ADD_CONTACT" -> 3
+
+
+            "GET_THREAD" -> 4
+
+
+            "GET_BLOCK_LIST" -> 5
+
+
+            "UNBLOCK_CONTACT" -> 6
+
+
+            "UPDATE_CONTACT" -> 7
+
+
+            "SEND_MESSAGE" -> 8
+
+
+            "REMOVE_CONTACT" -> 9
+
+
+            "ADD_PARTICIPANT" -> 10
+
+
+            "REMOVE_PARTICIPANT" -> 11
+
+
+            "FORWARD_MESSAGE" -> 12
+
+
+            "REPLY_MESSAGE" -> 13
+
+
+            "LEAVE_THREAD" -> 14
+
+
+            "MUTE_THREAD" -> 15
+
+
+            "UNMUTE_THREAD" -> 16
+
+
+            "DELETE_MESSAGE" -> 17
+
+
+            "EDIT_MESSAGE" -> 18
+
+
+            "GET_HISTORY" -> 19
+
+
+            "CREATE_THREAD_WITH_FORW_MSG" -> 20
+
+
+            "GET_PARTICIPANT" -> 21
+
+
+            "CLEAR_HISTORY" -> 22
+
+
+            "GET_ADMINS_LIST" -> 23
+
+
+            "ADD_ADMIN_ROLES" -> 24
+
+
+            "REMOVE_ADMIN_ROLES" -> 25
+
+
+            "DELETE_MULTIPLE_MESSAGE" -> 26
+
+
+            "CREATE_THREAD_WITH_MSG" -> 27
+
+
+            "GET_DELIVER_LIST" -> 28
+
+
+            "GET_SEEN_LIST" -> 29
+
+
+            "SEARCH_CONTACT" -> 30
+
+
+            else -> -1
+        }
+
+
+    }
+
+
+    private fun setErrorOnFunctionInPosition(position: Int) {
+
+
+        if (position == -1)
+            return
+
+        recyclerView.smoothScrollToPosition(position)
+
+        functionAdapter.setErrorState(position, true)
+
+        functionAdapter.deActivateFunction(position)
+
+
+
+    }
+
+
+    private fun removeErrorStateOnFunctionInPosition(position: Int) {
+
+        if (position == -1) return
+
+        activity?.runOnUiThread {
+            functionAdapter.setErrorState(position, false)
+
+        }
+
     }
 
     override fun onUnBlock(response: ChatResponse<ResultBlock>?) {
@@ -979,7 +1348,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun prepareSendMessage(chatResponse: ChatResponse<ResultThreads>?) {
         if (chatResponse?.result?.threads?.size!! > 0) {
-            fucCallback.remove(ConstantMsgType.SEND_MESSAGE)
+//            fucCallback.remove(ConstantMsgType.SEND_MESSAGE)
             val threadId = chatResponse.result.threads[0].id
             val requestMessage = RequestMessage.Builder(faker.lorem().paragraph(), threadId).build()
             fucCallback[ConstantMsgType.SEND_MESSAGE] = mainViewModel.sendTextMsg(requestMessage)
@@ -1014,7 +1383,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
 
 
-            //todo find correct threadId
             if (threadId == 0L) {
 
                 threadId = chatResponse.result.threads[0].id
@@ -1060,7 +1428,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             for (thread: Thread in chatResponse.result.threads) {
 
-                if (thread.isGroup) {
+                if (thread.isGroup && thread.admin) {
 
                     threadId = thread.id
 
@@ -1150,7 +1518,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             for (thread: Thread in chatResponse.result.threads) {
 
-                if (thread.isGroup) {
+                if (thread.isGroup && thread.admin) {
 
                     threadId = thread.id
 
@@ -1358,8 +1726,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (fucCallback[ConstantMsgType.SEND_MESSAGE] == response?.uniqueId) {
             val position = 8
-            changeSecondIconReceive(position)
             methods[position].funcOneFlag = true
+            changeSecondIconReceive(position)
         }
     }
 
@@ -1793,7 +2161,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun prepareRemoveAdminRoles(chatResponse: ChatResponse<ResultParticipant>?, uniqueId: String?) {
 
 
-        var adminParticipant = Participant()
+        var adminParticipant:Participant? = null
+
 
         for (par in chatResponse?.result!!.participants) {
 
@@ -1807,9 +2176,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
 
-        if (adminParticipant.equals(null)) {
+        if (adminParticipant == null) {
             Toast.makeText(context, "There is no thread with admin! create one first", Toast.LENGTH_LONG)
                 .show()
+
+            changeIconReceive(getPositionOf(ConstantMsgType.REMOVE_ADMIN_ROLES))
             return
         }
 
@@ -1842,6 +2213,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onNewMessage(response)
 
         val uniqueId = response?.uniqueId
+
+
+        if (uniqueId==fucCallback[ConstantMsgType.SEND_MESSAGE]){
+
+            val pos = getPositionOf(ConstantMsgType.SEND_MESSAGE)
+            methods[pos].methodNameFlag = true
+            changeIconReceive(pos)
+
+
+
+        }
 
         if (uniqueId == fucCallback[ConstantMsgType.GET_SEEN_LIST]) {
 
@@ -1938,7 +2320,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] == response?.uniqueId) {
 
-            fucCallback.remove(ConstantMsgType.CREATE_THREAD_WITH_MSG)
+//            fucCallback.remove(ConstantMsgType.CREATE_THREAD_WITH_MSG)
 
             changeIconReceive(27)
 
@@ -2064,14 +2446,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun changeFourthIconReceive(position: Int) {
+
+
         activity?.runOnUiThread {
             if (view != null) {
-                val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickFourth)
-                    .setImageResource(R.drawable.ic_round_done_all_24px)
+                val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
+                viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imageView_tickFourth)
+                    ?.setImageResource(R.drawable.ic_round_done_all_24px)
 
-                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickFourth)
-                    .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+                viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imageView_tickFourth)
+                    ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
             }
         }
     }
@@ -2079,12 +2463,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun changeThirdIconReceive(position: Int) {
         activity?.runOnUiThread {
             if (view != null) {
-                val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickThird)
-                    .setImageResource(R.drawable.ic_round_done_all_24px)
+                val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
+                viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imageView_tickThird)
+                    ?.setImageResource(R.drawable.ic_round_done_all_24px)
 
-                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickThird)
-                    .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+                viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imageView_tickThird)
+                    ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
             }
         }
     }
@@ -2093,12 +2477,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun changeSecondIconReceive(position: Int) {
         activity?.runOnUiThread {
             if (view != null) {
-                val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickFirst)
-                    .setImageResource(R.drawable.ic_round_done_all_24px)
+                val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
 
-                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickFirst)
-                    .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+                viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imageView_tickFirst)
+                    ?.setImageResource(R.drawable.ic_round_done_all_24px)
+
+                viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imageView_tickFirst)
+                    ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
             }
         }
     }
@@ -2163,7 +2548,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         if (fucCallback[ConstantMsgType.SEND_MESSAGE] == response?.uniqueId) {
-            fucCallback.remove(ConstantMsgType.SEND_MESSAGE)
+//            fucCallback.remove(ConstantMsgType.SEND_MESSAGE)
             handleSendMessageResponse(contactList)
         }
 
@@ -2672,7 +3057,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
     }
 
-    private fun getPartitipant() {
+    private fun getParticipant() {
+
+        changeIconSend(getPositionOf(ConstantMsgType.GET_PARTICIPANT))
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.GET_PARTICIPANT] = mainViewModel.getContact(requestGetContact)
     }
@@ -2682,6 +3069,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     // Its create Thread with someone that has userId
     // Then send Message to that thread
     private fun sendTextMsg() {
+        changeIconSend(getPositionOf(ConstantMsgType.SEND_MESSAGE))
         val requestThread = RequestThread.Builder().build()
         fucCallback[ConstantMsgType.SEND_MESSAGE] = mainViewModel.getThread(requestThread)
 
@@ -2708,16 +3096,19 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun leaveThread() {
+        changeIconSend(getPositionOf(ConstantMsgType.LEAVE_THREAD))
         val requestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.getContact(requestGetContact)
     }
 
     private fun removeParticipant() {
 
-        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
-        fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] = mainViewModel.getContact(requestGetContact)
         val position = 11
         changeIconSend(position)
+        val requestThread = RequestThread.Builder().build()
+        fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] = mainViewModel.getThread(requestThread)
+
+
     }
 
     private fun blockContact() {
@@ -2765,7 +3156,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
     private fun createThreadWithForwMessage() {
-
+        changeIconSend(getPositionOf(ConstantMsgType.CREATE_THREAD_WITH_FORW_MSG))
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FORW_MSG] = mainViewModel.getContact(requestGetContact)
 
@@ -2900,24 +3291,28 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
     private fun handleRemoveParticipant(contactList: ArrayList<Contact>?) {
-        if (contactList != null) {
-            for (contact: Contact in contactList) {
-                if (contact.isHasUser) {
-                    val contactId = contact.id
-                    val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
-                    val requestCreateThread: RequestCreateThread =
-                        RequestCreateThread.Builder(0, inviteList)
-                            .message(requestThreadInnerMessage)
-                            .build()
-//                    val uniqueId = mainViewModel.createThread(requestCreateThread)
-//                    fucCallback[ConstantMsgType.CREATE_THREAD] = uniqueId
-                    break
-                }
-            }
-        }
+
+
+
+//        if (contactList != null) {
+//            for (contact: Contact in contactList) {
+//                if (contact.isHasUser) {
+//                    val contactId = contact.id
+//                    val inviteList = ArrayList<Invitee>()
+//                    inviteList.add(Invitee(contactId, 1))
+//                    val requestThreadInnerMessage =
+//                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+//                    val requestCreateThread: RequestCreateThread =
+//                        RequestCreateThread.Builder(0, inviteList)
+//                            .message(requestThreadInnerMessage)
+//                            .build()
+//
+////                    val uniqueId = mainViewModel.createThread(requestCreateThread)
+////                    fucCallback[ConstantMsgType.CREATE_THREAD] = uniqueId
+//                    break
+//                }
+//            }
+//        }
     }
 
     //handle getContact response to create thread
@@ -2963,6 +3358,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         // get Contact
         // block contact with 3 params
         //
+        changeIconSend(getPositionOf(ConstantMsgType.UNBLOCK_CONTACT))
         val requestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.UNBLOCK_CONTACT] = mainViewModel.getContact(requestGetContact)
     }
@@ -2975,8 +3371,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun getBlockList() {
+
+        changeIconSend(getPositionOf(ConstantMsgType.GET_BLOCK_LIST))
         val requestBlockList = RequestBlockList.Builder().build()
-        mainViewModel.getBlockList(requestBlockList)
+
+        fucCallback[ConstantMsgType.GET_BLOCK_LIST] = mainViewModel.getBlockList(requestBlockList)
     }
 
     private fun getThread() {
@@ -3002,7 +3401,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 //        activity?.runOnUiThread {
 //            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
-//            viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
+//            viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progressMethod)?.visibility = View.GONE
 ////            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
 ////                ?.setImageResource(R.drawable.ic_round_done_all_24px)
 ////            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
@@ -3016,7 +3415,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 //        activity?.runOnUiThread {
 //
 //            val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-//            viewHolder.itemView.findViewById<ProgressBar>(R.id.progress_method).visibility = View.VISIBLE
+//            viewHolder.itemView.findViewById<ProgressBar>(R.id.progressMethod).visibility = View.VISIBLE
 //
 ////            viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
 ////                .setImageResource(R.drawable.ic_round_done_all_24px)
@@ -3024,9 +3423,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 //
 //
 //
-        activity?.runOnUiThread {
-            functionAdapter.activateFunction(position)
-        }
+
+        if (chatReady)
+            activity?.runOnUiThread {
+                functionAdapter.activateFunction(position)
+            }
 
     }
 /*
@@ -3043,7 +3444,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun forwardMessage() {
-
+changeIconSend(getPositionOf(ConstantMsgType.FORWARD_MESSAGE))
         val requestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.FORWARD_MESSAGE] = mainViewModel.getContact(requestGetContact)
 
@@ -3059,6 +3460,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun replyMessage() {
+        changeIconSend(getPositionOf(ConstantMsgType.REPLY_MESSAGE))
         val requestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.REPLY_MESSAGE] = mainViewModel.getContact(requestGetContact)
 

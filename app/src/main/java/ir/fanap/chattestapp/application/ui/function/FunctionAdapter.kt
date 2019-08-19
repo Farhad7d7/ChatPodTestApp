@@ -1,8 +1,6 @@
 package ir.fanap.chattestapp.application.ui.function
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatImageView
@@ -35,18 +33,7 @@ class FunctionAdapter(
         viewHolder.buttonRun.tag = position
         viewHolder.buttonLog.tag = position
 
-        if (methods[position].methodNameFlag == true) {
 
-            context.runOnUiThread {
-                viewHolder.checkBox.setImageResource(R.drawable.ic_round_done_all_24px)
-            }
-
-            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
-        } else {
-            viewHolder.checkBox
-                .setImageResource(R.drawable.ic_done_black_24dp)
-            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.grey_light))
-        }
 
 
         if (methods[position].funcOneFlag == true) {
@@ -127,32 +114,79 @@ class FunctionAdapter(
         }
 
 
-        if(methods[position].isActive){
+        if (methods[position].isActive) {
 
-            viewHolder.progress_method.visibility = View.VISIBLE
+            viewHolder.progressMethod.visibility = View.VISIBLE
 
-        }else{
+        } else {
 
-            viewHolder.progress_method.visibility = View.INVISIBLE
-
-        }
-
-        if(methods[position].isSearched) {
-
-            viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item_highlight)
-
-            viewHolder.imgViewArrowToMethod.visibility = View.VISIBLE
-
-        }else{
-
-            viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item)
-
-            viewHolder.imgViewArrowToMethod.visibility = View.GONE
-
-
+            viewHolder.progressMethod.visibility = View.INVISIBLE
 
         }
 
+
+
+
+        when {
+
+
+            methods[position].isSearched -> {
+
+                viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item_highlight)
+
+                viewHolder.imgViewArrowToMethod.visibility = View.VISIBLE
+
+                viewHolder.imgViewHasError.visibility = View.GONE
+
+            }
+
+
+
+            methods[position].methodNameFlag == true -> {
+
+                viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item_done)
+
+
+                viewHolder.imgViewHasError.visibility = View.GONE
+
+
+                context.runOnUiThread {
+                    viewHolder.checkBox.setImageResource(R.drawable.ic_round_done_all_24px)
+                }
+
+                viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+
+
+            }
+
+
+
+            methods[position].hasError -> {
+
+                viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item_error)
+
+                viewHolder.imgViewHasError.visibility = View.VISIBLE
+
+
+
+            }
+
+
+            else -> {
+
+
+                viewHolder.checkBox.setImageResource(R.drawable.ic_done_black_24dp)
+
+                viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.grey_light))
+
+                viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item)
+
+                viewHolder.imgViewArrowToMethod.visibility = View.GONE
+
+                viewHolder.imgViewHasError.visibility = View.GONE
+
+            }
+        }
 
 
     }
@@ -182,26 +216,55 @@ class FunctionAdapter(
     }
 
 
-    fun changeSearched(position: Int,isSearched:Boolean){
+    fun changeSearched(position: Int, isSearched: Boolean) {
 
-        methods[position].isSearched = isSearched
-        notifyDataSetChanged()
 
-    }
-     fun activateFunction(position: Int){
+        if (methods[position].isSearched != isSearched) {
 
-        methods[position].isActive = true
-        notifyDataSetChanged()
+            methods[position].isSearched = isSearched
 
-    }
+//            notifyDataSetChanged()
 
-    fun deActivateFunction(position: Int){
+            notifyItemChanged(position)
+        }
 
-        methods[position].isActive = false
-        notifyDataSetChanged()
 
     }
 
+    fun activateFunction(position: Int) {
+
+        if (!methods[position].isActive) {
+            methods[position].isActive = true
+//            notifyDataSetChanged()
+            notifyItemChanged(position)
+        }
+
+
+    }
+
+    fun deActivateFunction(position: Int) {
+
+
+        if (methods[position].isActive) {
+            methods[position].isActive = false
+//            notifyDataSetChanged()
+            notifyItemChanged(position)
+
+        }
+
+
+    }
+
+    fun setErrorState(position: Int, error: Boolean) {
+
+        if (methods[position].hasError != error) {
+            methods[position].hasError = error
+//            notifyDataSetChanged()
+            notifyItemChanged(position)
+        }
+
+
+    }
 
 
     final inner class ViewHolder(itemView: View, viewHolderListener: ViewHolderListener) :
@@ -221,18 +284,19 @@ class FunctionAdapter(
         val checkBoxSec: AppCompatImageView = itemView.findViewById(R.id.imageView_tickSec)
         val checkBoxThird: AppCompatImageView = itemView.findViewById(R.id.imageView_tickThird)
         val checkBoxFourth: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFourth)
-        val buttonLog :  AppCompatImageView = itemView.findViewById(R.id.imgView_log)
+        val buttonLog: AppCompatImageView = itemView.findViewById(R.id.imgView_log)
         val buttonRun: AppCompatImageView = itemView.findViewById(R.id.buttonRun)
         val funcViewParent: View = itemView.findViewById(R.id.viewFuncParent)
-        val topItemMethod: View = itemView.findViewById(R.id.appCompatImageView4)
+        val topItemMethod: View = itemView.findViewById(R.id.relativeViewMethod)
         val imgViewArrowToMethod: View = itemView.findViewById(R.id.imgViewArrowToMethod)
+        val imgViewHasError: View = itemView.findViewById(R.id.imgViewHasError)
 
-        val progress_method = itemView.findViewById(R.id.progress_method) as ProgressBar
+        val progressMethod = itemView.findViewById(R.id.progress_method) as ProgressBar
 
         init {
-            buttonRun.setOnClickListener(View.OnClickListener {
+            buttonRun.setOnClickListener {
                 viewHolderListener.onIconClicked(this)
-            })
+            }
 
             buttonLog.setOnClickListener {
                 viewHolderListener.onLogClicked(this)
