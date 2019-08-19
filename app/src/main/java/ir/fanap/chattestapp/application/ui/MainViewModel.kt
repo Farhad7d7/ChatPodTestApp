@@ -38,6 +38,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             }
 
+
+
+
+
             override fun onGetThreadParticipant(content: String?, response: ChatResponse<ResultParticipant>?) {
                 super.onGetThreadParticipant(content, response)
                 testListener.onGetThreadParticipant(response)

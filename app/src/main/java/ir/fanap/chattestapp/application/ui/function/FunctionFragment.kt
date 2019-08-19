@@ -580,14 +580,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if ((linearLayoutManager.findLastVisibleItemPosition() + 1) == linearLayoutManager.itemCount) {
 
 
-                    menuView.animate().setDuration(250).scaleX(0f).scaleY(0f).alpha(0f).setInterpolator(LinearInterpolator())
+                    menuView.animate().setDuration(250).scaleX(0f).scaleY(0f).alpha(0f)
+                        .setInterpolator(LinearInterpolator())
                         .start()
 
 
                 } else {
 
 
-                    menuView.animate().setDuration(250).scaleX(1.0f).scaleY(1.0f).alpha(1f).setInterpolator(LinearInterpolator())
+                    menuView.animate().setDuration(250).scaleX(1.0f).scaleY(1.0f).alpha(1f)
+                        .setInterpolator(LinearInterpolator())
                         .start()
 
 
@@ -1162,7 +1164,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         functionAdapter.deActivateFunction(position)
 
 
-
     }
 
 
@@ -1246,6 +1247,63 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (fucCallback[ConstantMsgType.GET_DELIVER_LIST] == chatResponse?.uniqueId) {
 
             prepareSendTxtMsgForGetDeliverList(chatResponse)
+
+        }
+
+        if (fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] == chatResponse?.uniqueId) {
+
+            prepareRemoveParticipants(chatResponse)
+
+        }
+
+
+    }
+
+    private fun prepareRemoveParticipants(chatResponse: ChatResponse<ResultThreads>?) {
+
+
+        var targetThreadId = 0L
+
+        if (chatResponse?.result!!.threads.size > 0) {
+
+            val threads = chatResponse.result?.threads!!
+
+            for (thread in threads) {
+
+
+                if (thread.isGroup && thread.admin) {
+
+                    targetThreadId = thread.id
+
+                    break
+
+
+                }
+
+
+            }
+
+
+            if (targetThreadId == 0L) {
+
+                Toast.makeText(
+                    context, "There is no thread with condition <<Group>> and <<Admin>> True! Please Create On First",
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+
+                return
+
+            }
+
+
+            val request = RequestThreadParticipant.Builder()
+                .threadId(targetThreadId)
+                .build()
+
+
+            fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] = mainViewModel.getParticipant(request)
+
 
         }
 
@@ -1932,7 +1990,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
             prepareAddAdminRoles(response, fucCallback[ConstantMsgType.ADD_ADMIN_ROLES])
+        }
 
+
+        if (fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] == response?.uniqueId) {
+
+
+            requestRemoveParticipant(response)
         }
 
 
@@ -2161,7 +2225,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun prepareRemoveAdminRoles(chatResponse: ChatResponse<ResultParticipant>?, uniqueId: String?) {
 
 
-        var adminParticipant:Participant? = null
+        var adminParticipant: Participant? = null
 
 
         for (par in chatResponse?.result!!.participants) {
@@ -2215,12 +2279,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val uniqueId = response?.uniqueId
 
 
-        if (uniqueId==fucCallback[ConstantMsgType.SEND_MESSAGE]){
+        if (uniqueId == fucCallback[ConstantMsgType.SEND_MESSAGE]) {
 
             val pos = getPositionOf(ConstantMsgType.SEND_MESSAGE)
             methods[pos].methodNameFlag = true
             changeIconReceive(pos)
-
 
 
         }
@@ -2488,6 +2551,23 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
     }
 
+
+    override fun onThreadRemoveParticipant(response: ChatResponse<ResultParticipant>?) {
+        super.onThreadRemoveParticipant(response)
+
+
+        if (response?.uniqueId == fucCallback[ConstantMsgType.REMOVE_PARTICIPANT]) {
+
+            val pos = getPositionOf(ConstantMsgType.REMOVE_PARTICIPANT)
+
+            changeIconReceive(pos)
+
+
+        }
+
+
+    }
+
     override fun onRemoveContact(response: ChatResponse<ResultRemoveContact>?) {
         super.onRemoveContact(response)
         if (fucCallback[ConstantMsgType.REMOVE_CONTACT] == response?.uniqueId) {
@@ -2583,10 +2663,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback.remove(ConstantMsgType.ADD_PARTICIPANT)
             handleAddParticipant(contactList)
         }
-        if (fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] == response?.uniqueId) {
-            fucCallback.remove(ConstantMsgType.REMOVE_PARTICIPANT)
-            handleRemoveParticipant(contactList)
-        }
+//        if (fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] == response?.uniqueId) {
+//            fucCallback.remove(ConstantMsgType.REMOVE_PARTICIPANT)
+//            requestRemoveParticipant(contactList)
+//        }
         if (fucCallback[ConstantMsgType.FORWARD_MESSAGE] == response?.uniqueId) {
             fucCallback.remove(ConstantMsgType.FORWARD_MESSAGE)
             handleForward(contactList)
@@ -3290,8 +3370,75 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
-    private fun handleRemoveParticipant(contactList: ArrayList<Contact>?) {
+    private fun requestRemoveParticipant(response: ChatResponse<ResultParticipant>?) {
 
+
+        val participants = response?.result?.participants!!
+
+        var targetParticipant: Participant? = null
+
+        if (participants.size > 0) {
+
+
+            for (participant in participants) {
+
+
+                if (!participant.admin) {
+
+
+                    targetParticipant = participant
+
+                }
+            }
+
+            if (targetParticipant == null) {
+
+                if (participants.size > 1) {
+
+                    targetParticipant = participants[0]
+
+                }
+
+            }
+
+            if (targetParticipant != null) {
+
+
+                val parIdList = ArrayList<Long>()
+
+                parIdList.add(targetParticipant.id)
+
+                val requestRemoveParticipant = RequestRemoveParticipants.Builder(response.subjectId, parIdList)
+                    .build()
+
+                fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] =
+                    mainViewModel.removeParticipant(requestRemoveParticipant)
+
+
+            } else {
+
+                Toast.makeText(context, "There is no participant in this thread. Please add someone", Toast.LENGTH_LONG)
+                    .show()
+
+
+                setErrorOnFunctionInPosition(getPositionOf(ConstantMsgType.REMOVE_PARTICIPANT))
+                changeIconReceive(getPositionOf(ConstantMsgType.REMOVE_PARTICIPANT))
+
+
+            }
+
+
+        } else {
+
+            Toast.makeText(context, "There is no participant in this thread. Please add someone", Toast.LENGTH_LONG)
+                .show()
+
+
+            setErrorOnFunctionInPosition(getPositionOf(ConstantMsgType.REMOVE_PARTICIPANT))
+            changeIconReceive(getPositionOf(ConstantMsgType.REMOVE_PARTICIPANT))
+
+
+        }
 
 
 //        if (contactList != null) {
@@ -3444,7 +3591,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun forwardMessage() {
-changeIconSend(getPositionOf(ConstantMsgType.FORWARD_MESSAGE))
+        changeIconSend(getPositionOf(ConstantMsgType.FORWARD_MESSAGE))
         val requestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.FORWARD_MESSAGE] = mainViewModel.getContact(requestGetContact)
 
