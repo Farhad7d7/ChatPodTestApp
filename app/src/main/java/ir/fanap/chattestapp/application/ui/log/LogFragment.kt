@@ -197,5 +197,10 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
         }
     }
 
+    override fun onLogEventWithName(logName: String, json: String) {
+        super.onLogEventWithName(logName, json)
 
+        //todo model Logs
+
+    }
 }

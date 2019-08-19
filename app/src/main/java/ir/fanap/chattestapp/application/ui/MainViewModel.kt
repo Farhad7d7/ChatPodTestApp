@@ -69,6 +69,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onAddContact(response)
             }
 
+
+
             override fun onRemoveContact(content: String?, response: ChatResponse<ResultRemoveContact>?) {
                 super.onRemoveContact(content, response)
                 testListener.onRemoveContact(response)
@@ -89,9 +91,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onBlockList(response)
             }
 
-            override fun OnLogEvent(log: String) {
-                super.OnLogEvent(log)
-                testListener.onLogEvent(log)
+
+            override fun onLogEvent(logName: String?, json: String?) {
+
+                testListener.onLogEventWithName(logName!!,json!!)
+            }
+
+            override fun onLogEvent(log: String?) {
+                super.onLogEvent(log)
+                testListener.onLogEvent(log!!)
             }
 
             override fun onUpdateContact(content: String?, response: ChatResponse<ResultUpdateContact>?) {
@@ -320,7 +328,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addContacts(requestAddContact: RequestAddContact): String {
+
         chat.addListener(object : ChatListener {
+
+            override fun onLogEvent(logName: String?, json: String?) {
+
+
+            }
+
             override fun onContactAdded(content: String?, response: ChatResponse<ResultAddContact>?) {
                 super.onContactAdded(content, response)
                 testListener.onAddContact(response)

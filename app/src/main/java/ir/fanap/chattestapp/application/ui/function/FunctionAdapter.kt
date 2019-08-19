@@ -149,6 +149,8 @@ class FunctionAdapter(
 
                 viewHolder.imgViewHasError.visibility = View.GONE
 
+                viewHolder.progressMethod.visibility = View.GONE
+
 
                 context.runOnUiThread {
                     viewHolder.checkBox.setImageResource(R.drawable.ic_round_done_all_24px)

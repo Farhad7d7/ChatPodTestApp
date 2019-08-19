@@ -99,5 +99,10 @@ interface TestListener {
 
     }
 
+    fun onLogEventWithName(logName: String, json: String) {
+
+
+    }
+
 
 }

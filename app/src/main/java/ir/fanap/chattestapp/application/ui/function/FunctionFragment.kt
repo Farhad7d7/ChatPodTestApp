@@ -311,7 +311,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
     override fun onLogClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
+
         var position = clickedViewHolder.adapterPosition
+
+
         if (textView_log.text.isEmpty()) {
             appCompatImageView_noResponse.visibility = View.VISIBLE
             txtView_noResponse.visibility = View.VISIBLE
@@ -1105,6 +1108,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             "DELETE_MESSAGE" -> 17
 
 
+            "DELETE_MESSAGE_ID" -> 17
+
+
             "EDIT_MESSAGE" -> 18
 
 
@@ -1665,6 +1671,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onDeleteMessage(response: ChatResponse<ResultDeleteMessage>?) {
         super.onDeleteMessage(response)
+
+
         if (fucCallback[ConstantMsgType.DELETE_MESSAGE] == response?.uniqueId) {
             val position = 17
             changeIconReceive(position)
@@ -1735,8 +1743,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         if (fucCallback[ConstantMsgType.DELETE_MESSAGE_ID] == response?.uniqueId) {
-//            val requestDeleteMessage = RequestDeleteMessage.Builder(response!!.result.messageId).build()
-//            fucCallback[ConstantMsgType.DELETE_MESSAGE] = mainViewModel.deleteMessage(requestDeleteMessage)
+
+
+            requestDeleteSingleMessage(response)
         }
 
         if (fucCallback[ConstantMsgType.REPLY_MESSAGE] == response?.uniqueId) {
@@ -1787,6 +1796,21 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             methods[position].funcOneFlag = true
             changeSecondIconReceive(position)
         }
+    }
+
+    private fun requestDeleteSingleMessage(response: ChatResponse<ResultMessage>?) {
+
+        val listOfMessageIds = ArrayList<Long>()
+
+        listOfMessageIds.add(response!!.result.messageId)
+
+        val requestDeleteMessage = RequestDeleteMessage.Builder()
+            .deleteForAll(true)
+            .messageIds(listOfMessageIds)
+            .build()
+        fucCallback[ConstantMsgType.DELETE_MESSAGE] = mainViewModel.deleteMessage(requestDeleteMessage)
+
+
     }
 
     override fun onSeen(response: ChatResponse<ResultMessage>?) {
@@ -2599,12 +2623,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         if (fucCallback[ConstantMsgType.EDIT_MESSAGE] == response?.uniqueId) {
-            fucCallback.remove(ConstantMsgType.DELETE_MESSAGE)
             handleEditMessage(contactList)
         }
 
         if (fucCallback[ConstantMsgType.DELETE_MESSAGE] == response?.uniqueId) {
-            fucCallback.remove(ConstantMsgType.DELETE_MESSAGE)
             handleDeleteMessage(contactList)
         }
 
@@ -2879,6 +2901,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                                 .build()
                         val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
                         fucCallback[ConstantMsgType.DELETE_MESSAGE_ID] = uniqueId!![1]
+                        fucCallback[ConstantMsgType.DELETE_MESSAGE] = uniqueId[0]
                     }
                     break
                 }
@@ -3617,5 +3640,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
+
+    //todo add getKeyByUniqueId() to add Logs in positions
+    override fun onLogEventWithName(logName: String, json: String) {
+        super.onLogEventWithName(logName, json)
+
+
+        methods[getPositionOf(logName)].log = json
+
+
+    }
 }
 
