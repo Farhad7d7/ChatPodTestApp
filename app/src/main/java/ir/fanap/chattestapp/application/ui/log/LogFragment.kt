@@ -14,6 +14,10 @@ import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.content.Context
+import com.fanap.podchat.mainmodel.ChatMessage
+import com.fanap.podchat.util.ChatMessageType
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.application.ui.IOnBackPressed
 
 
@@ -190,15 +194,31 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
         //todo log should return with more details
 
         super.onLogEvent(log)
-        logs.add(log)
-        activity?.runOnUiThread {
-            logAdapter.notifyItemInserted(logs.size - 1)
-            logAdapter.notifyDataSetChanged()
-        }
+//        logs.add(log)
+//        activity?.runOnUiThread {
+//            logAdapter.notifyItemInserted(logs.size - 1)
+//            logAdapter.notifyDataSetChanged()
+//        }
     }
 
     override fun onLogEventWithName(logName: String, json: String) {
         super.onLogEventWithName(logName, json)
+
+         val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+
+        val chatMessage: ChatMessage = gson.fromJson(json, ChatMessage::class.java)
+
+        if(chatMessage.type == ChatMessageType.Constants.PING) return
+
+        val logText = "\n\n <<<$logName>>> \n\n $json"
+
+
+        logs.add(logText)
+        activity?.runOnUiThread {
+            logAdapter.notifyItemInserted(logs.size - 1)
+            logAdapter.notifyDataSetChanged()
+        }
+
 
         //todo model Logs
 

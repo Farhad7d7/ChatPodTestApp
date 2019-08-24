@@ -66,11 +66,11 @@ class MethodList {
                 "",//19
                 "onSent",
                 "",//21
-                "",//22
-                "",//23
-                "",//24
-                "",//25
-                "",//26
+                "Get Threads",//22
+                "Get Threads",//23
+                "Get Threads",//24
+                "Get Threads",//25
+                "Get Threads",//26
                 "OnSent",//27
                 "",//28
                 "",//29
@@ -101,11 +101,11 @@ class MethodList {
                 "",//19
                 "",
                 "",//21
-                "",//22
-                "",//23
-                "",//24
-                "",//25
-                "",//26
+                "Clear History",//22
+                "Get Admin List",//23
+                "Get Thread Participants",//24
+                "Get Admins List",//25
+                "Send 5 Message to thread",//26
                 "",//27
                 "",//28
                 "",//29
@@ -138,9 +138,9 @@ class MethodList {
                 "",//21
                 "",//22
                 "",//23
-                "",//24
-                "",//25
-                "",//26
+                "Add Admin Roles",//24
+                "Remove Admin Roles",//25
+                "Get Thread history",//26
                 "",//27
                 "",//28
                 "",//29
@@ -175,7 +175,7 @@ class MethodList {
                 "",//23
                 "",//24
                 "",//25
-                "",//26
+                "Delete Multiple Message",//26
                 "",//27
                 "",//28
                 "",//29
