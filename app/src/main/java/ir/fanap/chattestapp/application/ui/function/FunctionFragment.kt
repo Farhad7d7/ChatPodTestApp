@@ -25,6 +25,7 @@ import com.fanap.podchat.chat.RoleType
 import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
+import com.fanap.podchat.util.ChatConstant
 import com.fanap.podchat.util.InviteType
 import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
@@ -1705,7 +1706,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             if (threadId == 0L) {
 
-                threadId = chatResponse.result.threads[0].id
+                Toast.makeText(context,"There is no group to get admins",Toast.LENGTH_LONG).show()
+                val pos = getPositionOf(ConstantMsgType.GET_ADMINS_LIST)
+                changeIconReceive(pos)
+                changeFunTwoState(pos,Method.DEACTIVE)
+
+                return
 
             }
 
@@ -1762,10 +1768,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
 
 
-            //todo find correct threadId
             if (threadId == 0L) {
 
-                threadId = chatResponse.result.threads.last().id
+
+                Toast.makeText(context,"No Thread found with condition Group and Admin true!",Toast.LENGTH_LONG)
+                    .show()
+
+                changeIconReceive(getPositionOf(ConstantMsgType.ADD_ADMIN_ROLES))
+
+                changeFunTwoState(getPositionOf(ConstantMsgType.ADD_ADMIN_ROLES),Method.DEACTIVE)
+
+                return
 
             }
 
@@ -3664,6 +3677,28 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
+    private fun getAdminsList() {
+
+
+        changeIconSend(23)
+
+
+        changeFunOneState(23, Method.RUNNING)
+
+
+        val requestGetThreads: RequestThread = RequestThread.Builder()
+            .build()
+
+        fucCallback[ConstantMsgType.GET_ADMINS_LIST] = mainViewModel.getThread(requestGetThreads)
+
+
+
+//        // positionUniqueIds[23] = ArrayList()
+//
+//        // positionUniqueIds[23]?.add(fucCallback[ConstantMsgType.GET_ADMINS_LIST]!!)
+
+    }
+
     private fun removeAdminRoles() {
 
 
@@ -3681,6 +3716,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     }
 
+
     private fun addAdminRoles() {
 
         changeIconSend(24)
@@ -3693,29 +3729,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val uniqueId = mainViewModel.getThread(requestGetThreads)
 
         fucCallback[ConstantMsgType.ADD_ADMIN_ROLES] = uniqueId
-
-
-    }
-
-
-    private fun getAdminsList() {
-
-
-        changeIconSend(23)
-
-
-        changeFunOneState(23, Method.RUNNING)
-
-
-        val requestGetThreads: RequestThread = RequestThread.Builder()
-                .build()
-
-        fucCallback[ConstantMsgType.GET_ADMINS_LIST] = mainViewModel.getThread(requestGetThreads)
-
-
-//        // positionUniqueIds[23] = ArrayList()
-//
-//        // positionUniqueIds[23]?.add(fucCallback[ConstantMsgType.GET_ADMINS_LIST]!!)
 
 
     }

@@ -3,9 +3,11 @@ package ir.fanap.chattestapp.application.ui.log
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat.getSystemService
 import android.support.v7.widget.RecyclerView
+import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,13 +32,30 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
         var beautifyText: String
 
-        beautifyText = logText.replace("{","\t{\n")
-        beautifyText =beautifyText.replace("[","\t[\n")
-        beautifyText =beautifyText.replace("}","\n\t}")
-        beautifyText =beautifyText.replace("]","\n\t]")
-        beautifyText =beautifyText.replace(",",",\n")
 
-        viewHolder.textViewLog.text = beautifyText
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+            beautifyText = logText.replace("{","{<br>")
+            beautifyText =beautifyText.replace("[","[<br>")
+            beautifyText =beautifyText.replace("}","<br>}")
+            beautifyText =beautifyText.replace("]","<br>]")
+            beautifyText =beautifyText.replace(",",",<br>")
+            beautifyText =beautifyText.replace("\n","<br>")
+
+            viewHolder.textViewLog.text = Html.fromHtml(beautifyText,Html.FROM_HTML_MODE_LEGACY)
+            
+        }else{
+
+            beautifyText = logText.replace("{","\t{\n")
+            beautifyText =beautifyText.replace("[","\t[\n")
+            beautifyText =beautifyText.replace("}","\n\t}")
+            beautifyText =beautifyText.replace("]","\n\t]")
+            beautifyText =beautifyText.replace(",",",\n")
+            
+            viewHolder.textViewLog.text = Html.escapeHtml(beautifyText)
+
+        }
 
         viewHolder.logNum.text = "#${(position+1)}"
 

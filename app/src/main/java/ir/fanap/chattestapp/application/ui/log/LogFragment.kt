@@ -14,11 +14,15 @@ import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.content.Context
+import android.text.Html
 import com.fanap.podchat.mainmodel.ChatMessage
 import com.fanap.podchat.util.ChatMessageType
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.application.ui.IOnBackPressed
+
+
+
 
 
 class LogFragment : Fragment(), TestListener, IOnBackPressed {
@@ -104,7 +108,10 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
         fabGoDown.setOnClickListener {
 
-            recyclerView.smoothScrollToPosition(logs.size - 1)
+            val ls = linearLayoutManager.findLastVisibleItemPosition() + 1
+
+
+            recyclerView.smoothScrollToPosition(ls)
 
         }
 
@@ -118,7 +125,11 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
         fabGoTop.setOnClickListener {
 
-            recyclerView.smoothScrollToPosition(0)
+
+
+            val fv = linearLayoutManager.findFirstVisibleItemPosition() - 1
+
+            recyclerView.smoothScrollToPosition(fv)
 
         }
 
@@ -190,9 +201,6 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
 
     override fun onLogEvent(log: String) {
-
-        //todo log should return with more details
-
         super.onLogEvent(log)
 //        logs.add(log)
 //        activity?.runOnUiThread {
@@ -204,16 +212,39 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
     override fun onLogEventWithName(logName: String, json: String) {
         super.onLogEventWithName(logName, json)
 
-         val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+
+        if(logName.isEmpty()) return
+
+        val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
         val chatMessage: ChatMessage = gson.fromJson(json, ChatMessage::class.java)
 
         if(chatMessage.type == ChatMessageType.Constants.PING) return
 
-        val logText = "\n\n <<<$logName>>> \n\n $json"
+
+        var jsonS = json.replace("\"type\"","<font color='#03a9f4'>type</font>")
 
 
-        logs.add(logText)
+
+        if (logName=="Error"){
+
+            val ln = "\n\n  <font color='#EE0000'> <<< $logName >>> </font> \n\n $jsonS"
+
+            logs.add(ln)
+
+        }else{
+
+            val logText = "\n\n <font color='#4caf50' size=8> <<< <b>$logName</b> >>> </font> \n\n $jsonS"
+
+            logs.add(logText)
+
+        }
+
+
+
+
+
+
         activity?.runOnUiThread {
             logAdapter.notifyItemInserted(logs.size - 1)
             logAdapter.notifyDataSetChanged()
