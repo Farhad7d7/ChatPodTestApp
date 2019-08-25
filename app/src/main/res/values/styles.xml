@@ -19,4 +19,19 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="const_method">
+        <item name="android:layout_width">372dp</item>
+        <item name="android:layout_height">65dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:background">@drawable/background_top_method_item</item>
+    </style>
+
+    <style name="progress_bar" parent="Base.Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:layout_width">222dp</item>
+        <item name="android:layout_height">4dp</item>
+        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:max">100</item>
+        <item name="android:progressDrawable">@drawable/round_corner_progressbar</item>
+    </style>
+
 </resources>

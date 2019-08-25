@@ -228,7 +228,7 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
         if (logName=="Error"){
 
-            val ln = "\n\n  <font color='#EE0000'> <<< $logName >>> </font> \n\n $jsonS"
+            val ln = "\n\n  <font color='#EE0000'> <<< <b>$logName</b> >>> </font> \n\n $jsonS"
 
             logs.add(ln)
 

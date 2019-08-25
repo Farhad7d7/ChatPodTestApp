@@ -71,10 +71,10 @@ class MethodList {
                 "Get Threads",//24
                 "Get Threads",//25
                 "Get Threads",//26
-                "OnSent",//27
-                "",//28
-                "",//29
-            ""//30
+                "Get Contacts",//27
+                "Get Threads",//28
+                "Get Threads",//29
+            "Search in Contacts"//30
             )
 
         val methodFuncTwo: MutableList<String> =
@@ -106,9 +106,9 @@ class MethodList {
                 "Get Thread Participants",//24
                 "Get Admins List",//25
                 "Send 5 Message to thread",//26
-                "",//27
-                "",//28
-                "",//29
+                "Create Thread With Message",//27
+                "Send Text Message",//28
+                "Send Text Message",//29
                 ""//30
             )
 
@@ -141,9 +141,9 @@ class MethodList {
                 "Add Admin Roles",//24
                 "Remove Admin Roles",//25
                 "Get Thread history",//26
-                "",//27
-                "",//28
-                "",//29
+                "Message Sent To Thread",//27
+                "Get Message Seen List",//28
+                "Get Message Deliver List",//29
                 ""//30
             )
 

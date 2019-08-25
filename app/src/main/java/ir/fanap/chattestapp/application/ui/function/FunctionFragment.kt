@@ -12,11 +12,13 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.*
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.TextView
@@ -25,7 +27,6 @@ import com.fanap.podchat.chat.RoleType
 import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
-import com.fanap.podchat.util.ChatConstant
 import com.fanap.podchat.util.InviteType
 import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
@@ -45,6 +46,7 @@ import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodNames
 import ir.fanap.chattestapp.application.ui.util.TokenFragment
 import ir.fanap.chattestapp.bussines.model.Method
 import kotlinx.android.synthetic.main.fragment_function.*
+import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -73,6 +75,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private lateinit var bottom_sheet_log: ConstraintLayout
     private lateinit var bottomSheetLog: BottomSheetBehavior<ConstraintLayout>
     private lateinit var bottomSheetSearch: BottomSheetBehavior<NestedScrollView>
+    private lateinit var bottomSheetSearchContacts: BottomSheetBehavior<NestedScrollView>
     private var gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private var methods: MutableList<Method> = mutableListOf()
     private var fucCallback: MapVariable<String, String> = MapVariable()
@@ -141,7 +144,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         bottomSheetSearch = BottomSheetBehavior.from(bottom_sheet_search)
 
+        bottomSheetSearchContacts = BottomSheetBehavior.from(bottom_sheet_search_contacts)
+
         bottomSheetSearch.isHideable = true
+
+        bottomSheetSearchContacts.isHideable = true
 
 //        appCompatImageView.setOnClickListener {
 //
@@ -149,6 +156,58 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 //            showTokenDialog()
 //
 //        }
+
+
+
+        rgSearchContactsType.setOnCheckedChangeListener { _, _ ->
+
+            when{
+
+                rbCellphone.isChecked -> etSearchContacts.inputType = InputType.TYPE_CLASS_PHONE
+
+                rbEmail.isChecked -> etSearchContacts.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+
+                rbFirstName.isChecked -> etSearchContacts.inputType = InputType.TYPE_CLASS_TEXT
+
+                rbLastName.isChecked -> etSearchContacts.inputType = InputType.TYPE_CLASS_TEXT
+
+                rbId.isChecked -> etSearchContacts.inputType = InputType.TYPE_CLASS_NUMBER
+
+            }
+
+        }
+
+
+
+        etSearchContacts.setOnEditorActionListener { v, actionId, event ->
+
+            if(actionId == EditorInfo.IME_ACTION_SEARCH){
+
+
+                handleSearchContact(view)
+            }
+
+            return@setOnEditorActionListener true
+        }
+        btnSearchContacts.setOnClickListener {
+
+            handleSearchContact(view)
+
+
+        }
+
+        btnCancelContacts.setOnClickListener {
+
+
+            hideKeyboard(context,view)
+
+            bottomSheetSearchContacts.state = BottomSheetBehavior.STATE_HIDDEN
+
+        }
+
+
+
+
 
 
         fltBtnSetToken.setOnClickListener {
@@ -216,7 +275,53 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
         })
 
+        bottomSheetSearchContacts.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
 
+
+            override fun onSlide(p0: View, p1: Float) {
+
+            }
+
+            override fun onStateChanged(p0: View, p1: Int) {
+
+                when (p1) {
+
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+
+                        bottomSheetSearchContacts.state = BottomSheetBehavior.STATE_HIDDEN
+
+
+                    }
+
+
+                }
+
+            }
+        })
+
+
+    }
+
+    private fun handleSearchContact(view: View) {
+        val searchQuery = etSearchContacts.text.toString()
+
+
+        if (searchQuery.isBlank()) {
+
+
+            etSearchContacts.error = "Enter something"
+
+            etSearchContacts.requestFocus()
+
+            return
+        }
+
+
+        hideKeyboard(context, view)
+
+        bottomSheetSearchContacts.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        searchContact(searchQuery)
     }
 
 
@@ -494,21 +599,41 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
             30 -> {
 
-                searchContact()
+                getSearchQuery()
             }
 
         }
     }
 
-    private fun searchContact() {
+    private fun getSearchQuery() {
+
+
+        bottomSheetSearchContacts.state = BottomSheetBehavior.STATE_EXPANDED
+
+    }
+
+    private fun searchContact(query: String) {
+
+
+        var searchContact = SearchContact.Builder("0", "50")
+
+
+        when{
+
+            rbCellphone.isChecked -> searchContact.cellphoneNumber(query)
+            rbEmail.isChecked -> searchContact.email(query)
+            rbFirstName.isChecked -> searchContact.firstName(query)
+            rbLastName.isChecked -> searchContact.lastName(query)
+            rbId.isChecked -> searchContact.id(query)
+        }
+
+        var requestSearchContact = searchContact.build()
 
         changeIconSend(30)
 
-        val searchContact = SearchContact.Builder("0", "50")
-                .firstName("Pooria")
-                .build()
+        changeFunOneState(30,Method.RUNNING)
 
-        fucCallback[ConstantMsgType.SEARCH_CONTACT] = mainViewModel.searchContact(searchContact)
+        fucCallback[ConstantMsgType.SEARCH_CONTACT] = mainViewModel.searchContact(requestSearchContact)
 
     }
 
@@ -517,9 +642,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         changeIconSend(29)
 
 
+        changeFunOneState(29,Method.RUNNING)
+
         val requestThread = RequestThread.Builder().build()
-
-
 
         fucCallback[ConstantMsgType.GET_SEEN_LIST] = mainViewModel.getThread(requestThread)
 
@@ -529,6 +654,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun getDeliverList() {
 
         changeIconSend(28)
+
+        changeFunOneState(28,Method.RUNNING)
 
         val requestThread = RequestThread.Builder().build()
 
@@ -812,6 +939,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (fucCallback[ConstantMsgType.SEARCH_CONTACT] == response?.uniqueId) {
 
             changeIconReceive(30)
+
+            changeFunOneState(30,Method.DONE)
+
 
             methods[30].methodNameFlag = true
 
@@ -1485,11 +1615,25 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (fucCallback[ConstantMsgType.GET_SEEN_LIST] == chatResponse?.uniqueId) {
 
+
+            val pos = getPositionOf(ConstantMsgType.GET_SEEN_LIST)
+
+            changeFunOneState(pos,Method.DONE)
+
+            changeFunTwoState(pos,Method.RUNNING)
+
             prepareSendTxtMsgForGetSeenList(chatResponse)
 
         }
 
         if (fucCallback[ConstantMsgType.GET_DELIVER_LIST] == chatResponse?.uniqueId) {
+
+
+            val pos = getPositionOf(ConstantMsgType.GET_DELIVER_LIST)
+
+            changeFunOneState(pos,Method.DONE)
+
+            changeFunTwoState(pos,Method.RUNNING)
 
             prepareSendTxtMsgForGetDeliverList(chatResponse)
 
@@ -2049,8 +2193,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         if (fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG_MESSAGE] == response?.uniqueId) {
+
             val position = 27
-            changeSecondIconReceive(position)
+
+
+            changeFunThreeState(position,Method.DONE)
+
+//            changeSecondIconReceive(position)
             methods[position].funcOneFlag = true
         }
 
@@ -2637,11 +2786,24 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (uniqueId == fucCallback[ConstantMsgType.GET_SEEN_LIST]) {
 
+            val pos = getPositionOf(ConstantMsgType.GET_SEEN_LIST)
+
+            changeFunTwoState(pos,Method.DONE)
+
+            changeFunThreeState(pos,Method.RUNNING)
+
             prepareGetSeenList(response)
 
         }
 
         if (uniqueId == fucCallback[ConstantMsgType.GET_DELIVER_LIST]) {
+
+
+            val pos = getPositionOf(ConstantMsgType.GET_DELIVER_LIST)
+
+            changeFunTwoState(pos,Method.DONE)
+
+            changeFunThreeState(pos,Method.RUNNING)
 
             prepareGetDeliveryList(response)
 
@@ -2687,7 +2849,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             changeIconReceive(29)
 
+            changeFunThreeState(29,Method.DONE)
+
             methods[29].methodNameFlag = true
+
+
 
 
         }
@@ -2702,6 +2868,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (response?.uniqueId == fucCallback[ConstantMsgType.GET_DELIVER_LIST]) {
 
             changeIconReceive(28)
+
+            changeFunThreeState(28,Method.DONE)
 
             methods[28].methodNameFlag = true
 
@@ -2731,6 +2899,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] == response?.uniqueId) {
 
 //            fucCallback.remove(ConstantMsgType.CREATE_THREAD_WITH_MSG)
+
+            changeFunTwoState(27,Method.DONE)
+
 
             changeIconReceive(27)
 
@@ -2937,6 +3108,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             handleCrtThreadForwMsg(contactList)
         }
         if (fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CREATE_THREAD_WITH_MSG)
+
+            changeFunOneState(pos,Method.DONE)
+
+            changeFunTwoState(pos,Method.RUNNING)
+
+            changeFunThreeState(pos,Method.RUNNING)
+
             prepareCreateThreadWithMsg(contactList)
         }
 
@@ -3092,6 +3272,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
          *int TO_BE_USER_USERNAME = 4;
          *TO_BE_USER_ID = 5  // just for p2p
          */
+
 
 
         if (contactList != null) {
@@ -3652,6 +3833,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun createThreadWithMessage() {
 
         changeIconSend(27)
+
+        changeFunOneState(27,Method.RUNNING)
 
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
 
