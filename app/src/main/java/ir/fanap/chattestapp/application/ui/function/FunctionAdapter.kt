@@ -37,9 +37,10 @@ class FunctionAdapter(
 
 
 
-        viewHolder.viewSubFunctions.visibility = if(methods[position].isExpanded) View.VISIBLE else View.GONE
+        viewHolder.viewSubFunctions.visibility =
+            if (methods[position].isExpanded) View.VISIBLE else View.GONE
 
-        viewHolder.buttonLog.rotation = if(methods[position].isExpanded) 90f else 0f
+        viewHolder.buttonLog.rotation = if (methods[position].isExpanded) 90f else 0f
 
 
 
@@ -66,7 +67,7 @@ class FunctionAdapter(
 
                 viewHolder.checkBoxOne
                     .visibility = View.INVISIBLE
-                
+
                 viewHolder.funOneProgressBar.visibility = View.VISIBLE
 
                 viewHolder.imageViewFuncOneFailure.visibility = View.INVISIBLE
@@ -198,7 +199,6 @@ class FunctionAdapter(
             Method.FAIL -> {
 
 
-
                 viewHolder.checkBoxThird.visibility = View.INVISIBLE
 
                 viewHolder.funThreeProgressBar.visibility = View.INVISIBLE
@@ -284,10 +284,6 @@ class FunctionAdapter(
             }
 
         }
-
-
-
-
 
 
 //        if (methods[position].funcOneFlag == true) {
@@ -389,7 +385,7 @@ class FunctionAdapter(
         when {
 
 
-            methods[position].isActive ->{
+            methods[position].isActive -> {
 
                 viewHolder.progressMethod.visibility = View.VISIBLE
 
@@ -405,7 +401,6 @@ class FunctionAdapter(
                 viewHolder.imgViewHasError.visibility = View.GONE
 
             }
-
 
 
             methods[position].methodNameFlag == true -> {
@@ -428,7 +423,6 @@ class FunctionAdapter(
             }
 
 
-
             methods[position].hasError -> {
 
                 viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item_error)
@@ -436,8 +430,6 @@ class FunctionAdapter(
                 viewHolder.imgViewHasError.visibility = View.VISIBLE
 
                 viewHolder.progressMethod.visibility = View.INVISIBLE
-
-
 
 
             }
@@ -459,7 +451,6 @@ class FunctionAdapter(
                 viewHolder.progressMethod.visibility = View.INVISIBLE
 
 
-
             }
         }
 
@@ -468,20 +459,19 @@ class FunctionAdapter(
         viewHolder.buttonLog.setOnClickListener {
 
 
-            if(methods[position].isExpanded){
+            if (methods[position].isExpanded) {
 
                 it.animate()
-                        .rotation(0f)
-                        .setDuration(450)
-                        .setInterpolator(BounceInterpolator())
-                        .start()
+                    .rotation(0f)
+                    .setDuration(450)
+                    .setInterpolator(BounceInterpolator())
+                    .start()
 
 
-
-            }else{
+            } else {
 
                 it.animate().rotation(90f).setDuration(250).setInterpolator(BounceInterpolator())
-                        .start()
+                    .start()
 
             }
 
@@ -491,6 +481,34 @@ class FunctionAdapter(
 
         }
 
+        viewHolder.buttonRun.setOnClickListener {
+
+
+            runMethod(viewHolder, position)
+
+
+        }
+
+    }
+
+    private fun runMethod(
+        viewHolder: ViewHolder,
+        position: Int
+    ) {
+
+        viewHolderListener.onIconClicked(viewHolder)
+
+        if (!methods[position].isExpanded) {
+
+            viewHolder.buttonLog.animate().rotation(90f).setDuration(250).setInterpolator(BounceInterpolator())
+                .start()
+
+            methods[position].isExpanded = true
+
+            notifyItemChanged(position)
+
+
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -544,7 +562,7 @@ class FunctionAdapter(
 
     }
 
-    fun changeFuncOneStateAtPosition(position: Int,state: Int){
+    fun changeFuncOneStateAtPosition(position: Int, state: Int) {
 
         methods[position].funcOneState = state
 
@@ -553,7 +571,7 @@ class FunctionAdapter(
     }
 
 
-    fun changeFuncTwoStateAtPosition(position: Int,state: Int){
+    fun changeFuncTwoStateAtPosition(position: Int, state: Int) {
 
         methods[position].funcTwoState = state
         notifyItemChanged(position)
@@ -561,7 +579,7 @@ class FunctionAdapter(
 
     }
 
-    fun changeFuncThreeStateAtPosition(position: Int,state: Int){
+    fun changeFuncThreeStateAtPosition(position: Int, state: Int) {
 
         methods[position].funcThreeState = state
 
@@ -569,7 +587,7 @@ class FunctionAdapter(
 
     }
 
-    fun changeFuncFourStateAtPosition(position: Int,state: Int){
+    fun changeFuncFourStateAtPosition(position: Int, state: Int) {
 
         methods[position].funcFourState = state
         notifyItemChanged(position)
@@ -615,7 +633,7 @@ class FunctionAdapter(
         val textViewFuncThree: TextView = itemView.findViewById(R.id.textView_FunThree)
         val textViewFuncFour: TextView = itemView.findViewById(R.id.textView_FunFour)
         val txtViewMethod: TextView = itemView.findViewById(R.id.textView_method)
-//        val checkBox: AppCompatImageView = itemView.findViewById(R.id.checkBox_test)
+        //        val checkBox: AppCompatImageView = itemView.findViewById(R.id.checkBox_test)
         val checkBoxOne: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFirst)
         val checkBoxSec: AppCompatImageView = itemView.findViewById(R.id.imageView_tickSec)
         val checkBoxThird: AppCompatImageView = itemView.findViewById(R.id.imageView_tickThird)
@@ -634,19 +652,21 @@ class FunctionAdapter(
 
         val imageViewFuncOneFailure: ImageView = itemView.findViewById(R.id.imageViewFuncOneFailure)
         val imageViewFuncTwoFailure: ImageView = itemView.findViewById(R.id.imageViewFuncTwoFailure)
-        val imageViewFuncThreeFailure: ImageView = itemView.findViewById(R.id.imageViewFuncThreeFailure)
-        val imageViewFuncFourFailure: ImageView = itemView.findViewById(R.id.imageViewFuncFourFailure)
+        val imageViewFuncThreeFailure: ImageView =
+            itemView.findViewById(R.id.imageViewFuncThreeFailure)
+        val imageViewFuncFourFailure: ImageView =
+            itemView.findViewById(R.id.imageViewFuncFourFailure)
 
 
         val progressMethod = itemView.findViewById(R.id.progress_method) as ProgressBar
 
 
-        val viewSubFunctions:View = itemView.findViewById(R.id.viewSubFunctions)
+        val viewSubFunctions: View = itemView.findViewById(R.id.viewSubFunctions)
 
         init {
-            buttonRun.setOnClickListener {
-                viewHolderListener.onIconClicked(this)
-            }
+//            buttonRun.setOnClickListener {
+//                viewHolderListener.onIconClicked(this)
+//            }
 
 //            buttonLog.setOnClickListener {
 //                viewHolderListener.onLogClicked(this)

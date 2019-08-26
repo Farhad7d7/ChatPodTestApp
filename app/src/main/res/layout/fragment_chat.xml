@@ -6,25 +6,22 @@
     android:layout_height="match_parent"
     android:background="@color/blue_grey_inactive">
 
+
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraint_text"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="8dp"
+        android:layout_width="361dp"
+        android:layout_height="64dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/bg_chat_edit_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.666"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintStart_toStartOf="parent">
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/appCompatImageView2"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="10dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="24dp"
             android:src="@drawable/ic_round_mic_none_24px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -33,9 +30,9 @@
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/appCompatImageView3"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="28dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
             android:src="@drawable/ic_round_tag_faces_24px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/appCompatImageView2"
@@ -53,13 +50,16 @@
             app:layout_constraintEnd_toStartOf="@+id/appCompatImageView3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
     </android.support.constraint.ConstraintLayout>
 
     <include
+
         android:id="@+id/ccv_attachment_reveal"
         layout="@layout/item_atach"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_width="372dp"
+        android:layout_height="58dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:visibility="gone"
@@ -67,7 +67,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
-
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -79,9 +78,9 @@
 
 
         <LinearLayout
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <android.support.constraint.ConstraintLayout
@@ -93,6 +92,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView">
 
+
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/buttonFileMsg"
                     android:layout_width="40dp"
@@ -101,17 +101,18 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_round_play_circle_outline_24px"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline_sfilemsg"
+                    app:layout_constraintHorizontal_bias="0.1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.48" />
-
 
                 <TextView
                     android:id="@+id/TxtViewFileMsg"
 
                     android:layout_width="wrap_content"
                     android:layout_height="20sp"
-                    android:layout_marginEnd="148dp"
+                    android:layout_marginEnd="144dp"
                     android:text="Send File Message"
                     android:textColor="@color/black"
                     android:textSize="12sp"
@@ -123,13 +124,12 @@
                     android:id="@+id/checkBox_Send_File_Msg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginEnd="24dp"
                     android:src="@drawable/ic_done_black_24dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.16" />
+                    app:layout_constraintVertical_bias="0.487" />
 
                 <ProgressBar
                     android:id="@+id/progress_sfilemsg"
@@ -210,12 +210,13 @@
                     android:src="@drawable/ic_done_black_24dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5" />
 
                 <ProgressBar
                     android:id="@+id/progress_UploadFile"
                     style="@style/progress_bar"
-                    android:padding="1dp"
                     android:progressDrawable="@drawable/round_corner_progressbar"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonUploadFile"
                     app:layout_constraintStart_toStartOf="@+id/TxtViewUploadFile" />
@@ -292,12 +293,11 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.487" />
+                    app:layout_constraintVertical_bias="0.5" />
 
                 <ProgressBar
                     android:id="@+id/progress_Reply_File_Msg"
                     style="@style/progress_bar"
-
                     android:progressDrawable="@drawable/round_corner_progressbar"
                     app:layout_constraintBottom_toBottomOf="@+id/button_Reply_File_Msg"
                     app:layout_constraintStart_toStartOf="@+id/guideline_Reply_File_Msg" />
@@ -381,7 +381,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.487" />
+                    app:layout_constraintVertical_bias="0.5" />
 
                 <ProgressBar
                     android:id="@+id/progress_UploadImage"
@@ -445,7 +445,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.512" />
+                    app:layout_constraintVertical_bias="0.5" />
 
                 <ProgressBar
                     android:id="@+id/progressBarLocationMessage"
@@ -460,7 +460,6 @@
                     app:layout_constraintVertical_bias="1.0" />
 
 
-
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/btnSendLocationMesssage"
                     android:layout_width="40dp"
@@ -468,7 +467,6 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="24dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-
                     android:src="@drawable/ic_round_play_circle_outline_24px"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/tvSendLocationMessage"
@@ -518,6 +516,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="20dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="left" />
 
 
 </android.support.constraint.ConstraintLayout>

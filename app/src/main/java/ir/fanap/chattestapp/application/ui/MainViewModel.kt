@@ -92,6 +92,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
 
+
+
             override fun onLogEvent(logName: String?, json: String?) {
 
                 testListener.onLogEventWithName(logName!!,json!!)
@@ -313,6 +315,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ): String {
         return chat.createThread(threadType, invitee, threadTitle, description, image, metadata, null)
     }
+
+
+
+
+
 
     fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {
         return chat.createThreadWithMessage(requestCreateThread)

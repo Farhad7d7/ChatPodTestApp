@@ -140,8 +140,10 @@ class ChatFragment : Fragment(), TestListener {
                         startRadius.toFloat(),
                         endRadius.toFloat()
                     )
+
+
                 anim.interpolator = AccelerateDecelerateInterpolator()
-//                cicuralCard.visibility = View.VISIBLE
+                cicuralCard.visibility = View.VISIBLE
                 anim.duration = 1000
                 anim.start()
 
@@ -176,7 +178,7 @@ class ChatFragment : Fragment(), TestListener {
                     }
 
                     override fun onAnimationEnd(p0: Animator?) {
-//                        cicuralCard.visibility = View.GONE
+                        cicuralCard.visibility = View.GONE
                     }
                 })
                 anim.interpolator = AccelerateDecelerateInterpolator()
@@ -425,6 +427,16 @@ class ChatFragment : Fragment(), TestListener {
                     imageView_tickOne.setImageResource(R.drawable.ic_round_done_all_24px)
                     imageView_tickOne.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
                 }
+
+                override fun onProgressUpdate(
+                    uniqueId: String?,
+                    bytesSent: Int,
+                    totalBytesSent: Int,
+                    totalBytesToSend: Int
+                ) {
+                    super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
+
+                }
             })
         }
 
@@ -469,7 +481,7 @@ class ChatFragment : Fragment(), TestListener {
                 if (contact.isHasUser) {
                     choose++
                     if (choose == 1) {
-                        val contactId = contact.id
+                        val contactId = contact.userId
 
                         val inviteList = ArrayList<Invitee>()
                         inviteList.add(Invitee(contactId, 1))
@@ -484,6 +496,22 @@ class ChatFragment : Fragment(), TestListener {
                     }
                     break
                 }
+            }
+
+            if(choose == 0){
+                val contactId = 121L
+
+                val inviteList = ArrayList<Invitee>()
+                inviteList.add(Invitee(contactId, 1))
+
+                val list = Array(1) { Invitee(inviteList[0].id, 1) }
+
+                val uniqueId = mainViewModel.createThread(
+                    ThreadType.Constants.NORMAL, list, "nothing", ""
+                    , "", ""
+                )
+                fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = uniqueId
+
             }
         }
     }

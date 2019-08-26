@@ -9,7 +9,7 @@ class MethodList {
         val methodNames: MutableList<String> =
             arrayListOf(
                 "0 Create Thread",
-                "1 get Contact",
+                "1 Get Contact",
                 "2 Block Contact",
                 "3 Add Contact",
                 "4 Get Thread",
@@ -18,8 +18,8 @@ class MethodList {
                 "7 Update Contact",
                 "8 Send Message",
                 "9 Remove Contact",
-                "10 Add participant",
-                "11 remove participant",
+                "10 Add Participant",
+                "11 Remove Participant",
                 "12 Forward Message",
                 "13 Reply Message",
                 "14 Leave Thread",
@@ -45,22 +45,22 @@ class MethodList {
         val methodFuncOne: MutableList<String> =
             arrayListOf(
                 "CHANNEL",//0
-                "",//1
-                "",//2
-                "",//3
-                "",//4
-                "",//5
-                "",//6
-                "",//7
-                "8 sent",//8
-                "",//9
-                "",//10
-                "",//11
-                "onSent",//12
-                "",//13
-                "",//14
-                "",//15
-                "",//16
+                "Get Contacts List",//1
+                "Get Contacts List",//2
+                "Add New Contact",//3
+                "Get Threads List",//4
+                "Get Blocked Contacts",//5
+                "Get Blocked Contacts",//6
+                "Get Contacts List",//7
+                "Get Threads or Contacts",//8
+                "Add new Contact",//9
+                "Get Threads",//10
+                "Get Threads",//11
+                "Get Contacts",//12
+                "Get Contacts",//13
+                "Get Contacts",//14
+                "Get Contacts",//15
+                "Get Contacts",//16
                 "",//17
                 "",//18
                 "",//19
@@ -81,21 +81,21 @@ class MethodList {
             arrayListOf(
                 "CHANNEL_GROUP",//0
                 "",//1
-                "",//2
+                "Block Contact",//2
                 "",//3
                 "",//4
                 "",//5
-                "",//6
-                "",//7
-                "8 deliver",//8
-                "",//9
-                "",//10
-                "",//11
-                "",//12
-                "",//13
-                "",//14
-                "",//15
-                "",//16
+                "Unblock Contact",//6
+                "Update Contact Info",//7
+                "Send Message",//8
+                "Remove Added Contact",//9
+                "Create Public Group",//10
+                "Get Thread Participants",//11
+                "Create Thread With Contact A",//12
+                "Create Thread With Message",//13
+                "Create Thread With Message",//14
+                "Create Thread",//15
+                "Create Thread",//16
                 "",//17
                 "",//18
                 "",//19
@@ -122,15 +122,15 @@ class MethodList {
                 "",//5
                 "",//6
                 "",//7
-                "8 seen",
+                "Message Sent",
                 "",//9
-                "",//10
-                "",//11
-                "",//12
-                "",//13
-                "",//14
-                "",//15
-                "",//16
+                "Add Participant to group",//10
+                "Remove Participant from group",//11
+                "Create Thread With Contact B",//12
+                "Reply To Message",//13
+                "Leave Created Thread",//14
+                "Mute Thread",//15
+                "Unmute Thread",//16
                 "",//17
                 "",//18
                 "",//19
@@ -161,7 +161,7 @@ class MethodList {
                 "",//9
                 "",//10
                 "",//11
-                "",//12
+                "Forward Message From A to B",//12
                 "",//13
                 "",//14
                 "",//15
