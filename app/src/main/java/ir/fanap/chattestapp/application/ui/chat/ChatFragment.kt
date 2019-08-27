@@ -211,8 +211,8 @@ class ChatFragment : Fragment(), TestListener {
         progressSendLocationMessage.visibility = View.VISIBLE
 
 
-        checkBoxLocationMessage.setImageResource(R.drawable.ic_done_black_24dp)
-        checkBoxLocationMessage.setColorFilter(ContextCompat.getColor(activity!!, R.color.abc_color_highlight_material))
+//        checkBoxLocationMessage.setImageResource(R.drawable.ic_done_black_24dp)
+//        checkBoxLocationMessage.setColorFilter(ContextCompat.getColor(activity!!, R.color.abc_color_highlight_material))
 
         progressBarLocationMessage.progress = 0
 

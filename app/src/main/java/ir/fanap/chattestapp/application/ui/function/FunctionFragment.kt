@@ -62,7 +62,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private var chatReady: Boolean = false
     var TEST_THREAD_ID: Long = 10955L
 
-    private lateinit var buttonConect: Button
+    private lateinit var buttonConnect: Button
     private lateinit var switchCompat_sandBox: SwitchCompat
     private lateinit var recyclerView: RecyclerView
     private lateinit var mainViewModel: MainViewModel
@@ -771,7 +771,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         recyclerView.adapter = functionAdapter
 
         recyclerView.childCount
-        buttonConect.setOnClickListener { connect() }
+        buttonConnect.setOnClickListener { connect() }
         switchCompat_sandBox.setOnCheckedChangeListener { _, isChecked ->
             sandbox = isChecked
         }
@@ -818,7 +818,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun initView(view: View) {
-        buttonConect = view.findViewById(R.id.button_Connect)
+        buttonConnect = view.findViewById(R.id.button_Connect)
         recyclerView = view.findViewById(R.id.recyclerV_funcFrag)
         recyclerView.isNestedScrollingEnabled = true
         textView_state = view.findViewById(R.id.textView_state)
@@ -853,6 +853,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     textView_state.setTextColor(
                         ContextCompat.getColor(activity?.applicationContext!!, R.color.green_active)
                     )
+
+
+//                    buttonConnect.animate().scaleX(0.2f).setDuration(450).setInterpolator(BounceInterpolator()).start()
+
                 } else {
 
                     chatReady = false
@@ -2458,16 +2462,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onSeen(response: ChatResponse<ResultMessage>?) {
         super.onSeen(response)
-        val position = 8
-        changeFourthIconReceive(position)
-        methods[position].funcFourFlag = true
+//        val position = 8
+//        changeFourthIconReceive(position)
+//        methods[position].funcFourFlag = true
     }
 
     override fun onDeliver(response: ChatResponse<ResultMessage>?) {
         super.onDeliver(response)
-        val position = 8
-        changeThirdIconReceive(position)
-        methods[position].funcThreeFlag = true
+//        val position = 8
+//        changeThirdIconReceive(position)
+//        methods[position].funcThreeFlag = true
     }
 
     override fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
@@ -2985,20 +2989,20 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     override fun onNewMessage(response: ChatResponse<ResultNewMessage>?) {
         super.onNewMessage(response)
 
-        val uniqueId = response?.uniqueId
 
 
-        if (uniqueId == fucCallback[ConstantMsgType.SEND_MESSAGE]) {
+        if (fucCallback[ConstantMsgType.SEND_MESSAGE] == response?.uniqueId) {
 
             val pos = getPositionOf(ConstantMsgType.SEND_MESSAGE)
-            methods[pos].methodNameFlag = true
             changeIconReceive(pos)
             changeFunTwoState(pos, Method.DONE)
 
 
         }
 
-        if (uniqueId == fucCallback[ConstantMsgType.GET_SEEN_LIST]) {
+
+
+        if (fucCallback[ConstantMsgType.GET_SEEN_LIST] == response?.uniqueId) {
 
             val pos = getPositionOf(ConstantMsgType.GET_SEEN_LIST)
 
@@ -3010,7 +3014,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         }
 
-        if (uniqueId == fucCallback[ConstantMsgType.GET_DELIVER_LIST]) {
+        if (fucCallback[ConstantMsgType.GET_DELIVER_LIST] == response?.uniqueId) {
 
 
             val pos = getPositionOf(ConstantMsgType.GET_DELIVER_LIST)

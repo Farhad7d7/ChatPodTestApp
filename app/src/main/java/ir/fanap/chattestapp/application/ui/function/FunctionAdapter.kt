@@ -340,8 +340,8 @@ class FunctionAdapter(
 //        }
 
 
-        if (!viewHolder.textViewFuncOne.text.isEmpty()) {
-            viewHolder.checkBoxOne.visibility = View.VISIBLE
+        if (viewHolder.textViewFuncOne.text.isNotEmpty()) {
+//            viewHolder.checkBoxOne.visibility = View.VISIBLE
             viewHolder.textViewFuncOne.visibility = View.VISIBLE
         } else {
             viewHolder.checkBoxOne.visibility = View.GONE
@@ -349,8 +349,8 @@ class FunctionAdapter(
 
 
         }
-        if (!viewHolder.textViewFuncTwo.text.isEmpty()) {
-            viewHolder.checkBoxSec.visibility = View.VISIBLE
+        if (viewHolder.textViewFuncTwo.text.isNotEmpty()) {
+//            viewHolder.checkBoxSec.visibility = View.VISIBLE
             viewHolder.textViewFuncTwo.visibility = View.VISIBLE
 
         } else {
@@ -359,8 +359,8 @@ class FunctionAdapter(
 
         }
 
-        if (!viewHolder.textViewFuncThree.text.isEmpty()) {
-            viewHolder.checkBoxThird.visibility = View.VISIBLE
+        if (viewHolder.textViewFuncThree.text.isNotEmpty()) {
+//            viewHolder.checkBoxThird.visibility = View.VISIBLE
             viewHolder.textViewFuncThree.visibility = View.VISIBLE
 
         } else {
@@ -369,8 +369,8 @@ class FunctionAdapter(
 
         }
 
-        if (!viewHolder.textViewFuncFour.text.isEmpty()) {
-            viewHolder.checkBoxFourth.visibility = View.VISIBLE
+        if (viewHolder.textViewFuncFour.text.isNotEmpty()) {
+//            viewHolder.checkBoxFourth.visibility = View.VISIBLE
             viewHolder.textViewFuncFour.visibility = View.VISIBLE
 
         } else {
@@ -388,6 +388,12 @@ class FunctionAdapter(
             methods[position].isActive -> {
 
                 viewHolder.progressMethod.visibility = View.VISIBLE
+
+                viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item)
+
+                viewHolder.imgViewArrowToMethod.visibility = View.GONE
+
+                viewHolder.imgViewHasError.visibility = View.GONE
 
             }
 
@@ -407,17 +413,9 @@ class FunctionAdapter(
 
                 viewHolder.topItemMethod.setBackgroundResource(R.drawable.background_top_method_item_done)
 
-
                 viewHolder.imgViewHasError.visibility = View.GONE
 
                 viewHolder.progressMethod.visibility = View.GONE
-
-
-//                context.runOnUiThread {
-//                    viewHolder.checkBox.setImageResource(R.drawable.ic_round_done_all_24px)
-//                }
-//
-//                viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
 
 
             }
@@ -678,7 +676,7 @@ class FunctionAdapter(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.item_method, viewGroup, false)
+            .inflate(R.layout.item_method_2, viewGroup, false)
         return ViewHolder(v, viewHolderListener)
     }
 
