@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/viewFuncParent"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <!--<android.support.v7.widget.AppCompatImageView-->
+        <!--android:id="@+id/checkBox_test"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--android:src="@drawable/ic_done_black_24dp"-->
+        <!--android:visibility="invisible"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/viewSubFunctions"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/guideline2"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/viewSubFunctions"-->
+        <!--app:layout_constraintVertical_bias="0.164" />-->
+
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imgViewArrowToMethod"
+        android:layout_width="29dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_arrow_right_blue"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonRun"
+        app:layout_constraintEnd_toStartOf="@+id/relativeViewMethod"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonRun"
+        app:layout_constraintVertical_bias="0.625" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imgViewHasError"
+        android:layout_width="29dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_arrow_right_red"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonRun"
+        app:layout_constraintEnd_toStartOf="@+id/relativeViewMethod"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonRun"
+        app:layout_constraintVertical_bias="0.625" />
+
+    <RelativeLayout
+        android:id="@+id/relativeViewMethod"
+        android:layout_width="298dp"
+        android:layout_height="53dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/background_top_method_item"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/buttonRun"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_round_play_circle_outline_24px"
+            app:layout_constraintStart_toStartOf="@+id/relativeViewMethod"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toStartOf="@+id/guideline3"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="@+id/relativeViewMethod"
+            app:layout_constraintBottom_toBottomOf="@+id/relativeViewMethod"/>
+
+    <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imgView_log"
+            android:src="@drawable/ic_round_keyboard_arrow_right_24px"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintEnd_toEndOf="@+id/relativeViewMethod"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/relativeViewMethod"
+            app:layout_constraintTop_toTopOf="@+id/relativeViewMethod"/>
+
+    <!-- Progress bar -->
+    <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/progress_method"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_width="35dp" android:layout_height="35dp"
+            style="@style/Widget.AppCompat.ProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/buttonRun" app:layout_constraintStart_toStartOf="@+id/buttonRun"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonRun"
+            app:layout_constraintTop_toTopOf="@+id/buttonRun"/>
+    <TextView
+            android:id="@+id/textView_method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/guideline3"
+            android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/relativeViewMethod"
+            app:layout_constraintBottom_toBottomOf="@+id/relativeViewMethod"/>
+
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="312dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="302dp" />
+
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/viewSubFunctions" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/viewSubFunctions"
+        android:layout_width="216dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/relativeViewMethod">
+
+
+        <TextView
+            android:id="@+id/textView_FunOne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="TextView"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textView_FunTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/textView_FunOne"
+            app:layout_constraintTop_toBottomOf="@+id/textView_FunOne"
+            tools:text="textView_FunTwo"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textView_FunThree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/textView_FunOne"
+            app:layout_constraintTop_toBottomOf="@+id/textView_FunTwo"
+            tools:text="textView_FunThree"
+            tools:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/textView_FunFour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textView_FunOne"
+            app:layout_constraintTop_toBottomOf="@+id/textView_FunThree"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="textView_FunFour"
+            tools:visibility="visible" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imageView_tickFirst"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_fiber"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imageView_tickSec"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_fiber"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/imageView_tickFirst"
+            app:layout_constraintTop_toBottomOf="@+id/imageView_tickFirst"
+            tools:visibility="visible" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imageView_tickThird"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_fiber"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/imageView_tickSec"
+            app:layout_constraintTop_toBottomOf="@+id/imageView_tickSec"
+            tools:visibility="visible" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imageView_tickFourth"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_fiber"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/imageView_tickThird"
+            app:layout_constraintTop_toBottomOf="@+id/imageView_tickThird"
+            tools:visibility="visible" />
+
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="312dp" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="-81dp" />
+
+        <ProgressBar
+            android:visibility="invisible"
+
+            android:id="@+id/funcOneProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView_tickFirst"
+            app:layout_constraintEnd_toEndOf="@+id/imageView_tickFirst"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/imageView_tickFirst"
+            app:layout_constraintTop_toTopOf="@+id/imageView_tickFirst"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ProgressBar
+            android:visibility="invisible"
+
+            android:id="@+id/funcTwoProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView_tickSec"
+            app:layout_constraintEnd_toEndOf="@+id/imageView_tickSec"
+            app:layout_constraintStart_toStartOf="@+id/imageView_tickSec"
+            app:layout_constraintTop_toTopOf="@+id/imageView_tickSec" />
+
+        <ProgressBar
+            android:visibility="invisible"
+
+            android:id="@+id/funcThreeProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView_tickThird"
+            app:layout_constraintEnd_toEndOf="@+id/imageView_tickThird"
+            app:layout_constraintStart_toStartOf="@+id/imageView_tickThird"
+            app:layout_constraintTop_toTopOf="@+id/imageView_tickThird" />
+
+        <ProgressBar
+            android:visibility="invisible"
+            android:id="@+id/funcFourProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView_tickFourth"
+            app:layout_constraintEnd_toEndOf="@+id/imageView_tickFourth"
+            app:layout_constraintStart_toStartOf="@+id/imageView_tickFourth"
+            app:layout_constraintTop_toTopOf="@+id/imageView_tickFourth" />
+
+        <ImageView
+            android:id="@+id/imageViewFuncOneFailure"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_error"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/funcOneProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/funcOneProgressBar"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/funcOneProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/funcOneProgressBar"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/imageViewFuncTwoFailure"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:visibility="invisible"
+
+            android:src="@drawable/ic_error"
+            app:layout_constraintBottom_toBottomOf="@+id/funcTwoProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/funcTwoProgressBar"
+            app:layout_constraintStart_toStartOf="@+id/funcTwoProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/funcTwoProgressBar" />
+
+        <ImageView
+            android:visibility="invisible"
+
+            android:id="@+id/imageViewFuncThreeFailure"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_error"
+            app:layout_constraintBottom_toBottomOf="@+id/funcThreeProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/funcThreeProgressBar"
+            app:layout_constraintStart_toStartOf="@+id/funcThreeProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/funcThreeProgressBar" />
+
+        <ImageView
+            android:visibility="invisible"
+
+            android:id="@+id/imageViewFuncFourFailure"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_error"
+            app:layout_constraintBottom_toBottomOf="@+id/funcFourProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/funcFourProgressBar"
+            app:layout_constraintStart_toStartOf="@+id/funcFourProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/funcFourProgressBar" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.constraint.ConstraintLayout>
