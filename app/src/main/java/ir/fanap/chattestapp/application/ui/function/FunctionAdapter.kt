@@ -496,6 +496,8 @@ class FunctionAdapter(
         position: Int
     ) {
 
+
+
         viewHolderListener.onIconClicked(viewHolder)
 
         if (!methods[position].isExpanded) {

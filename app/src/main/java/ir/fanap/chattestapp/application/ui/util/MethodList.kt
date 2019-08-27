@@ -28,14 +28,14 @@ class MethodList {
                 "17 Delete Message",
                 "18 Edit Message",
                 "19 Get history",
-                "20 Create Thread with ForwardMsg",
+                "20 Create THRD with FWD MSG",
                 "21 Get thread Participant",
                 "22 Clear History",
                 "23 Get Admin List",
                 "24 Add Admin Roles",
                 "25 Remove Admin Roles",
                 "26 Delete Multiple Message",
-                "27 Create Thread With Text Message",
+                "27 Create THRD With TXT MSG",
                 "28 Get Deliver List",
                 "29 Get Seen List",
                 "30 Search Contact"
@@ -61,11 +61,11 @@ class MethodList {
                 "Get Contacts",//14
                 "Get Contacts",//15
                 "Get Contacts",//16
-                "",//17
-                "",//18
-                "",//19
-                "onSent",
-                "",//21
+                "Get Contacts",//17
+                "Get Contacts",//18
+                "Get Contacts",//19
+                "Get Contacts",//20
+                "Get Contacts",//21
                 "Get Threads",//22
                 "Get Threads",//23
                 "Get Threads",//24
@@ -92,21 +92,21 @@ class MethodList {
                 "Create Public Group",//10
                 "Get Thread Participants",//11
                 "Create Thread With Contact A",//12
-                "Create Thread With Message",//13
-                "Create Thread With Message",//14
+                "Create Thread With MSG",//13
+                "Create Thread With MSG",//14
                 "Create Thread",//15
                 "Create Thread",//16
-                "",//17
-                "",//18
-                "",//19
-                "",
-                "",//21
+                "Create Thread With MSG",//17
+                "Create Thread With MSG",//18
+                "Create Thread",//19
+                "Create Thread",//20
+                "Create Thread",//21
                 "Clear History",//22
                 "Get Admin List",//23
                 "Get Thread Participants",//24
                 "Get Admins List",//25
-                "Send 5 Message to thread",//26
-                "Create Thread With Message",//27
+                "Send 5 MSG to thread",//26
+                "Create Thread With MSG",//27
                 "Send Text Message",//28
                 "Send Text Message",//29
                 ""//30
@@ -124,26 +124,26 @@ class MethodList {
                 "",//7
                 "Message Sent",
                 "",//9
-                "Add Participant to group",//10
-                "Remove Participant from group",//11
-                "Create Thread With Contact B",//12
+                "Add Participant to GP",//10
+                "Remove Participant from GP",//11
+                "Create THRD With Contact B",//12
                 "Reply To Message",//13
                 "Leave Created Thread",//14
                 "Mute Thread",//15
-                "Unmute Thread",//16
-                "",//17
-                "",//18
-                "",//19
-                "",
-                "",//21
+                "UnMute Thread",//16
+                "Delete Message",//17
+                "Edit Message",//18
+                "Get History",//19
+                "Send Message to thread",//20
+                "Get Thread Participants",//21
                 "",//22
                 "",//23
                 "Add Admin Roles",//24
                 "Remove Admin Roles",//25
                 "Get Thread history",//26
                 "Message Sent To Thread",//27
-                "Get Message Seen List",//28
-                "Get Message Deliver List",//29
+                "Get MSG Seen List",//28
+                "Get MSG Deliver List",//29
                 ""//30
             )
 
@@ -161,7 +161,7 @@ class MethodList {
                 "",//9
                 "",//10
                 "",//11
-                "Forward Message From A to B",//12
+                "Forward MSG From A to B",//12
                 "",//13
                 "",//14
                 "",//15
@@ -169,13 +169,13 @@ class MethodList {
                 "",//17
                 "",//18
                 "",//19
-                "",
+                "Create Thread With Forward MSG",
                 "",//21
                 "",//22
                 "",//23
                 "",//24
                 "",//25
-                "Delete Multiple Message",//26
+                "Delete Multiple MSG",//26
                 "",//27
                 "",//28
                 "",//29
