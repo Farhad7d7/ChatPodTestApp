@@ -104,5 +104,10 @@ interface TestListener {
 
     }
 
+    fun onUploadImageFile(content: String?, response: ChatResponse<ResultImageFile>?) {
+
+
+    }
+
 
 }

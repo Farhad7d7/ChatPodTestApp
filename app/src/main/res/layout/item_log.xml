@@ -63,7 +63,7 @@
                 app:fabSize="mini"
                 app:backgroundTint="@color/blue_active"
                 android:id="@+id/btnCopy"
-                app:srcCompat="@drawable/ic_content_copy"
+                android:src="@drawable/ic_content_copy"
                 android:layout_height="wrap_content"/>
 
         <View

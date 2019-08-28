@@ -21,7 +21,7 @@
 
     <style name="const_method">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">65dp</item>
+        <item name="android:layout_height">95dp</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:background">@drawable/background_top_method_item</item>
     </style>

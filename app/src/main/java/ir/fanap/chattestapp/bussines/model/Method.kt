@@ -41,6 +41,8 @@ class Method() {
 
     var log :String? = null
 
+    var logs:ArrayList<LogClass> = ArrayList()
+
     var response:Boolean? = null
 
     var methodNameImage: Int? = null
@@ -53,6 +55,14 @@ class Method() {
     var isActive:Boolean=false
     var hasError:Boolean=false
 
+
+
+    fun addLog(log: LogClass){
+
+
+        logs.add(log)
+
+    }
 
 
 

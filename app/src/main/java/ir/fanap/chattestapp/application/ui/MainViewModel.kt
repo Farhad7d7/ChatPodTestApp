@@ -10,7 +10,7 @@ import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
 import com.fanap.podchat.mainmodel.Invitee
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
-import com.fanap.podchat.mainmodel.SearchContact
+import com.fanap.podchat.mainmodel.RequestSearchContact
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import rx.subjects.PublishSubject
@@ -37,6 +37,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 observable.onNext(state)
 
             }
+
+
 
 
 
@@ -220,6 +222,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 super.OnStaticMap(response)
 
                 testListener.onGetStaticMap(response)
+            }
+
+            override fun onUploadImageFile(
+                content: String?,
+                response: ChatResponse<ResultImageFile>?
+            ) {
+                super.onUploadImageFile(content, response)
+
+                testListener.onUploadImageFile(content,response)
             }
         })
     }
@@ -433,7 +444,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.getMessageSeenList(request)
     }
 
-    fun searchContact(searchContact: SearchContact) :String {
+    fun searchContact(searchContact: RequestSearchContact) :String {
 
         return chat.searchContact(searchContact)
     }

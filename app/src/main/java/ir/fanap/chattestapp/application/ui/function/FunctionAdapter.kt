@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -33,14 +34,14 @@ class FunctionAdapter(
         viewHolder.textViewFuncThree.text = methods[position].funcThree
         viewHolder.textViewFuncFour.text = methods[position].funcFour
         viewHolder.buttonRun.tag = position
-        viewHolder.buttonLog.tag = position
+        viewHolder.buttonExpand.tag = position
 
 
 
         viewHolder.viewSubFunctions.visibility =
             if (methods[position].isExpanded) View.VISIBLE else View.GONE
 
-        viewHolder.buttonLog.rotation = if (methods[position].isExpanded) 90f else 0f
+        viewHolder.buttonExpand.rotation = if (methods[position].isExpanded) 90f else 0f
 
 
 
@@ -454,7 +455,7 @@ class FunctionAdapter(
 
 
 
-        viewHolder.buttonLog.setOnClickListener {
+        viewHolder.buttonExpand.setOnClickListener {
 
 
             if (methods[position].isExpanded) {
@@ -487,6 +488,14 @@ class FunctionAdapter(
 
         }
 
+        viewHolder.buttonLog.setOnClickListener {
+
+
+            viewHolderListener.onLogClicked(position)
+
+
+        }
+
     }
 
     private fun runMethod(
@@ -500,7 +509,7 @@ class FunctionAdapter(
 
         if (!methods[position].isExpanded) {
 
-            viewHolder.buttonLog.animate().rotation(90f).setDuration(250).setInterpolator(BounceInterpolator())
+            viewHolder.buttonExpand.animate().rotation(90f).setDuration(250).setInterpolator(BounceInterpolator())
                 .start()
 
             methods[position].isExpanded = true
@@ -638,8 +647,9 @@ class FunctionAdapter(
         val checkBoxSec: AppCompatImageView = itemView.findViewById(R.id.imageView_tickSec)
         val checkBoxThird: AppCompatImageView = itemView.findViewById(R.id.imageView_tickThird)
         val checkBoxFourth: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFourth)
-        val buttonLog: AppCompatImageView = itemView.findViewById(R.id.imgView_log)
+        val buttonExpand: AppCompatImageView = itemView.findViewById(R.id.imgView_log)
         val buttonRun: AppCompatImageView = itemView.findViewById(R.id.buttonRun)
+        val buttonLog: ImageButton = itemView.findViewById(R.id.imageButtonShowLog)
         val funcViewParent: View = itemView.findViewById(R.id.viewFuncParent)
         val topItemMethod: View = itemView.findViewById(R.id.relativeViewMethod)
         val imgViewArrowToMethod: View = itemView.findViewById(R.id.imgViewArrowToMethod)
@@ -663,15 +673,15 @@ class FunctionAdapter(
 
         val viewSubFunctions: View = itemView.findViewById(R.id.viewSubFunctions)
 
-        init {
-//            buttonRun.setOnClickListener {
-//                viewHolderListener.onIconClicked(this)
-//            }
-
-//            buttonLog.setOnClickListener {
-//                viewHolderListener.onLogClicked(this)
-//            }
-        }
+//        init {
+////            buttonRun.setOnClickListener {
+////                viewHolderListener.onIconClicked(this)
+////            }
+//
+////            buttonExpand.setOnClickListener {
+////                viewHolderListener.onLogClicked(this)
+////            }
+//        }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -682,7 +692,7 @@ class FunctionAdapter(
 
     interface ViewHolderListener {
         fun onIconClicked(clickedViewHolder: ViewHolder)
-        fun onLogClicked(clickedViewHolder: ViewHolder)
+        fun onLogClicked(position: Int)
     }
 
     interface ICheckChangeListener {
