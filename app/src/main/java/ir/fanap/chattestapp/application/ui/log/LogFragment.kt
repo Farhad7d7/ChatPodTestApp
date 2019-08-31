@@ -48,6 +48,8 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
         super.onViewCreated(view, savedInstanceState)
 
         setHasOptionsMenu(true)
+
+
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerV_funcLog)
         val fabGoDown: FloatingActionButton = view.findViewById(R.id.fActionButton)
 //        val Toolbar: Toolbar = view.findViewById(R.id.toolbarLog)
