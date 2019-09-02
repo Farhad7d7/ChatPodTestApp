@@ -8,24 +8,28 @@ import android.view.View
 import android.view.ViewGroup
 import ir.fanap.chattestapp.R
 import android.animation.Animator
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
+import android.graphics.Color
 import android.net.Uri
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.support.design.circularreveal.CircularRevealCompat
 import android.support.design.circularreveal.cardview.CircularRevealCardView
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.*
 import com.fanap.podchat.ProgressHandler
-import com.fanap.podchat.mainmodel.Contact
-import com.fanap.podchat.mainmodel.Invitee
-import com.fanap.podchat.mainmodel.RequestThreadInnerMessage
-import com.fanap.podchat.mainmodel.Thread
+import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
+import com.fanap.podchat.util.InviteType
 import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
 import ir.fanap.chattestapp.application.ui.MainViewModel
@@ -34,11 +38,16 @@ import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
 import kotlinx.android.synthetic.main.fragment_chat.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.io.File
 import java.util.ArrayList
 import kotlin.math.hypot
 import kotlin.math.max
 
+@SuppressLint("SetTextI18n")
 class ChatFragment : Fragment(), TestListener {
+
+    private lateinit var tvPickedFileName: TextView
+    private val PICKFILE_REQUEST_CODE: Int = 2
 
     private var chatReady: Boolean = false
 
@@ -51,6 +60,9 @@ class ChatFragment : Fragment(), TestListener {
     private var imageUrl: Uri? = null
 
     private lateinit var txtViewFileMsg: TextView
+    private lateinit var tvReplayFileMessageStatus: TextView
+    private lateinit var tvSendFileMessageStatus: TextView
+    private lateinit var tvUploadFileStatus: TextView
     private lateinit var txtViewUploadFile: TextView
     private lateinit var txtViewUploadImage: TextView
     private lateinit var txtViewReplyFileMsg: TextView
@@ -61,10 +73,27 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var imageView_tickFour: AppCompatImageView
     private lateinit var prgressbarUploadImg: ProgressBar
     private lateinit var progressLocationMessage: ProgressBar
+    private lateinit var progressBarReplyFileMsg: ProgressBar
+    private lateinit var progressBarSendFileMessage: ProgressBar
+    private lateinit var progressBarUploadFile: ProgressBar
     private lateinit var contentProgressLocationMessage: ProgressBar
+    private lateinit var contentProgressFileMessage: ProgressBar
+    private lateinit var contentProgressUploadFile: ProgressBar
+    private lateinit var contentProgressReplyFileMessage: ProgressBar
     private lateinit var buttonUploadImage: AppCompatImageView
+
+
+    private lateinit var buttonFileMsg: AppCompatImageView
+    private lateinit var buttonUploadFile: AppCompatImageView
+    private lateinit var buttonReplyFileMsg: AppCompatImageView
+    private lateinit var btnSendLocationMessage: AppCompatImageView
+
+
     private lateinit var imgViewMap: AppCompatImageView
     private lateinit var imgViewCheckLocationMessage: AppCompatImageView
+    private lateinit var imageViewSelectedPic: AppCompatImageView
+    private lateinit var circularCard: CircularRevealCardView
+
 
     var isOpen = false
 
@@ -110,7 +139,7 @@ class ChatFragment : Fragment(), TestListener {
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
 
 
-        val cicuralCard: CircularRevealCardView = view.findViewById(R.id.ccv_attachment_reveal)
+
 
 
         initViews(view)
@@ -123,10 +152,22 @@ class ChatFragment : Fragment(), TestListener {
         val appCompatImageViewGallery: AppCompatImageView =
             view.findViewById(R.id.appCompatImageView_gallery)
 
+        val appCompatImageViewFile: AppCompatImageView =
+            view.findViewById(R.id.appCompatImageView_folder)
 
+
+
+        appCompatImageViewFile.setOnClickListener {
+
+            runScaleAnim(it)
+
+            openFilePicker()
+
+        }
 
         appCompatImageViewGallery.setOnClickListener {
-            selectImageInAlbum()
+            runScaleAnim(it)
+            openImagePicker()
         }
 
 
@@ -134,72 +175,138 @@ class ChatFragment : Fragment(), TestListener {
 
         atach_file.setOnClickListener {
 
+
+            runScaleAnim(it)
+
+
             if (!isOpen) {
 
-                val x = cicuralCard.left
-                val y = cicuralCard.bottom
+                openCircularCard()
 
-                val startRadius = 0
-                val endRadius = hypot(cicuralCard.width.toDouble(), cicuralCard.height.toDouble())
+                changeColor(atach_file, R.color.blue_inactive)
 
-                val anim: Animator =
-                    CircularRevealCompat.createCircularReveal(
-                        cicuralCard,
-                        x.toFloat(),
-                        y.toFloat(),
-                        startRadius.toFloat(),
-                        endRadius.toFloat()
-                    )
-
-
-                anim.interpolator = AccelerateDecelerateInterpolator()
-                cicuralCard.visibility = View.VISIBLE
-                anim.duration = 1000
-                anim.start()
-
-                isOpen = true
 
             } else {
 
-                val x = cicuralCard.left
-                val y = cicuralCard.bottom
+                closeCircularCard()
 
-                val endRadius = max(cicuralCard.width, cicuralCard.height)
-                val startRadius = 0
+                changeColor(atach_file, R.color.grey_active)
 
-
-                val anim: Animator =
-                    CircularRevealCompat.createCircularReveal(
-                        cicuralCard,
-                        x.toFloat(),
-                        y.toFloat(),
-                        startRadius.toFloat(),
-                        endRadius.toFloat()
-                    )
-                anim.addListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(p0: Animator?) {
-
-                    }
-
-                    override fun onAnimationCancel(p0: Animator?) {
-                    }
-
-                    override fun onAnimationRepeat(p0: Animator?) {
-                    }
-
-                    override fun onAnimationEnd(p0: Animator?) {
-                        cicuralCard.visibility = View.GONE
-                    }
-                })
-                anim.interpolator = AccelerateDecelerateInterpolator()
-                anim.duration = 1000
-                anim.start()
-                isOpen = false
             }
+
+            isOpen = !isOpen
+
+
         }
 
 
         return view
+    }
+
+
+    private fun openFilePicker() {
+
+
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+        intent.type = "*/*"
+
+        val pickIntent = Intent.createChooser(intent, "Choose a file")
+
+        startActivityForResult(pickIntent, PICKFILE_REQUEST_CODE)
+    }
+
+    private fun changeColor(
+        image: AppCompatImageView?,
+        color: Int
+    ) {
+
+        image?.setColorFilter(
+            ContextCompat.getColor(
+                activity!!,
+                color
+            )
+        )
+    }
+
+    private fun runScaleAnim(it: View) {
+        it.animate().setDuration(150L).setInterpolator(LinearInterpolator())
+            .withEndAction {
+
+                it.animate().setDuration(150L).setInterpolator(LinearInterpolator())
+                    .scaleX(1f).scaleY(1f).start()
+
+            }
+            .scaleX(0.7f).scaleY(0.7f).start()
+    }
+
+    private fun closeCircularCard() {
+
+        val x = circularCard.left
+        val y = circularCard.bottom
+
+        val endRadius = max(circularCard.width, circularCard.height)
+        val startRadius = 0
+
+
+        val anim: Animator =
+            CircularRevealCompat.createCircularReveal(
+                circularCard,
+                x.toFloat(),
+                y.toFloat(),
+                startRadius.toFloat(),
+                endRadius.toFloat()
+            )
+
+
+        anim.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(p0: Animator?) {
+
+            }
+
+            override fun onAnimationCancel(p0: Animator?) {
+            }
+
+            override fun onAnimationRepeat(p0: Animator?) {
+            }
+
+            override fun onAnimationEnd(p0: Animator?) {
+                circularCard.visibility = View.GONE
+            }
+        })
+
+
+        anim.interpolator = AccelerateDecelerateInterpolator()
+        anim.duration = 150
+        anim.start()
+    }
+
+    private fun openCircularCard() {
+
+        val x = circularCard.left
+        val y = circularCard.bottom
+
+        val startRadius = 0
+
+        val endRadius = hypot(circularCard.width.toDouble(), circularCard.height.toDouble())
+
+        val anim: Animator =
+            CircularRevealCompat.createCircularReveal(
+                circularCard,
+                x.toFloat(),
+                y.toFloat(),
+                startRadius.toFloat(),
+                endRadius.toFloat()
+            )
+
+
+        anim.interpolator = AccelerateDecelerateInterpolator()
+        circularCard.visibility = View.VISIBLE
+        circularCard.requestFocus()
+        anim.duration = 150
+        anim.start()
     }
 
     private fun setListeners() {
@@ -207,13 +314,47 @@ class ChatFragment : Fragment(), TestListener {
 
         txtViewFileMsg.setOnClickListener {
 
-            fileMsg()
+            sendFileMsg()
         }
         txtViewUploadFile.setOnClickListener { uploadFile() }
         txtViewReplyFileMsg.setOnClickListener { replyFileMsg() }
+//        buttonUploadImage.setOnClickListener {
+//            //            uploadImage()
+//            uploadImageProgress()
+//        }
+
+
+        buttonFileMsg.setOnClickListener {
+
+            sendFileMsg()
+
+        }
+
+        buttonUploadFile.setOnClickListener {
+
+            uploadFile()
+        }
+
+        buttonReplyFileMsg.setOnClickListener {
+
+            replyFileMsg()
+
+        }
+
         buttonUploadImage.setOnClickListener {
-            //            uploadImage()
+
+            uploadImage()
+
             uploadImageProgress()
+
+        }
+
+        btnSendLocationMessage.setOnClickListener {
+
+
+            sendLocationMessage()
+
+
         }
 
 
@@ -378,6 +519,60 @@ class ChatFragment : Fragment(), TestListener {
 
     }
 
+    override fun onUploadFile(response: ChatResponse<ResultFile>?) {
+        super.onUploadFile(response)
+
+        if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_FILE_MESSAGE]) {
+
+
+            imageView_tickOne.setImageResource(R.drawable.ic_done_black_24dp)
+
+            imageView_tickOne.setColorFilter(R.color.green_active)
+
+            progressBarSendFileMessage.incrementProgressBy(40)
+
+//            Handler().postDelayed({
+//
+//                tvSendFileMessageStatus.text = "Sending Message..."
+//
+//            }, 500)
+            tvSendFileMessageStatus.text = "Sending Message..."
+
+
+        }
+
+        if (fucCallback[ConstantMsgType.UPLOAD_FILE] == response?.uniqueId) {
+
+            tvSendFileMessageStatus.text = "File Uploaded Successfully"
+
+            imageView_tickTwo.setImageResource(R.drawable.ic_round_done_all_24px)
+
+            imageView_tickTwo.setColorFilter(R.color.green_active)
+
+            progressBarUploadFile.progress = 100
+
+
+            contentProgressUploadFile.visibility = View.GONE
+
+
+        }
+
+        if (fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] == response?.uniqueId) {
+
+
+            imageView_tickThree.setImageResource(R.drawable.ic_done_black_24dp)
+
+            imageView_tickThree.setColorFilter(R.color.green_active)
+
+            tvReplayFileMessageStatus.text = "Sending Message"
+
+            progressBarReplyFileMsg.incrementProgressBy(40)
+
+
+        }
+
+
+    }
 
     override fun onUploadImageFile(content: String?, response: ChatResponse<ResultImageFile>?) {
         super.onUploadImageFile(content, response)
@@ -415,6 +610,15 @@ class ChatFragment : Fragment(), TestListener {
 
         }
 
+
+        if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_FILE_MESSAGE]) {
+
+
+            tvSendFileMessageStatus.text = "Sending File Message"
+
+
+        }
+
     }
 
     override fun onGetStaticMap(response: ChatResponse<ResultStaticMapImage>?) {
@@ -428,11 +632,18 @@ class ChatFragment : Fragment(), TestListener {
 
             progressLocationMessage.incrementProgressBy(5)
 
-            imgViewMap.visibility = View.VISIBLE
+//            imgViewMap.visibility = View.VISIBLE
+//
+//            imgViewMap.setImageBitmap(response?.result?.bitmap)
+//
+//            imgViewMap.scaleType = ImageView.ScaleType.FIT_XY
 
-            imgViewMap.setImageBitmap(response?.result?.bitmap)
 
-            imgViewMap.scaleType = ImageView.ScaleType.FIT_XY
+            tvPickedFileName.text = ""
+
+            imgViewSelectedPic.visibility = View.VISIBLE
+
+            imgViewSelectedPic.setImageBitmap(response?.result?.bitmap)
 
             val size = response?.result?.bitmap?.byteCount
 
@@ -451,18 +662,40 @@ class ChatFragment : Fragment(), TestListener {
         imageView_tickFour = view.findViewById(R.id.checkBox_ufil)
 
         buttonUploadImage = view.findViewById(R.id.buttonUploadImage)
+        buttonFileMsg = view.findViewById(R.id.buttonFileMsg)
+        buttonUploadFile = view.findViewById(R.id.buttonUploadFile)
+        buttonReplyFileMsg = view.findViewById(R.id.buttonReplyFileMsg)
+        btnSendLocationMessage = view.findViewById(R.id.btnSendLocationMessage)
+
+
         imgViewMap = view.findViewById(R.id.imgViewMapStatic)
         tvSendLocationMessageStatus = view.findViewById(R.id.tvSendLocationStatus)
         progressLocationMessage = view.findViewById(R.id.progressBarLocationMessage)
+        progressBarReplyFileMsg = view.findViewById(R.id.progressBarReplyFileMsg)
+        progressBarSendFileMessage = view.findViewById(R.id.progressBarSendFileMessage)
+        progressBarUploadFile = view.findViewById(R.id.progressBarUploadFile)
         contentProgressLocationMessage = view.findViewById(R.id.progressSendLocationMessage)
+        contentProgressFileMessage = view.findViewById(R.id.progressSendFileMessage)
+        contentProgressUploadFile = view.findViewById(R.id.contentProgressUploadFile)
+        contentProgressReplyFileMessage = view.findViewById(R.id.contentProgressReplyFileMessage)
 
         txtViewFileMsg = view.findViewById(R.id.TxtViewFileMsg)
+        tvSendFileMessageStatus = view.findViewById(R.id.tvSendFileMessageStatus)
+        tvReplayFileMessageStatus = view.findViewById(R.id.tvReplayFileMessageStatus)
+        tvUploadFileStatus = view.findViewById(R.id.tvUploadFileStatus)
         txtViewUploadFile = view.findViewById(R.id.TxtViewUploadFile)
         txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
         txtViewReplyFileMsg = view.findViewById(R.id.TxtViewReplyFileMsg)
         prgressbarUploadImg = view.findViewById(R.id.progress_UploadImage)
         atach_file = view.findViewById(R.id.atach_file)
         imgViewCheckLocationMessage = view.findViewById(R.id.checkBoxLocationMessage)
+
+
+        circularCard = view.findViewById(R.id.ccv_attachment_reveal)
+
+        imageViewSelectedPic = view.findViewById(R.id.imgViewSelectedPic)
+
+        tvPickedFileName = view.findViewById(R.id.tvFileName)
 
     }
 
@@ -471,55 +704,140 @@ class ChatFragment : Fragment(), TestListener {
 
 
         if (fucCallback[ConstantMsgType.REPLY_MESSAGE_ID] == response?.uniqueId) {
-            val messageId = response?.result?.messageId
-            val threadId = fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID]
-            val replyFileMessage = RequestReplyFileMessage
-                .Builder(
-                    "this is replyMessage",
-                    threadId?.toLong()!!,
-                    messageId!!,
-                    imageUrl,
-                    activity
+
+
+            try {
+                activity?.runOnUiThread {
+                    tvReplayFileMessageStatus.text = "Uploading File"
+
+                    progressBarReplyFileMsg.incrementProgressBy(10)
+                }
+            } catch (e: Exception) {
+                Log.e("MTAG", e.message)
+            }
+
+            prepareReplyWithMessage(response)
+
+        }
+
+
+        if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]) {
+
+            handleSendLocationMessage()
+
+        }
+
+
+        if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_FILE_MESSAGE]) {
+
+
+            contentProgressFileMessage.visibility = View.GONE
+
+            imageView_tickOne.setImageResource(R.drawable.ic_round_done_all_24px)
+
+            imageView_tickOne.setColorFilter(R.color.green_active)
+
+
+            progressBarSendFileMessage.progress = 100
+
+            tvSendFileMessageStatus.text = "Message Sent Successfully"
+
+            tvSendFileMessageStatus.setTextColor(
+                ContextCompat.getColor(
+                    context!!,
+                    R.color.green_active
                 )
-                .build()
-            fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] = mainViewModel
-                .replyWithFile(replyFileMessage, object : ProgressHandler.sendFileMessage {
+            )
+
+
+        }
+
+
+        if (fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] == response?.uniqueId) {
+
+            try {
+                activity?.runOnUiThread {
+
+                    progressBarReplyFileMsg.progress = 100
+
+                    contentProgressReplyFileMessage.visibility = View.GONE
+
+                    imageView_tickThree.setImageResource(R.drawable.ic_round_done_all_24px)
+
+                    imageView_tickThree.setColorFilter(R.color.green_active)
+
+                    tvReplayFileMessageStatus.text = "Message Sent Successfully"
+
+                    tvReplayFileMessageStatus.setTextColor(
+                        ContextCompat.getColor(
+                            context!!,
+                            R.color.green_active
+                        )
+                    )
+
+                }
+            } catch (e: Exception) {
+                Log.e("MTAG", e.message)
+            }
+
+
+        }
+
+
+    }
+
+    private fun handleSendLocationMessage() {
+        progressLocationMessage.progress = 100
+        imgViewCheckLocationMessage.setImageResource(R.drawable.ic_round_done_all_24px)
+
+
+        tvSendLocationMessageStatus.setTextColor(
+            ContextCompat.getColor(
+                activity!!,
+                R.color.green_active
+            )
+        )
+
+        tvSendLocationMessageStatus.text = "Message Sent Successfully!"
+
+        contentProgressLocationMessage.visibility = View.GONE
+    }
+
+    private fun prepareReplyWithMessage(response: ChatResponse<ResultMessage>?) {
+
+
+        val messageId = response?.result?.messageId
+        val threadId = fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID]
+        val replyFileMessage = RequestReplyFileMessage
+            .Builder(
+                "this is replyMessage",
+                threadId?.toLong()!!,
+                messageId!!,
+                imageUrl,
+                activity
+            )
+            .build()
+
+
+
+        fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] =
+            mainViewModel.replyWithFile(replyFileMessage,
+                object : ProgressHandler.sendFileMessage {
                     override fun onFinishImage(
                         json: String?,
                         chatResponse: ChatResponse<ResultImageFile>?
                     ) {
                         super.onFinishImage(json, chatResponse)
-                        imageView_tickFour.setImageResource(R.drawable.ic_round_done_all_24px)
-                        imageView_tickFour.setColorFilter(
-                            ContextCompat.getColor(
-                                activity!!,
-                                R.color.colorPrimary
-                            )
-                        )
+//                    imageView_tickFour.setImageResource(R.drawable.ic_round_done_all_24px)
+//                    imageView_tickFour.setColorFilter(
+//                        ContextCompat.getColor(
+//                            activity!!,
+//                            R.color.colorPrimary
+//                        )
+//                    )
                     }
 
                 })
-        }
-
-
-        if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]) {
-            progressLocationMessage.progress = 100
-            imgViewCheckLocationMessage.setImageResource(R.drawable.ic_round_done_all_24px)
-
-
-            tvSendLocationMessageStatus.setTextColor(
-                ContextCompat.getColor(
-                    activity!!,
-                    R.color.green_active
-                )
-            )
-
-            tvSendLocationMessageStatus.text = "Message Sent Successfully!"
-
-            contentProgressLocationMessage.visibility = View.GONE
-
-
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -547,13 +865,7 @@ class ChatFragment : Fragment(), TestListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        layoutSendLocationMessage.setOnClickListener {
 
-
-            sendLocationMessage()
-
-
-        }
     }
 
     override fun onGetContact(response: ChatResponse<ResultContact>?) {
@@ -563,6 +875,20 @@ class ChatFragment : Fragment(), TestListener {
         }
 
         if (fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] == response?.uniqueId) {
+
+
+            try {
+                activity?.runOnUiThread {
+
+                    tvReplayFileMessageStatus.text = "Create Thread with Message"
+
+                    progressBarReplyFileMsg.incrementProgressBy(10)
+                }
+            } catch (e: Exception) {
+                Log.e("MTAG", "Exception: ${e.message}")
+            }
+
+
             handleReplyFileMessage(response!!.result.contacts)
         }
     }
@@ -576,148 +902,259 @@ class ChatFragment : Fragment(), TestListener {
 
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
         super.onCreateThread(response)
+
+
+
         if (fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] == response?.uniqueId) {
-            val requestFileMessage =
-                RequestFileMessage.Builder(activity, response!!.result.thread.id, imageUrl).build()
-            mainViewModel.sendFileMessage(
-                requestFileMessage,
-                object : ProgressHandler.sendFileMessage {
-                    override fun onFinishImage(
-                        json: String?,
-                        chatResponse: ChatResponse<ResultImageFile>?
-                    ) {
-                        super.onFinishImage(json, chatResponse)
-                        imageView_tickOne.setImageResource(R.drawable.ic_round_done_all_24px)
-                        imageView_tickOne.setColorFilter(
-                            ContextCompat.getColor(
-                                activity!!,
-                                R.color.colorPrimary
-                            )
-                        )
-                    }
 
-                    override fun onProgressUpdate(
-                        uniqueId: String?,
-                        bytesSent: Int,
-                        totalBytesSent: Int,
-                        totalBytesToSend: Int
-                    ) {
-                        super.onProgressUpdate(
-                            uniqueId,
-                            bytesSent,
-                            totalBytesSent,
-                            totalBytesToSend
-                        )
 
-                    }
-                })
+            handleSendFileMessage(response)
+
         }
 
-        if ((fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] == response?.uniqueId)) {
-            val threadId = response?.result?.thread?.id
-            fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = threadId.toString()
+
+
+        if (fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] == response?.uniqueId) {
+
+            fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = response?.result?.thread?.id.toString()
+
+            activity?.runOnUiThread {
+                tvReplayFileMessageStatus.text = "Thread created"
+
+                progressBarReplyFileMsg.incrementProgressBy(10)
+            }
+
+
         }
     }
 
+    private fun handleSendFileMessage(response: ChatResponse<ResultThread>?) {
+        val requestFileMessage =
+            RequestFileMessage.Builder(activity, response!!.result.thread.id, imageUrl).build()
+
+
+        progressBarSendFileMessage.incrementProgressBy(10)
+
+        tvSendFileMessageStatus.text = "Uploading File..."
+
+        fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = mainViewModel.sendFileMessage(
+            requestFileMessage,
+            object : ProgressHandler.sendFileMessage {
+                override fun onFinishImage(
+                    json: String?,
+                    chatResponse: ChatResponse<ResultImageFile>?
+                ) {
+                    super.onFinishImage(json, chatResponse)
+                    imageView_tickOne.setImageResource(R.drawable.ic_round_done_all_24px)
+                    imageView_tickOne.setColorFilter(
+                        ContextCompat.getColor(
+                            activity!!,
+                            R.color.colorPrimary
+                        )
+                    )
+                }
+
+                override fun onProgressUpdate(
+                    uniqueId: String?,
+                    bytesSent: Int,
+                    totalBytesSent: Int,
+                    totalBytesToSend: Int
+                ) {
+                    super.onProgressUpdate(
+                        uniqueId,
+                        bytesSent,
+                        totalBytesSent,
+                        totalBytesToSend
+                    )
+
+
+                }
+            })
+    }
+
     private fun handleReplyFileMessage(contactList: ArrayList<Contact>) {
+
+
         if (contactList != null) {
             var choose = 0
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
                     choose++
-                    if (choose == 1) {
-                        val contactId = contact.id
+                    val contactId = contact.id
 
-                        val inviteList = ArrayList<Invitee>()
-                        inviteList.add(Invitee(contactId, 1))
-                        val requestThreadInnerMessage =
-                            RequestThreadInnerMessage.Builder().message(faker.music().genre())
-                                .build()
-                        val requestCreateThread: RequestCreateThread =
-                            RequestCreateThread.Builder(0, inviteList)
-                                .message(requestThreadInnerMessage)
-                                .build()
-                        val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
-                        fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = uniqueId!![0]
-                        fucCallback[ConstantMsgType.REPLY_MESSAGE_ID] = uniqueId[1]
-                    }
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 2))
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder().message(faker.music().genre())
+                            .build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(0, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = uniqueId!![0]
+                    fucCallback[ConstantMsgType.REPLY_MESSAGE_ID] = uniqueId[1]
                     break
                 }
+
+
+            }
+
+            if (choose == 0) {
+
+
+                showToast("not contact found with user")
+
+                contentProgressReplyFileMessage.visibility = View.INVISIBLE
+
             }
         }
     }
 
     private fun handleSendFileMsg(contactList: ArrayList<Contact>) {
 
-        if (contactList != null) {
-            var choose = 0
-            for (contact: Contact in contactList) {
-                if (contact.isHasUser) {
-                    choose++
-                    if (choose == 1) {
-                        val contactId = contact.userId
+        activity?.runOnUiThread {
 
-                        val inviteList = ArrayList<Invitee>()
-                        inviteList.add(Invitee(contactId, 1))
+            progressBarSendFileMessage.incrementProgressBy(10)
 
-                        val list = Array(1) { Invitee(inviteList[0].id, 2) }
+            tvSendFileMessageStatus.text = "Creating Thread..."
+        }
 
-                        val uniqueId = mainViewModel.createThread(
-                            ThreadType.Constants.NORMAL, list, "nothing", ""
-                            , "", ""
-                        )
-                        fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = uniqueId
-                    }
-                    break
-                }
-            }
+        var choose = 0
 
-            if (choose == 0) {
-                val contactId = 121L
 
-                val inviteList = ArrayList<Invitee>()
-                inviteList.add(Invitee(contactId, 1))
+        for (contact: Contact in contactList) {
 
-                val list = Array(1) { Invitee(inviteList[0].id, 1) }
+            if (contact.isHasUser) {
 
-                val uniqueId = mainViewModel.createThread(
+                val list =
+                    Array(1) { Invitee(contact.id, InviteType.Constants.TO_BE_USER_CONTACT_ID) }
+
+                fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = mainViewModel.createThread(
                     ThreadType.Constants.NORMAL, list, "nothing", ""
                     , "", ""
                 )
-                fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = uniqueId
 
+                choose++
+
+                break
             }
+        }
+
+        if (choose == 0) {
+
+            val contactId = 121L
+
+            val inviteList = ArrayList<Invitee>()
+            inviteList.add(Invitee(contactId, 1))
+
+            val list = Array(1) { Invitee(inviteList[0].id, 1) }
+
+            val uniqueId = mainViewModel.createThread(
+                ThreadType.Constants.NORMAL, list, "nothing", ""
+                , "", ""
+            )
+
+            fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = uniqueId
+
+            tvSendFileMessageStatus.text = "Creating Thread With id 121..."
+
+
         }
     }
 
-    private fun fileMsg() {
-        if (!chatReady) return
+    private fun sendFileMsg() {
 
-        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
-        val uniqueId = mainViewModel.getContact(requestGetContact)
-        fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = uniqueId
+
+        if (!chatReady) {
+
+
+            showToast("Chat is not ready")
+
+            return
+
+        }
+
+        if (imageUrl != null) {
+
+            if (!chatReady) return
+            tvSendFileMessageStatus.text = "Getting Contacts..."
+            contentProgressFileMessage.visibility = View.VISIBLE
+
+            val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+            val uniqueId = mainViewModel.getContact(requestGetContact)
+            fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = uniqueId
+
+
+        } else {
+
+            showToast("Pick a file our image first")
+
+            openCircularCard()
+
+
+        }
+
+
 //            mainViewModel.sendFileMessage()
 
     }
 
-    fun uploadFile() {
-        if (!chatReady) return
+    private fun uploadFile() {
+
+        if (!chatReady) {
+
+
+            showToast("Chat is not ready")
+
+
+            return
+        }
 
         if (imageUrl != null) {
 
+            contentProgressUploadFile.visibility = View.VISIBLE
+
+            tvUploadFileStatus.text = "Uploading..."
+
             val requestUploadFile = RequestUploadFile.Builder(activity, imageUrl).build()
-            mainViewModel.uploadFile(requestUploadFile)
+
+            fucCallback[ConstantMsgType.UPLOAD_FILE] = mainViewModel.uploadFile(requestUploadFile)
+
+
+        } else {
+
+            showToast("Pick a File")
+
+            openCircularCard()
+
+            atach_file.requestFocus()
+
+
         }
     }
 
     //Chat needs update
-    fun uploadImage() {
-        if (!imageUrl.toString().isEmpty()) {
-            mainViewModel.uploadImage(activity, imageUrl!!)
+    private fun uploadImage() {
+
+
+        if (imageUrl != null) {
+
+            fucCallback[ConstantMsgType.UPLOAD_IMAGE] =
+                mainViewModel.uploadImage(activity, imageUrl!!)
+
+        } else {
+
+            showToast("PICK IMAGE")
+
+            openImagePicker()
+
+            return
         }
     }
 
-    fun uploadImageProgress() {
+    private fun uploadImageProgress() {
+
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //            prgressbarUploadImg.setProgress(100, true)
 //        }
@@ -734,8 +1171,7 @@ class ChatFragment : Fragment(), TestListener {
             mainViewModel.uploadImageProgress(
                 contextFrag,
                 activity,
-                imageUrl,
-                object : ProgressHandler.onProgress {
+                imageUrl, object : ProgressHandler.onProgress {
                     override fun onProgressUpdate(
                         uniqueId: String?,
                         bytesSent: Int,
@@ -766,29 +1202,148 @@ class ChatFragment : Fragment(), TestListener {
 
                     }
                 })
+        } else {
+
+            openImagePicker()
+
+            showToast("Select Image First")
         }
     }
 
-    fun replyFileMsg() {
-        if (!chatReady) return
+    private fun showToast(message: String) {
+
+        activity?.runOnUiThread {
+
+            Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+
+        }
+    }
+
+
+    private fun replyFileMsg() {
+
+
+        if (!chatReady) {
+
+            showToast("Chat is not Ready")
+
+            return
+        }
+
+        if (imageUrl == null) {
+
+            showToast("Pick a file")
+
+            openCircularCard()
+
+            atach_file.requestFocus()
+
+            return
+
+        }
+
+        contentProgressReplyFileMessage.visibility = View.VISIBLE
+
+        tvReplayFileMessageStatus.text = "Get Contacts"
+
+        progressBarReplyFileMsg.progress = 0
+
+        imageView_tickThree.setImageResource(R.drawable.ic_done_black_24dp)
+
+        imageView_tickThree.setColorFilter(Color.parseColor("#E7E6E6"))
+
 
         val requestGetContact = RequestGetContact.Builder().build()
+
         fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] =
             mainViewModel.getContact(requestGetContact)
+
+
     }
 
-    fun selectImageInAlbum() {
+    private fun openImagePicker() {
+
         val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+
         startActivityForResult(i, REQUEST_SELECT_IMAGE_IN_ALBUM)
+
+
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (data != null) {
+
+
+        if (data != null && resultCode == Activity.RESULT_OK) {
+
+            imageViewSelectedPic.visibility = View.VISIBLE
+
+
             if (REQUEST_SELECT_IMAGE_IN_ALBUM == requestCode) {
+
                 imageUrl = data.data
+                imageViewSelectedPic.setImageURI(imageUrl)
+
+
             }
+
+            if (PICKFILE_REQUEST_CODE == requestCode) {
+
+                imageUrl = data.data
+
+                imageViewSelectedPic.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context!!,
+                        R.drawable.ic_file
+                    )
+                )
+
+            }
+
+            if (data.data != null) {
+
+                tvPickedFileName.text = getFileName(data.data!!, data.dataString!!)
+
+
+            }
+
+            circularCard.visibility = View.GONE
+            changeColor(atach_file, R.color.grey_active)
+            isOpen = !isOpen
         }
     }
+
+    private fun getFileName(uri: Uri, uriString: String): String {
+
+
+        val file = File(uriString)
+
+        var displayName = ""
+
+        if (uriString.startsWith("content://")) {
+
+            var cursor: Cursor? = null
+
+            try {
+                cursor = activity?.contentResolver?.query(uri, null, null, null, null)
+
+                if (cursor != null && cursor.moveToFirst()) {
+                    displayName =
+                        cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                }
+            } finally {
+                cursor?.close()
+            }
+        } else if (uriString.startsWith("file://")) {
+            displayName = file.name
+        }
+
+
+        return displayName
+
+    }
+
+
 }
 

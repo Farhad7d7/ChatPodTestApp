@@ -7,85 +7,27 @@
     android:background="@color/blue_grey_inactive">
 
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraint_text"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_chat_edit_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
-        app:layout_constraintStart_toStartOf="@+id/guidelineStart">
-
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/appCompatImageView2"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="24dp"
-            android:src="@drawable/ic_round_mic_none_24px"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/appCompatImageView3"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_round_tag_faces_24px"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/appCompatImageView2"
-            app:layout_constraintStart_toEndOf="@+id/atach_file"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/atach_file"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="235dp"
-            android:src="@drawable/ic_round_attach_file_24px"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/appCompatImageView3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-    </android.support.constraint.ConstraintLayout>
-
-    <include
-
-        android:id="@+id/ccv_attachment_reveal"
-        layout="@layout/item_atach"
-        android:layout_width="372dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/constraint_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ScrollView
+        android:id="@+id/scrollView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:scrollbarThumbVertical="@drawable/progress_bar_log"
-        android:layout_marginEnd="8dp"
+        android:scrollbarSize="4dp"
         app:layout_constraintBottom_toTopOf="@+id/ccv_attachment_reveal"
         app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/guidelineStart"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/imgViewSelectedPic"
+        app:layout_constraintVertical_bias="0.0">
 
 
         <LinearLayout
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -113,6 +55,19 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.48" />
 
+                <android.support.v4.widget.ContentLoadingProgressBar
+                    android:id="@+id/progressSendFileMessage"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="40dp"
+
+                    android:layout_height="40dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonFileMsg"
+                    app:layout_constraintEnd_toEndOf="@+id/buttonFileMsg"
+                    app:layout_constraintStart_toStartOf="@+id/buttonFileMsg"
+                    app:layout_constraintTop_toTopOf="@+id/buttonFileMsg" />
+
+
                 <TextView
                     android:id="@+id/TxtViewFileMsg"
 
@@ -139,11 +94,11 @@
                     app:layout_constraintVertical_bias="0.487" />
 
                 <ProgressBar
-                    android:id="@+id/progress_sfilemsg"
+                    android:id="@+id/progressBarSendFileMessage"
                     style="@style/progress_bar"
 
                     android:progressDrawable="@drawable/round_corner_progressbar"
-                    app:layout_constraintBottom_toTopOf="@+id/textView10"
+                    app:layout_constraintBottom_toTopOf="@+id/tvSendFileMessageStatus"
                     app:layout_constraintEnd_toStartOf="@+id/guideline_sfilemsg_Right"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="@+id/TxtViewFileMsg"
@@ -178,17 +133,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.5" />
+                    app:layout_constraintGuide_begin="173dp" />
 
                 <TextView
-                    android:id="@+id/textView10"
-
+                    android:id="@+id/tvSendFileMessageStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline_sfilemsg"
-                    app:layout_constraintTop_toBottomOf="@+id/progress_sfilemsg" />
+                    app:layout_constraintTop_toBottomOf="@+id/progressBarSendFileMessage"
+                    tools:text="status progress" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -214,6 +169,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.52" />
+
+                <android.support.v4.widget.ContentLoadingProgressBar
+                    android:id="@+id/contentProgressUploadFile"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="40dp"
+
+                    android:layout_height="40dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonUploadFile"
+                    app:layout_constraintEnd_toEndOf="@+id/buttonUploadFile"
+                    app:layout_constraintStart_toStartOf="@+id/buttonUploadFile"
+                    app:layout_constraintTop_toTopOf="@+id/buttonUploadFile" />
 
                 <TextView
                     android:id="@+id/TxtViewUploadFile"
@@ -243,7 +210,7 @@
                     app:layout_constraintVertical_bias="0.5" />
 
                 <ProgressBar
-                    android:id="@+id/progress_UploadFile"
+                    android:id="@+id/progressBarUploadFile"
                     style="@style/progress_bar"
                     android:progressDrawable="@drawable/round_corner_progressbar"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonUploadFile"
@@ -276,13 +243,13 @@
 
                 <TextView
                     android:id="@+id/tvUploadFileStatus"
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline_UploadFile"
-                    app:layout_constraintTop_toBottomOf="@+id/progress_UploadFile" />
+                    app:layout_constraintTop_toBottomOf="@+id/progressBarUploadFile"
+                    tools:text="status progress" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -297,7 +264,7 @@
 
 
                 <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/button_Reply_File_Msg"
+                    android:id="@+id/buttonReplyFileMsg"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="16dp"
@@ -309,6 +276,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.52" />
+
+                <android.support.v4.widget.ContentLoadingProgressBar
+                    android:id="@+id/contentProgressReplyFileMessage"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="40dp"
+
+                    android:layout_height="40dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonReplyFileMsg"
+                    app:layout_constraintEnd_toEndOf="@+id/buttonReplyFileMsg"
+                    app:layout_constraintStart_toStartOf="@+id/buttonReplyFileMsg"
+                    app:layout_constraintTop_toTopOf="@+id/buttonReplyFileMsg" />
 
                 <TextView
                     android:id="@+id/TxtViewReplyFileMsg"
@@ -322,7 +301,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/checkBox_Reply_File_Msg"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/guideline_Reply_File_Msg"
-                    app:layout_constraintTop_toTopOf="@+id/button_Reply_File_Msg" />
+                    app:layout_constraintTop_toTopOf="@+id/buttonReplyFileMsg" />
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/checkBox_Reply_File_Msg"
@@ -336,7 +315,7 @@
                     app:layout_constraintVertical_bias="0.5" />
 
                 <ProgressBar
-                    android:id="@+id/progress_Reply_File_Msg"
+                    android:id="@+id/progressBarReplyFileMsg"
                     style="@style/progress_bar"
                     android:progressDrawable="@drawable/round_corner_progressbar"
                     app:layout_constraintBottom_toTopOf="@+id/tvReplayFileMessageStatus"
@@ -373,11 +352,11 @@
                     android:id="@+id/tvReplayFileMessageStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline_Reply_File_Msg"
-                    app:layout_constraintTop_toBottomOf="@+id/progress_Reply_File_Msg" />
+                    app:layout_constraintTop_toBottomOf="@+id/progressBarReplyFileMsg"
+                    tools:text="status progress" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -412,6 +391,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.48" />
+
+                <android.support.v4.widget.ContentLoadingProgressBar
+                    android:id="@+id/contentProgressUploadImage"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="40dp"
+
+                    android:layout_height="40dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonUploadImage"
+                    app:layout_constraintEnd_toEndOf="@+id/buttonUploadImage"
+                    app:layout_constraintStart_toStartOf="@+id/buttonUploadImage"
+                    app:layout_constraintTop_toTopOf="@+id/buttonUploadImage" />
 
                 <TextView
                     android:id="@+id/TxtViewUploadImage"
@@ -465,10 +456,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline_uploadImage"
-                    app:layout_constraintTop_toBottomOf="@+id/progress_UploadImage" />
+                    app:layout_constraintTop_toBottomOf="@+id/progress_UploadImage"
+                    tools:text="status progress" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -496,7 +487,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/checkBoxLocationMessage"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/guideline6"
-                    app:layout_constraintTop_toTopOf="@+id/btnSendLocationMesssage" />
+                    app:layout_constraintTop_toTopOf="@+id/btnSendLocationMessage" />
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/checkBoxLocationMessage"
@@ -521,7 +512,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvSendLocationMessage" />
 
                 <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/btnSendLocationMesssage"
+                    android:id="@+id/btnSendLocationMessage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
@@ -542,10 +533,10 @@
 
                     android:layout_height="40dp"
                     android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnSendLocationMesssage"
-                    app:layout_constraintEnd_toEndOf="@+id/btnSendLocationMesssage"
-                    app:layout_constraintStart_toStartOf="@+id/btnSendLocationMesssage"
-                    app:layout_constraintTop_toTopOf="@+id/btnSendLocationMesssage" />
+                    app:layout_constraintBottom_toBottomOf="@+id/btnSendLocationMessage"
+                    app:layout_constraintEnd_toEndOf="@+id/btnSendLocationMessage"
+                    app:layout_constraintStart_toStartOf="@+id/btnSendLocationMessage"
+                    app:layout_constraintTop_toTopOf="@+id/btnSendLocationMessage" />
 
                 <android.support.constraint.Guideline
                     android:id="@+id/guideline6"
@@ -643,22 +634,21 @@
 
             <android.support.v7.widget.AppCompatImageView
 
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
                 android:id="@+id/imgViewMapStatic"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:visibility="gone"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
 
             <View
-                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"/>
+                android:layout_height="60dp"
+                android:layout_marginTop="8dp" />
         </LinearLayout>
     </ScrollView>
-
 
     <TextView
         android:id="@+id/textView"
@@ -674,23 +664,108 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imgViewSelectedPic"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitCenter"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        android:visibility="gone"
+        tools:src="@drawable/ic_file" />
+
+    <TextView
+        android:id="@+id/tvFileName"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/imgViewSelectedPic"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+        app:layout_constraintTop_toTopOf="@+id/imgViewSelectedPic"
+        tools:text="file name" />
+
     <android.support.constraint.Guideline
         android:id="@+id/guidelineStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="17dp"
+        app:layout_constraintGuide_begin="8dp"
         app:layout_constraintStart_toStartOf="parent" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guidelineEnd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_end="16dp" />
+        app:layout_constraintGuide_end="8dp" />
 
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraint_text"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_chat_edit_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/appCompatImageView2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_round_mic_none_24px"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.555" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/appCompatImageView3"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_round_tag_faces_24px"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/appCompatImageView2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.555" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/atach_file"
+            android:layout_width="48dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="28dp"
+            android:src="@drawable/ic_round_attach_file_24px"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.466" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+    <include
+        android:id="@+id/ccv_attachment_reveal"
+        layout="@layout/item_atach"
+        android:layout_width="315dp"
+        android:layout_height="136dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/constraint_text"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+        tools:visibility="visible" />
 
 </android.support.constraint.ConstraintLayout>

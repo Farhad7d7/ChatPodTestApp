@@ -57,7 +57,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(content: String?, OutPutError: ErrorOutPut?) {
-                super.onError(content, OutPutError)
+                 super.onError(content, OutPutError)
                 testListener.onError(OutPutError)
             }
 
@@ -231,6 +231,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 super.onUploadImageFile(content, response)
 
                 testListener.onUploadImageFile(content,response)
+            }
+
+            override fun onUploadFile(content: String?, response: ChatResponse<ResultFile>?) {
+                super.onUploadFile(content, response)
+
+                testListener.onUploadFile(response)
             }
         })
     }

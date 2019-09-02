@@ -5,6 +5,8 @@ import android.support.annotation.StringDef
 class ConstantMsgType {
 
     companion object {
+        const val UPLOAD_IMAGE = "UPLOAD_IMAGE"
+        const val UPLOAD_FILE = "UPLOAD_FILE"
         const val FORWARD_MESSAGE_CONTACT_B= "FORWARD_MESSAGE_CONTACT_B"
         const val GET_BLOCK_LIST = "GET_BLOCK_LIST"
         const val SEND_LOCATION_MESSAGE = "SEND_LOCATION_MESSAGE"

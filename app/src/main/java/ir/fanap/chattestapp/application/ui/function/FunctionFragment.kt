@@ -476,16 +476,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val logFragment = SpecificLogFragment()
 
-        val  bundle = Bundle()
+        val bundle = Bundle()
 
-        bundle.putParcelableArrayList("LOGS",logs)
+        bundle.putParcelableArrayList("LOGS", logs)
 
         logFragment.arguments = bundle
 
 
-        logFragment.show(childFragmentManager,"LOG_FRAG")
-
-
+        logFragment.show(childFragmentManager, "LOG_FRAG")
 
 
     }
@@ -3204,14 +3202,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val position = 0
             changeIconReceive(position)
 
-            changeFunOneState(position,Method.DONE)
+            changeFunOneState(position, Method.DONE)
         }
 
         if (fucCallback[ConstantMsgType.CREATE_THREAD_CHANNEL_GROUP] == response?.uniqueId) {
             val position = 0
             changeIconReceive(position)
 
-            changeFunTwoState(position,Method.DONE)
+            changeFunTwoState(position, Method.DONE)
 
         }
 
@@ -3219,7 +3217,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val position = 0
             changeIconReceive(position)
 
-            changeFunThreeState(position,Method.DONE)
+            changeFunThreeState(position, Method.DONE)
 
         }
         if (fucCallback[ConstantMsgType.CREATE_THREAD_OWNER_GROUP] == response?.uniqueId) {
@@ -3676,29 +3674,38 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             var choose = 0
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
-                    if (choose == 2) {
-                        val contactId = contact.id
 
-                        val inviteList = ArrayList<Invitee>()
-                        inviteList.add(
-                            Invitee(
-                                contactId,
-                                InviteType.Constants.TO_BE_USER_CONTACT_ID
-                            )
+                    val contactId = contact.id
+
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(
+                        Invitee(
+                            contactId,
+                            InviteType.Constants.TO_BE_USER_CONTACT_ID
                         )
+                    )
 
-                        val list = Array(1) { Invitee(inviteList[0].id, inviteList[0].idType) }
+                    val list = Array(1) { Invitee(inviteList[0].id, inviteList[0].idType) }
 
-                        val uniqueId = mainViewModel.createThread(
-                            ThreadType.Constants.NORMAL, list, "nothing", ""
-                            , "", ""
-                        )
+                    val uniqueId = mainViewModel.createThread(
+                        ThreadType.Constants.NORMAL, list, "nothing", ""
+                        , "", ""
+                    )
 
-                        fucCallback[ConstantMsgType.GET_PARTICIPANT] = uniqueId
-                        break
-                    }
+                    fucCallback[ConstantMsgType.GET_PARTICIPANT] = uniqueId
                     choose++
+                    break
+
                 }
+            }
+
+            if(choose ==0){
+
+                showToast("no contact found. at least add one contact with user")
+                val pos = getPositionOf(ConstantMsgType.GET_PARTICIPANT)
+                changeIconReceive(pos)
+                changeFunTwoState(pos, Method.DEACTIVE)
+
             }
         }
     }
@@ -3859,6 +3866,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 changeFunTwoState(pos, Method.DEACTIVE)
 
                 changeIconReceive(pos)
+
             }
         }
     }
@@ -4260,7 +4268,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val requestAddContact = RequestAddContact.Builder()
             .firstName(faker.name().firstName())
             .lastName(faker.name().lastName())
-            .email(faker.lordOfTheRings().character() + "@Gmail.com")
+            .email(faker.lordOfTheRings().character() + "@gmail.com")
             .cellphoneNumber(faker.phoneNumber().cellPhone())
             .build()
 
@@ -4603,13 +4611,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             .Builder()
             .build()
 
-        fucCallback[ConstantMsgType.CREATE_THREAD]= mainViewModel.getContact(requestGetContact)
+        fucCallback[ConstantMsgType.CREATE_THREAD] = mainViewModel.getContact(requestGetContact)
         val pos = 0
         changeIconSend(pos)
-        changeFunOneState(pos,Method.RUNNING)
-        changeFunTwoState(pos,Method.RUNNING)
-        changeFunThreeState(pos,Method.RUNNING)
-        changeFunFourState(pos,Method.RUNNING)
+        changeFunOneState(pos, Method.RUNNING)
+        changeFunTwoState(pos, Method.RUNNING)
+        changeFunThreeState(pos, Method.RUNNING)
+        changeFunFourState(pos, Method.RUNNING)
 
     }
 
@@ -4648,7 +4656,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun createThreadChannelGroup(inviteList: ArrayList<Invitee>) {
-        val list = Array(1) {Invitee(inviteList[0].id, 2) }
+        val list = Array(1) { Invitee(inviteList[0].id, 2) }
 
         val uniqueId = mainViewModel.createThread(
             ThreadType.Constants.CHANNEL_GROUP, list, "nothing", ""

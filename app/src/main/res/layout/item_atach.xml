@@ -14,26 +14,85 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.AppCompatImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_gallery"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp"
-            android:id="@+id/appCompatImageView_gallery"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.AppCompatImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/appCompatImageView_gallery"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_gallery"
+            app:layout_constraintEnd_toStartOf="@+id/guideline17"
+            app:layout_constraintStart_toStartOf="@+id/guideline16"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Select Image"
+            app:layout_constraintEnd_toEndOf="@+id/appCompatImageView_gallery"
+            app:layout_constraintHorizontal_bias="0.529"
+            app:layout_constraintStart_toStartOf="@+id/appCompatImageView_gallery"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatImageView_gallery" />
+
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/appCompatImageView_folder"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
             android:src="@drawable/ic_round_folder_open_24px"
-            app:layout_constraintTop_toTopOf="@+id/appCompatImageView_gallery"
-            app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView_gallery"
-            app:layout_constraintStart_toEndOf="@+id/appCompatImageView_gallery"
-            android:layout_marginStart="8dp" />
+            app:layout_constraintEnd_toStartOf="@+id/guideline15"
+            app:layout_constraintStart_toStartOf="@+id/guideline17"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Select File"
+            app:layout_constraintEnd_toEndOf="@+id/appCompatImageView_folder"
+            app:layout_constraintStart_toStartOf="@+id/appCompatImageView_folder"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatImageView_folder" />
+
+        <android.support.constraint.Barrier
+            android:id="@+id/barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="left" />
+
+        <android.support.constraint.Barrier
+            android:id="@+id/barrier2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="top" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="36dp" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="36dp" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline17"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="24dp" />
 
     </android.support.constraint.ConstraintLayout>
 

@@ -109,5 +109,10 @@ interface TestListener {
 
     }
 
+    fun onUploadFile(response: ChatResponse<ResultFile>?) {
+
+
+    }
+
 
 }
