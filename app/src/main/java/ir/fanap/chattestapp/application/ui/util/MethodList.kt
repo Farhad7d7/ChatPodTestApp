@@ -3,8 +3,6 @@ package ir.fanap.chattestapp.application.ui.util
 class MethodList {
 
 
-
-
     companion object {
         val methodNames: MutableList<String> =
             arrayListOf(
@@ -38,7 +36,8 @@ class MethodList {
                 "27 Create THRD With TXT MSG",
                 "28 Get Deliver List",
                 "29 Get Seen List",
-                "30 Search Contact"
+                "30 Search Contact",
+                "31 Spam/Report Thread"
             )
 
 
@@ -74,7 +73,8 @@ class MethodList {
                 "Get Contacts",//27
                 "Get THRDs",//28
                 "Get THRDs",//29
-            "Search in Contacts"//30
+                "Search in Contacts",//30
+                "Get Contacts"//31
             )
 
         val methodFuncTwo: MutableList<String> =
@@ -109,7 +109,8 @@ class MethodList {
                 "Create THRD With MSG",//27
                 "Send Text MSG",//28
                 "Send Text MSG",//29
-                ""//30
+                "",//30
+                "Create THRD With MSG"
             )
 
         val methodFuncThree: MutableList<String> =
@@ -144,7 +145,8 @@ class MethodList {
                 "MSG Sent To THRD",//27
                 "Get MSG Seen List",//28
                 "Get MSG Deliver List",//29
-                ""//30
+                "",//30
+                "Spam/Report Thread"
             )
 
         val methodFuncFour: MutableList<String> =

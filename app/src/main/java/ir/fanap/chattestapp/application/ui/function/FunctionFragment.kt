@@ -45,6 +45,7 @@ import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncO
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncThree
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncTwo
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodNames
+import ir.fanap.chattestapp.application.ui.util.SmartHashMap
 import ir.fanap.chattestapp.application.ui.util.TokenFragment
 import ir.fanap.chattestapp.bussines.model.LogClass
 import ir.fanap.chattestapp.bussines.model.Method
@@ -58,6 +59,7 @@ import rx.subjects.BehaviorSubject
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.concurrent.thread
 
 class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestListener {
 
@@ -83,7 +85,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private lateinit var bottomSheetSearchContacts: BottomSheetBehavior<NestedScrollView>
     private var gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private var methods: MutableList<Method> = mutableListOf()
-    private var fucCallback: MapVariable<String, String> = MapVariable()
+    private var fucCallback: SmartHashMap<String, String> = SmartHashMap()
     private val positionUniqueIds: HashMap<Int, ArrayList<String>> = HashMap()
     private val uniqueIdLogName: HashMap<String, ArrayList<String>> = HashMap()
     private val uniqueIdLog: HashMap<String, ArrayList<String>> = HashMap()
@@ -91,7 +93,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private var positionLogs: HashMap<Int, ArrayList<LogClass>> = HashMap()
 
 
-//    private val logObservable = MapVariable(fucCallback)
+//    private val logObservable = SmartHashMap(fucCallback)
 
     private var fucCallbacks: HashMap<String, ArrayList<String>> = hashMapOf()
     private lateinit var textView_state: TextView
@@ -621,9 +623,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                 getSearchQuery()
             }
+            31 -> {
+
+                spamOrReportThread()
+            }
 
         }
     }
+
 
     private fun getSearchQuery() {
 
@@ -662,12 +669,27 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         changeIconSend(29)
 
-
         changeFunOneState(29, Method.RUNNING)
 
         val requestThread = RequestThread.Builder().build()
 
         fucCallback[ConstantMsgType.GET_SEEN_LIST] = mainViewModel.getThread(requestThread)
+
+
+    }
+
+
+    private fun spamOrReportThread() {
+
+        val pos = getPositionOf(ConstantMsgType.SPAM_THREAD)
+
+        changeIconSend(pos)
+
+        changeFunOneState(pos, Method.RUNNING)
+
+        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+
+        fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.getContact(requestGetContact)
 
 
     }
@@ -1558,6 +1580,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
             "SEARCH_CONTACT" -> 30
+
+            "SPAM_THREAD" -> 31
+
+            "SPAM_THREAD_MESSAGE" -> 31
 
 
             else -> -1
@@ -3125,6 +3151,19 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
         super.onCreateThread(response)
 
+
+
+        if(fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId){
+
+            val position = getPositionOf(ConstantMsgType.SPAM_THREAD)
+
+            changeFunTwoState(position, Method.DONE)
+
+            changeFunThreeState(position, Method.RUNNING)
+
+            requestSpamThread(response)
+        }
+
         if (fucCallback[ConstantMsgType.GET_PARTICIPANT] == response?.uniqueId) {
 
             val position = getPositionOf(ConstantMsgType.GET_PARTICIPANT)
@@ -3275,6 +3314,34 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
         }
+    }
+
+    private fun requestSpamThread(response: ChatResponse<ResultThread>?) {
+
+        val targetThreadId = response?.subjectId
+
+
+        if(response?.result?.thread?.canSpam!!){
+
+
+
+
+            val requestSpam = RequestSpam.Builder().threadId(targetThreadId!!)
+                .build()
+
+
+            fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
+
+
+
+
+
+        }
+
+
+
+
+
     }
 
     private fun requestGetParticipants(response: ChatResponse<ResultThread>?) {
@@ -3501,6 +3568,22 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val contactList = response?.result?.contacts
 
+
+        if(fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId){
+
+            val pos = getPositionOf(ConstantMsgType.SPAM_THREAD)
+
+            changeFunOneState(pos,Method.DONE)
+
+            changeFunTwoState(pos,Method.RUNNING)
+
+            prepareCreateThreadMessageForSpam(contactList)
+
+
+
+
+        }
+
         if (fucCallback[ConstantMsgType.GET_PARTICIPANT] == response?.uniqueId) {
 
             val pos = getPositionOf(ConstantMsgType.GET_PARTICIPANT)
@@ -3669,7 +3752,79 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
     }
 
+    private fun prepareCreateThreadMessageForSpam(contactList: ArrayList<Contact>?) {
+
+
+        if (contactList != null) {
+
+            var contactId = 0L
+
+
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+
+
+                    contactId = contact.id
+
+                    break
+
+                }
+            }
+
+
+            var invList = ArrayList<Invitee>()
+
+
+            if (contactId != 0L) {
+
+                invList.add(Invitee(contactId, InviteType.Constants.TO_BE_USER_CONTACT_ID))
+
+            } else {
+
+                contactId = contactList[0].id
+
+                invList.add(Invitee(121, InviteType.Constants.TO_BE_USER_SSO_ID))
+
+            }
+
+
+            val message = RequestThreadInnerMessage
+                .Builder()
+                .message("Test create thread with message at: " + Date().toString() + " For Spam/Report")
+//                .forwardedMessageIds(listForwardIds)
+                .build()
+
+
+            val requestCreateThread = RequestCreateThread
+                .Builder(ThreadType.Constants.NORMAL, invList)
+                .message(message)
+                .build()
+
+
+            val uniqueIds = mainViewModel.createThreadWithMessage(requestCreateThread)
+
+//            uniqueIds?.forEach {
+//
+//                fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] = it
+//
+//            }
+
+            fucCallback[ConstantMsgType.SPAM_THREAD] = uniqueIds!![0]
+
+            fucCallback[ConstantMsgType.SPAM_THREAD_MESSAGE] = uniqueIds[1]
+
+
+
+
+        }
+
+
+
+
+    }
+
     private fun handleGetParticipant(contactList: ArrayList<Contact>?) {
+
         if (contactList != null) {
             var choose = 0
             for (contact: Contact in contactList) {
@@ -3699,7 +3854,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 }
             }
 
-            if(choose ==0){
+            if (choose == 0) {
 
                 showToast("no contact found. at least add one contact with user")
                 val pos = getPositionOf(ConstantMsgType.GET_PARTICIPANT)
@@ -5151,11 +5306,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                         uniqueIdsList.forEach {
 
-                            Log.d(
-                                "LTAG",
-                                ">>>> NEW LOG FROM LIST OF LOGS: Name: $logName === Unique Id: $it "
-                            )
-
                             addToLogsAndLogNames(it, logName, json)
 
                         }
@@ -5189,8 +5339,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             uniqueIdsList.forEach {
 
-                Log.d("LTAG", ">>> NEW LOG FROM LIST OF LOGS: Name: $logName === Unique Id: $it ")
-
                 addToLogsAndLogNames(it, logName, json)
 
             }
@@ -5198,12 +5346,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             return
 
         }
-
-
-
-
-        Log.d("LTAG", ">> NEW LOG: Name: $logName === Unique Id: $uniqueId ")
-
 
         addToLogsAndLogNames(uniqueId, logName, json)
 
@@ -5273,44 +5415,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 observable.onNext(value)
             }
         val observable = BehaviorSubject.create(value)
-    }
-
-
-    class MapVariable<K, V> : HashMap<K, V>() {
-
-
-        override fun put(key: K, value: V): V? {
-
-            observableKeys.onNext(keys)
-
-            observableVals.onNext(values)
-
-            oKey.onNext(key)
-
-            oValue.onNext(value)
-
-
-            onInsertObserver.onNext(Pair(first = key, second = value))
-
-
-            return super.put(key, value)
-
-
-        }
-
-
-        val observableKeys: BehaviorSubject<Set<K>> = BehaviorSubject.create(keys)
-
-        val observableVals: BehaviorSubject<Collection<V>> = BehaviorSubject.create(values)
-
-
-        val oKey: BehaviorSubject<K> = BehaviorSubject.create()
-
-        val oValue: BehaviorSubject<V> = BehaviorSubject.create()
-
-        val onInsertObserver: BehaviorSubject<Pair<K, V>> = BehaviorSubject.create()
-
-
     }
 
 

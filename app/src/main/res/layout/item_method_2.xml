@@ -125,9 +125,7 @@
 
         <ImageButton
             android:id="@+id/imageButtonShowLog"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:scaleType="fitXY"
+            style="@style/log_button_style"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline7"
             app:layout_constraintHorizontal_bias="0.794"
@@ -141,9 +139,9 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/viewSubFunctions"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/guideline10"
         app:layout_constraintHorizontal_bias="0.609"
         app:layout_constraintStart_toStartOf="@+id/guideline9"
@@ -375,7 +373,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_end="16dp" />
-
 
 
     <View

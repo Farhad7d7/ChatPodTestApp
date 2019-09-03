@@ -15,12 +15,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_bubble)
-        val titles = arrayOf("chat", "Function", "Log")
+        val titles = arrayOf("Chat", "Function", "Log")
         val viewPager: ViewPager = findViewById(R.id.view_pager)
         val pagerAdapter = PagerAdapter(supportFragmentManager, titles)
 
 //        supportFragmentManager.beginTransaction().add(LogFragment.newInstance(), "LogFragment").commit()
         viewPager.adapter = pagerAdapter
+
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
             }

@@ -5,6 +5,7 @@ import android.support.annotation.StringDef
 class ConstantMsgType {
 
     companion object {
+        const val SPAM_THREAD_MESSAGE= "SPAM_THREAD_MESSAGE"
         const val UPLOAD_IMAGE = "UPLOAD_IMAGE"
         const val UPLOAD_FILE = "UPLOAD_FILE"
         const val FORWARD_MESSAGE_CONTACT_B= "FORWARD_MESSAGE_CONTACT_B"
@@ -55,11 +56,14 @@ class ConstantMsgType {
         const val ADD_ADMIN_ROLES = "ADD_ADMIN_ROLES"
         const val REMOVE_ADMIN_ROLES = "REMOVE_ADMIN_ROLES"
         const val DELETE_MULTIPLE_MESSAGE = "DELETE_MULTIPLE_MESSAGE"
+        const val SPAM_THREAD = "SPAM_THREAD"
     }
 
     @StringDef(
         UPDATE_CONTACT,
-        GET_THREAD
+        SPAM_THREAD,
+        GET_THREAD,
+        SPAM_THREAD_MESSAGE
         , ADD_CONTACT
         , UNBLOCK_CONTACT
         , BLOCK_CONTACT

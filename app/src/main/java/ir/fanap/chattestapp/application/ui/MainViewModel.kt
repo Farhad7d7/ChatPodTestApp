@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.content.Context
 import android.net.Uri
 import android.support.v4.app.FragmentActivity
+import android.util.Log
 import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
@@ -13,11 +14,21 @@ import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.mainmodel.RequestSearchContact
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import ir.fanap.chattestapp.application.ui.util.SmartArrayList
+import ir.fanap.chattestapp.bussines.model.LogClass
+import org.json.JSONObject
 import rx.subjects.PublishSubject
 import java.util.*
 import kotlin.collections.ArrayList
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    val listOfLogs: SmartArrayList<LogClass> = SmartArrayList()
+
+    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
     private var chat: Chat = Chat.init(application)
     private lateinit var testListener: TestListener
@@ -37,6 +48,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 observable.onNext(state)
 
             }
+
 
 
 
@@ -97,6 +109,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
             override fun onLogEvent(logName: String?, json: String?) {
+
+
+                saveLogs(logName,json)
 
                 testListener.onLogEventWithName(logName!!,json!!)
             }
@@ -241,6 +256,91 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+    private fun saveLogs(logName: String?, json: String?) {
+
+        val jsonReader = try {
+            JSONObject(json)
+        } catch (e: Exception) {
+            null
+        }
+
+        if (!jsonReader?.has("uniqueId")!! || jsonReader["uniqueId"] == "") {
+
+            try {
+
+                if (jsonReader.has("content")) {
+
+
+                    val contentString = jsonReader["content"].toString()
+
+                    val content = JSONObject(contentString)
+
+                    if (content.has("uniqueIds")) {
+
+                        val jsonUniqueIds = content["uniqueIds"].toString()
+
+                        val uniqueIdsList: ArrayList<String> =
+                            gson.fromJson(jsonUniqueIds, object : TypeToken<ArrayList<String>>() {
+
+                            }.type)
+
+                        uniqueIdsList.forEach {
+
+                            addToLogsAndLogNames(it, logName, json)
+
+                        }
+
+
+                    }
+
+
+                }
+            } catch (e: Exception) {
+                Log.e("LTAG", e.message)
+            }
+
+            return
+
+        }
+
+
+        val uniqueId: String = jsonReader["uniqueId"].toString()
+
+
+
+        if (uniqueId[0] == '[') {
+
+            val uniqueIdsList: ArrayList<String> =
+                gson.fromJson(uniqueId, object : TypeToken<ArrayList<String>>() {
+
+                }.type)
+
+            uniqueIdsList.forEach {
+
+                addToLogsAndLogNames(it, logName, json)
+
+            }
+
+            return
+
+        }
+
+        addToLogsAndLogNames(uniqueId, logName, json)
+
+
+
+
+    }
+
+    private fun addToLogsAndLogNames(uniqueId: String, logName: String?, log: String?) {
+
+
+        listOfLogs.add(LogClass(uniqueId = uniqueId, logName = logName!!, log = log!!))
+
+
+
+    }
+
     fun setTestListener(testListener: TestListener) {
         this.testListener = testListener
     }
@@ -262,12 +362,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         chat.connect(rb)
 
-////
-//        chat.addListener(object : ChatListener {
-//            override fun onUserInfo(content: String?, response: ChatResponse<ResultUserInfo>?) {
-//                super.onUserInfo(content, response)
-//            }
-//        })
     }
 
     fun uploadFile(requestUploadFile: RequestUploadFile): String {
@@ -311,17 +405,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.unMuteThread(requestMuteThread, null)
     }
 
-    //    * createThreadTypes = {
-//        *         NORMAL: 0,
-//        *         OWNER_GROUP: 1,
-//        *         PUBLIC_GROUP: 2,
-//        *         CHANNEL_GROUP: 4,
-//        *         CHANNEL: 8
-//        *       }
-//    */
-//
-//    int threadType, Invitee[] invitee, String threadTitle, String description, String image
-//    , String metadata, ChatHandler handler
     fun createThread(
         threadType: Int,
         invitee: Array<Invitee>,
@@ -468,6 +551,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteMultipleMessage(requestDeleteMessage: RequestDeleteMessage): ArrayList<String> {
 
         return ArrayList(chat.deleteMultipleMessage(requestDeleteMessage,null))
+    }
+
+    fun spamThread(requestSpam: RequestSpam): String {
+
+        return chat.spam(requestSpam)
     }
 
 }

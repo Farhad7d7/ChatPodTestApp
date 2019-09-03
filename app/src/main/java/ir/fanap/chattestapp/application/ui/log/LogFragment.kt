@@ -253,7 +253,6 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
         }
 
 
-        //todo model Logs
 
     }
 }
