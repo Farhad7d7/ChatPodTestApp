@@ -367,6 +367,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun uploadFile(requestUploadFile: RequestUploadFile): String {
         return chat.uploadFile(requestUploadFile)
     }
+    fun uploadFileProgress(requestUploadFile: RequestUploadFile,progress: ProgressHandler.onProgressFile): String {
+        return chat.uploadFileProgress(requestUploadFile,progress)
+    }
 
     fun uploadImage(activity: FragmentActivity?, uri: Uri): String {
         return chat.uploadImage(activity, uri)
@@ -378,7 +381,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         uri: Uri?,
         progress: ProgressHandler.onProgress
     ): String {
-        return chat.uploadImageProgress(context, activity, uri, progress)
+        return chat.uploadImageProgress(activity, uri, progress)
+    }
+fun uploadImageProgress(
+        requestUploadImage: RequestUploadImage,
+        progress: ProgressHandler.onProgress
+    ): String {
+        return chat.uploadImageProgress(requestUploadImage, progress)
     }
 
     fun sendFileMessage(requestFileMessage: RequestFileMessage, objects: ProgressHandler.sendFileMessage): String {

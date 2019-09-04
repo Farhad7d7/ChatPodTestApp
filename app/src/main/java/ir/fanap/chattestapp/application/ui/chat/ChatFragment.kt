@@ -551,6 +551,12 @@ class ChatFragment : Fragment(), TestListener {
     override fun onUploadFile(response: ChatResponse<ResultFile>?) {
         super.onUploadFile(response)
 
+
+        if(response?.uniqueId == null) return
+
+
+
+
         if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_FILE_MESSAGE]) {
 
 
@@ -666,32 +672,13 @@ class ChatFragment : Fragment(), TestListener {
         if (fucCallback[ConstantMsgType.UPLOAD_IMAGE] == response?.uniqueId) {
 
 
-            handleOnImageUploaded()
+            handleFinishUploadImage()
 
 
         }
 
     }
 
-    private fun handleOnImageUploaded() {
-
-
-        try {
-            activity?.runOnUiThread {
-
-                hideView(contentProgressUploadImage)
-
-                changeTextAndColorToGreenOf(tvUploadImageStatus, "Image Uploaded")
-
-                changeImageViewResourceToDoneAll(imageView_tickFour)
-
-            }
-        } catch (e: Exception) {
-            Log.e("MTAG", e.message)
-        }
-
-
-    }
 
     private fun handleOnMapImageUploaded() {
 
@@ -1668,11 +1655,38 @@ class ChatFragment : Fragment(), TestListener {
 
             setTextOf(tvUploadFileStatus, "Uploading...")
 
-            //todo add progress bar for upload file
-
             val requestUploadFile = RequestUploadFile.Builder(activity, fileUri).build()
 
-            fucCallback[ConstantMsgType.UPLOAD_FILE] = mainViewModel.uploadFile(requestUploadFile)
+            fucCallback[ConstantMsgType.UPLOAD_FILE] = mainViewModel.uploadFileProgress(
+                requestUploadFile,
+                object : ProgressHandler.onProgressFile{
+
+                    override fun onProgress(
+                        uniqueId: String?,
+                        bytesSent: Int,
+                        totalBytesSent: Int,
+                        totalBytesToSend: Int
+                    ) {
+                        super.onProgress(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
+
+                        try {
+                            activity?.runOnUiThread {
+
+                                setTextOf(tvUploadFileStatus, "$bytesSent%")
+
+                                updateProgressBar(progressBarUploadFile, bytesSent)
+
+
+                            }
+                        } catch (e: Exception) {
+                        }
+
+                    }
+
+                    override fun onProgressUpdate(bytesSent: Int) {
+
+                    }
+                })
 
 
         } else {
@@ -1725,10 +1739,14 @@ class ChatFragment : Fragment(), TestListener {
 
             setTextOf(tvUploadImageStatus, "Uploading...")
 
+
+            val requestUploadImage: RequestUploadImage = RequestUploadImage
+                .Builder(activity, imageUri)
+                .build()
+
+
             fucCallback[ConstantMsgType.UPLOAD_IMAGE] = mainViewModel.uploadImageProgress(
-                contextFrag,
-                activity,
-                imageUri, object : ProgressHandler.onProgress {
+                requestUploadImage, object : ProgressHandler.onProgress {
                     override fun onProgressUpdate(
                         uniqueId: String?,
                         bytesSent: Int,
@@ -1759,8 +1777,6 @@ class ChatFragment : Fragment(), TestListener {
                     ) {
                         super.onFinish(imageJson, chatResponse)
 
-
-                        handleFinishUploadImage()
 
                     }
                 })
