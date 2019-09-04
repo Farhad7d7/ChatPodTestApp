@@ -434,10 +434,7 @@ class ChatFragment : Fragment(), TestListener {
         if (chatResponse?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]) {
 
 
-            setTextOf(tvSendLocationMessageStatus, "Get Static Map From Neshan API")
 
-
-            increaseProgressOf(progressLocationMessage)
 
 
             prepareSendLocationMessage(chatResponse?.result?.threads)
@@ -455,6 +452,23 @@ class ChatFragment : Fragment(), TestListener {
 
 
     private fun prepareSendLocationMessage(threads: List<Thread>?) {
+
+
+        try {
+            activity?.runOnUiThread {
+
+
+                setTextOf(tvSendLocationMessageStatus, "Get Static Map From Neshan API")
+
+
+                increaseProgressOf(progressLocationMessage)
+
+            }
+        } catch (e: Exception) {
+            Log.e("MTAG",e.message)
+        }
+
+
 
 
         if (threads!!.isNotEmpty()) {
@@ -533,7 +547,7 @@ class ChatFragment : Fragment(), TestListener {
                         override fun onError(jsonError: String?, error: ErrorOutPut?) {
                             super.onError(jsonError, error)
 
-                            Log.d("MTAG", "upload error $jsonError")
+                            Log.e("MTAG", "upload error $jsonError")
 
                             Toast.makeText(context, jsonError, Toast.LENGTH_LONG).show()
 
