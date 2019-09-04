@@ -59,10 +59,12 @@ import rx.subjects.BehaviorSubject
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.concurrent.thread
 
 class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestListener {
 
+
+    private var nextSearchPosition: Int = 0
+    private var searchInMethodsResults: ArrayList<Int> = ArrayList()
 
     private var contactBIdType: Int = 0
     private var chatReady: Boolean = false
@@ -308,6 +310,101 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         })
 
 
+
+
+
+
+
+
+        imageButtonNextResult.setOnClickListener {
+
+
+            showNextSearchResult()
+
+        }
+
+        imageButtonPreviousResult.setOnClickListener {
+
+
+            showPreviousSearchResult()
+
+
+        }
+
+        imageCloseSearchResult.setOnClickListener {
+
+
+            closeSearchResult()
+
+
+        }
+
+    }
+
+    private fun showPreviousSearchResult() {
+
+
+        if (nextSearchPosition > 0)
+            nextSearchPosition--
+
+        focusOnNextSearchResult()
+
+
+    }
+
+    private fun showNextSearchResult() {
+
+
+        if (nextSearchPosition < searchInMethodsResults.size - 1)
+            nextSearchPosition++
+
+        focusOnNextSearchResult(next = true)
+
+    }
+
+
+    private fun focusOnNextSearchResult(next: Boolean = false) {
+
+        activity?.runOnUiThread {
+
+            tvNextResult.text = (nextSearchPosition + 1).toString()
+
+            functionAdapter.changeSearched(searchInMethodsResults[nextSearchPosition], true)
+
+            if (next)
+                recyclerView.smoothScrollToPosition(searchInMethodsResults[nextSearchPosition] + 2)
+            else {
+                recyclerView.smoothScrollToPosition(searchInMethodsResults[nextSearchPosition])
+            }
+
+
+            Handler().postDelayed({
+
+
+                hideLastSearchedResults()
+
+
+            }, 3000)
+
+
+        }
+
+    }
+
+    private fun hideLastSearchedResults() {
+
+
+        for (index in searchInMethodsResults.indices) {
+
+
+            functionAdapter.changeSearched(searchInMethodsResults[index], false)
+
+            if (index == nextSearchPosition)
+                break
+
+
+        }
+
     }
 
     private fun handleSearchContact(view: View) {
@@ -347,6 +444,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun searchInMethodsWith(query: String) {
 
 
+        searchInMethodsResults.clear()
+
         var found = false
 
         val queryS = query.replace(" ", "")
@@ -360,30 +459,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             if (methodName.contains(queryS, ignoreCase = true)) {
 
-
-                hideKeyboard(context, view!!)
-
-
-                bottomSheetSearch.state = BottomSheetBehavior.STATE_COLLAPSED
-
-                functionAdapter.changeSearched(methodIndex, true)
-
-                recyclerView.smoothScrollToPosition(methodIndex)
-
-
-                Handler().postDelayed({
-
-
-                    functionAdapter.changeSearched(methodIndex, false)
-
-
-                }, 5000)
-
+                searchInMethodsResults.add(methodIndex)
 
                 found = true
-
-                break
-
 
             }
 
@@ -395,8 +473,77 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             showToast("Nothing found!")
 
+            return
         }
 
+        tvSearchQuery.text = query
+
+
+        hideKeyboard(context, view!!)
+
+        showSearchResult()
+
+        bottomSheetSearch.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        nextSearchPosition = 0
+
+        tvNextResult.text = (nextSearchPosition + 1).toString()
+
+        tvResultCount.text = searchInMethodsResults.size.toString()
+
+        focusOnNextSearchResult()
+
+
+    }
+
+    private fun showSearchResult() {
+
+        layoutSearchResult.animate()
+            .setStartDelay(200)
+            .setDuration(250)
+            .setInterpolator(LinearInterpolator())
+            .translationY(0f)
+            .alpha(1f)
+            .withStartAction {
+
+                layoutSearchResult.visibility = View.VISIBLE
+            }
+            .start()
+
+    }
+
+    private fun closeSearchResult() {
+
+
+        layoutSearchResult.animate()
+            .setDuration(250)
+            .setInterpolator(LinearInterpolator())
+            .translationY(-200f)
+            .alpha(0f)
+            .withStartAction {
+
+                hideAllSearchResult()
+
+            }
+            .withEndAction {
+
+                searchInMethodsResults.clear()
+
+
+                layoutSearchResult.visibility = View.GONE
+            }
+            .start()
+
+    }
+
+    private fun hideAllSearchResult() {
+
+
+        for (searchedIndex in searchInMethodsResults) {
+
+            functionAdapter.changeSearched(searchedIndex, false)
+
+        }
 
     }
 
@@ -1189,14 +1336,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onError(chatResponse: ErrorOutPut?) {
         super.onError(chatResponse)
-        activity?.runOnUiThread {
-            Toast.makeText(activity, chatResponse?.errorMessage, Toast.LENGTH_LONG).show()
-        }
+
+        showToast(chatResponse?.errorMessage!!)
+
         val uniqueId = chatResponse?.uniqueId
-
-
-        val jObj = gson.toJson(chatResponse)
-
 
         fucCallback.forEach {
 
@@ -1218,248 +1361,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         }
 
-//        for(key in fucCallback.forEach()){
-//            
-//            
-//            
-//        }
-
-//        when (uniqueId) {
-//
-//            fucCallback[ConstantMsgType.CREATE_THREAD] -> {
-//
-//
-//                setErrorOnFunctionInPosition(0)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_CONTACT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(1)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.BLOCK_CONTACT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(2)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.ADD_CONTACT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(3)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_THREAD] -> {
-//
-//
-//                setErrorOnFunctionInPosition(4)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_BLOCK_LIST] -> {
-//
-//
-//                setErrorOnFunctionInPosition(5)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.UNBLOCK_CONTACT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(6)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.UPDATE_CONTACT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(7)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.SEND_MESSAGE] -> {
-//
-//
-//                setErrorOnFunctionInPosition(8)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.REMOVE_CONTACT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(9)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.ADD_PARTICIPANT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(10)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(11)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.FORWARD_MESSAGE] -> {
-//
-//
-//                setErrorOnFunctionInPosition(12)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.REPLY_MESSAGE] -> {
-//
-//
-//                setErrorOnFunctionInPosition(13)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.LEAVE_THREAD] -> {
-//
-//
-//                setErrorOnFunctionInPosition(14)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.MUTE_THREAD] -> {
-//
-//
-//                setErrorOnFunctionInPosition(15)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.UNMUTE_THREAD] -> {
-//
-//
-//                setErrorOnFunctionInPosition(16)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.DELETE_MESSAGE] -> {
-//
-//
-//                setErrorOnFunctionInPosition(17)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.EDIT_MESSAGE] -> {
-//
-//
-//                setErrorOnFunctionInPosition(18)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_HISTORY] -> {
-//
-//
-//                setErrorOnFunctionInPosition(19)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FORW_MSG] -> {
-//
-//
-//                setErrorOnFunctionInPosition(20)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_PARTICIPANT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(21)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.CLEAR_HISTORY] -> {
-//
-//
-//                setErrorOnFunctionInPosition(22)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_ADMINS_LIST] -> {
-//
-//
-//                setErrorOnFunctionInPosition(23)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.ADD_ADMIN_ROLES] -> {
-//
-//
-//                setErrorOnFunctionInPosition(24)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.REMOVE_ADMIN_ROLES] -> {
-//
-//
-//                setErrorOnFunctionInPosition(25)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.DELETE_MULTIPLE_MESSAGE] -> {
-//
-//
-//                setErrorOnFunctionInPosition(26)
-//
-//            }
-//
-//
-//
-//            fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] -> {
-//
-//
-//                setErrorOnFunctionInPosition(27)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_DELIVER_LIST] -> {
-//
-//
-//                setErrorOnFunctionInPosition(28)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.GET_SEEN_LIST] -> {
-//
-//
-//                setErrorOnFunctionInPosition(29)
-//
-//            }
-//
-//            fucCallback[ConstantMsgType.SEARCH_CONTACT] -> {
-//
-//
-//                setErrorOnFunctionInPosition(30)
-//
-//            }
-//
-//
-//        }
-
-
-//        if (uniqueId == fucCallback[ConstantMsgType.ADD_CONTACT]) {
-//            fucCallback[uniqueId]
-//            activity?.runOnUiThread {
-//
-//                val viewHolder: RecyclerView.ViewHolder = recyclerView.getChildViewHolder(recyclerView.getChildAt(3))
-//
-//                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-//
-//                    .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorAccent))
-//            }
-//        }
     }
 
     private fun getPositionOf(key: String): Int {
@@ -3153,7 +3054,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
 
-        if(fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId){
+        if (fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId) {
 
             val position = getPositionOf(ConstantMsgType.SPAM_THREAD)
 
@@ -3321,9 +3222,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val targetThreadId = response?.subjectId
 
 
-        if(response?.result?.thread?.canSpam!!){
-
-
+        if (response?.result?.thread?.canSpam!!) {
 
 
             val requestSpam = RequestSpam.Builder().threadId(targetThreadId!!)
@@ -3333,13 +3232,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
 
 
-
-
-
         }
-
-
-
 
 
     }
@@ -3569,17 +3462,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val contactList = response?.result?.contacts
 
 
-        if(fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId){
+        if (fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId) {
 
             val pos = getPositionOf(ConstantMsgType.SPAM_THREAD)
 
-            changeFunOneState(pos,Method.DONE)
+            changeFunOneState(pos, Method.DONE)
 
-            changeFunTwoState(pos,Method.RUNNING)
+            changeFunTwoState(pos, Method.RUNNING)
 
             prepareCreateThreadMessageForSpam(contactList)
-
-
 
 
         }
@@ -3814,11 +3705,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback[ConstantMsgType.SPAM_THREAD_MESSAGE] = uniqueIds[1]
 
 
-
-
         }
-
-
 
 
     }
@@ -4484,14 +4371,19 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun showToast(message: String) {
 
-        activity?.runOnUiThread {
+        try {
+            activity?.runOnUiThread {
 
-            Toast.makeText(
-                activity,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+                Toast.makeText(
+                    activity,
+                    message,
+                    Toast.LENGTH_LONG
+                ).show()
 
+
+            }
+        } catch (e: Exception) {
+            Log.e("MTAG", e.message)
 
         }
     }

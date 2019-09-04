@@ -15,7 +15,6 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
@@ -66,7 +65,7 @@ class ChatFragment : Fragment(), TestListener {
     private var fileUri: Uri? = null
 
     private lateinit var txtViewFileMsg: TextView
-    private lateinit var tvReplayFileMessageStatus: TextView
+    private lateinit var tvReplyFileMessageStatus: TextView
     private lateinit var tvSendFileMessageStatus: TextView
     private lateinit var tvUploadFileStatus: TextView
     private lateinit var txtViewUploadFile: TextView
@@ -78,7 +77,7 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var imageView_tickTwo: AppCompatImageView
     private lateinit var imageView_tickThree: AppCompatImageView
     private lateinit var imageView_tickFour: AppCompatImageView
-    private lateinit var prgressbarUploadImg: ProgressBar
+    private lateinit var progressBarUploadImage: ProgressBar
     private lateinit var progressLocationMessage: ProgressBar
     private lateinit var progressBarReplyFileMsg: ProgressBar
     private lateinit var progressBarSendFileMessage: ProgressBar
@@ -400,22 +399,25 @@ class ChatFragment : Fragment(), TestListener {
 
 
 
+        changeToNormalState(
+            tickImage = imgViewCheckLocationMessage,
+            mainView = constraintSendLocationMessage,
+            contentProgress = contentProgressLocationMessage,
+            textView = tvSendLocationMessageStatus,
+            progressBar = progressLocationMessage
+
+        )
+
+
 
         showView(contentProgressLocationMessage)
-
-        showView(imgViewCheckLocationMessage)
-
-        changeImageViewResourceToDoneDefault(imgViewCheckLocationMessage)
-
-        updateProgressBar(progressLocationMessage, 0)
-
 
         val requestThread = RequestThread
             .Builder()
             .build()
 
 
-        changeTextAndColorToGreyOf(tvSendLocationMessageStatus, "Get List of threads...")
+        setTextOf(tvSendLocationMessageStatus, "Get List of threads...")
 
 
         fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel.getThread(requestThread)
@@ -460,6 +462,7 @@ class ChatFragment : Fragment(), TestListener {
 
             val targetThreadId = threads[0].id
 
+//            val center = "-1"
             val center = "35.7003510,51.3376472"
 
             val requestLocationMessage = RequestLocationMessage.Builder()
@@ -579,11 +582,11 @@ class ChatFragment : Fragment(), TestListener {
         try {
             activity?.runOnUiThread {
 
+                setTextOf(tvReplyFileMessageStatus, "Sending Message")
+
                 changeImageViewColorToGreen(imageView_tickThree)
 
                 changeImageViewResourceDone(imageView_tickThree)
-
-                setTextOf(tvReplayFileMessageStatus, "Sending Message")
 
                 updateProgressBar(progressBarReplyFileMsg, 95)
 
@@ -785,12 +788,12 @@ class ChatFragment : Fragment(), TestListener {
 
         txtViewFileMsg = view.findViewById(R.id.TxtViewFileMsg)
         tvSendFileMessageStatus = view.findViewById(R.id.tvSendFileMessageStatus)
-        tvReplayFileMessageStatus = view.findViewById(R.id.tvReplayFileMessageStatus)
+        tvReplyFileMessageStatus = view.findViewById(R.id.tvReplayFileMessageStatus)
         tvUploadFileStatus = view.findViewById(R.id.tvUploadFileStatus)
         txtViewUploadFile = view.findViewById(R.id.TxtViewUploadFile)
         txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
         txtViewReplyFileMsg = view.findViewById(R.id.TxtViewReplyFileMsg)
-        prgressbarUploadImg = view.findViewById(R.id.progressUploadImage)
+        progressBarUploadImage = view.findViewById(R.id.progressUploadImage)
         atach_file = view.findViewById(R.id.atach_file)
         imgViewCheckLocationMessage = view.findViewById(R.id.checkBoxLocationMessage)
 
@@ -800,6 +803,7 @@ class ChatFragment : Fragment(), TestListener {
         imageViewSelectedPic = view.findViewById(R.id.imgViewSelectedPic)
 
         tvPickedFileName = view.findViewById(R.id.tvFileName)
+
 
     }
 
@@ -838,7 +842,7 @@ class ChatFragment : Fragment(), TestListener {
 
                     changeImageViewColorToGreen(imageView_tickThree)
 
-                    changeTextColorToGreen(tvReplayFileMessageStatus)
+                    changeTextColorToGreen(tvReplyFileMessageStatus)
 
                     updateProgressBar(progressBarReplyFileMsg, 100)
 
@@ -846,7 +850,7 @@ class ChatFragment : Fragment(), TestListener {
 
                     changeImageViewResourceToDoneAll(imageView_tickThree)
 
-                    setTextOf(tvReplayFileMessageStatus, "Message Sent Successfully")
+                    setTextOf(tvReplyFileMessageStatus, "Message Sent Successfully")
 
                 }
             } catch (e: Exception) {
@@ -955,10 +959,10 @@ class ChatFragment : Fragment(), TestListener {
         try {
             activity?.runOnUiThread {
 
-                setTextOf(tvReplayFileMessageStatus, "Uploading File")
+                setTextOf(tvReplyFileMessageStatus, "Uploading File")
 
 
-                increaseProgressOf(progressBarReplyFileMsg, 10)
+                increaseProgressOf(progressBarReplyFileMsg)
 
             }
         } catch (e: Exception) {
@@ -1002,11 +1006,17 @@ class ChatFragment : Fragment(), TestListener {
                             activity?.runOnUiThread {
 
 
-                                setTextOf(tvReplayFileMessageStatus, "Uploading $bytesSent%")
+                                setTextOf(tvReplyFileMessageStatus, "Uploading $bytesSent%")
 
 
                                 if (bytesSent < 95)
-                                    updateProgressBar(progressBarSendFileMessage, bytesSent)
+                                    updateProgressBar(progressBarReplyFileMsg, bytesSent)
+
+                                if (bytesSent == 100) {
+
+                                    setTextOf(tvReplyFileMessageStatus, "Sending Reply Message")
+
+                                }
 
 
                             }
@@ -1083,7 +1093,6 @@ class ChatFragment : Fragment(), TestListener {
 
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -1145,7 +1154,6 @@ class ChatFragment : Fragment(), TestListener {
         logFragment.show(childFragmentManager, "LOG_FRAG")
 
 
-
     }
 
     private fun getLogsForPosition(position: Int): ArrayList<LogClass> {
@@ -1198,7 +1206,7 @@ class ChatFragment : Fragment(), TestListener {
         try {
             activity?.runOnUiThread {
 
-                setTextOf(tvReplayFileMessageStatus, "Create Thread with Message")
+                setTextOf(tvReplyFileMessageStatus, "Create Thread with Message")
 
                 increaseProgressOf(progressBarReplyFileMsg)
             }
@@ -1212,9 +1220,168 @@ class ChatFragment : Fragment(), TestListener {
 
     override fun onError(chatResponse: ErrorOutPut?) {
         super.onError(chatResponse)
-        activity?.runOnUiThread {
-            Toast.makeText(activity, chatResponse?.errorMessage, Toast.LENGTH_LONG).show()
+
+        showToast(chatResponse?.errorMessage!!)
+
+        val uniqueId = chatResponse?.uniqueId
+
+
+        fucCallback.forEach {
+
+            if (it.value == uniqueId) {
+
+                setErrorOnFunctionInPosition(getPosition(it.key))
+
+            }
+
         }
+
+
+    }
+
+    private fun changeToNormalState(
+
+        tickImage: AppCompatImageView,
+        mainView: View,
+        contentProgress: ProgressBar,
+        progressBar: ProgressBar,
+        textView: TextView
+
+
+    ) {
+
+        try {
+            activity?.runOnUiThread {
+
+                changeViewBackground(tickImage, android.R.color.transparent)
+
+                changeImageViewResourceToDoneDefault(tickImage)
+
+                changeViewBackground(mainView, R.drawable.background_top_method_item)
+
+                hideView(contentProgress)
+
+                updateProgressBar(progressBar, 0)
+
+                changeViewBackground(textView, android.R.color.transparent)
+
+                changeTextAndColorToGreyOf(textView, "")
+
+            }
+        } catch (e: Exception) {
+        }
+
+    }
+
+
+    private fun changeToErrorState(
+
+        tickImage: AppCompatImageView,
+        mainView: View,
+        progressToHide: ProgressBar,
+        textView: TextView
+
+
+    ) {
+
+        try {
+            activity?.runOnUiThread {
+
+                changeViewBackground(tickImage, R.drawable.default_background_rounded_rect)
+
+                changeImageViewResourceToError(tickImage)
+
+                changeViewBackground(mainView, R.drawable.background_top_method_item_error)
+
+                hideView(progressToHide)
+
+                changeViewBackground(textView, R.drawable.default_background_rounded_rect)
+
+                changeTextColor(textView, R.color.red_active)
+
+                appendTextToTextView(textView, " (Failed)")
+
+            }
+        } catch (e: Exception) {
+        }
+
+    }
+
+    private fun setErrorOnFunctionInPosition(position: Int) {
+
+
+        when (position) {
+
+            FILE_MESSAGE -> {
+
+                changeToErrorState(
+                    tickImage = imageView_tickOne,
+                    mainView = constraintSendFileMessage,
+                    progressToHide = contentProgressFileMessage,
+                    textView = tvSendFileMessageStatus
+
+                )
+
+            }
+            UPLOAD_FILE -> {
+
+                changeToErrorState(
+                    tickImage = imageView_tickTwo,
+                    mainView = constraintUploadFile,
+                    progressToHide = contentProgressUploadFile,
+                    textView = tvUploadFileStatus
+
+                )
+
+
+            }
+            REPLY_FILE_MESSAGE -> {
+
+                changeToErrorState(
+                    tickImage = imageView_tickThree,
+                    mainView = constraintReplyFileMessage,
+                    progressToHide = contentProgressReplyFileMessage,
+                    textView = tvReplyFileMessageStatus
+
+                )
+
+            }
+            UPLOAD_IMAGE -> {
+
+                changeToErrorState(
+                    tickImage = imageView_tickFour,
+                    mainView = constraintUploadImage,
+                    progressToHide = contentProgressUploadImage,
+                    textView = tvUploadImageStatus
+
+                )
+
+
+            }
+            LOCATION_MESSAGE -> {
+
+                changeToErrorState(
+                    tickImage = imgViewCheckLocationMessage,
+                    mainView = constraintSendLocationMessage,
+                    progressToHide = contentProgressLocationMessage,
+                    textView = tvSendLocationMessageStatus
+
+                )
+
+
+            }
+
+
+        }
+
+
+    }
+
+
+    private fun changeViewBackground(view: View, backgroundResource: Int) {
+
+        view.setBackgroundResource(backgroundResource)
+
     }
 
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
@@ -1246,13 +1413,15 @@ class ChatFragment : Fragment(), TestListener {
         try {
             activity?.runOnUiThread {
 
-                setTextOf(tvReplayFileMessageStatus, "Thread created")
+                setTextOf(tvReplyFileMessageStatus, "Thread Created")
 
                 increaseProgressOf(progressBarReplyFileMsg)
 
             }
         } catch (e: Exception) {
         }
+
+
     }
 
     private fun handleSendFileMessage(response: ChatResponse<ResultThread>?) {
@@ -1277,7 +1446,7 @@ class ChatFragment : Fragment(), TestListener {
                     try {
                         activity?.runOnUiThread {
 
-                            setTextOf(tvSendFileMessageStatus, "Upload finish")
+                            setTextOf(tvSendFileMessageStatus, "Sending Text Message")
 
                             updateProgressBar(progressBarSendFileMessage, 95)
 
@@ -1432,6 +1601,17 @@ class ChatFragment : Fragment(), TestListener {
             if (!chatReady) return
 
 
+
+            changeToNormalState(
+                tickImage = imageView_tickOne,
+                mainView = constraintSendFileMessage,
+                contentProgress = contentProgressFileMessage,
+                textView = tvSendFileMessageStatus,
+                progressBar = progressBarSendFileMessage
+
+            )
+
+
             changeTextAndColorToGreyOf(tvSendFileMessageStatus, "Getting Contacts...")
 
             showView(contentProgressFileMessage)
@@ -1453,6 +1633,13 @@ class ChatFragment : Fragment(), TestListener {
 
     }
 
+    private fun appendTextToTextView(textView: TextView, text: String) {
+
+        textView.append(text)
+
+
+    }
+
     private fun uploadFile() {
 
         if (!chatReady) {
@@ -1466,9 +1653,20 @@ class ChatFragment : Fragment(), TestListener {
 
         if (fileUri != null) {
 
+
+            changeToNormalState(
+                tickImage = imageView_tickTwo,
+                mainView = constraintUploadFile,
+                contentProgress = contentProgressUploadFile,
+                textView = tvUploadFileStatus,
+                progressBar = progressBarUploadFile
+
+            )
+
+
             showView(contentProgressUploadFile)
 
-            changeTextAndColorToGreyOf(tvUploadFileStatus, "Uploading...")
+            setTextOf(tvUploadFileStatus, "Uploading...")
 
             //todo add progress bar for upload file
 
@@ -1513,12 +1711,21 @@ class ChatFragment : Fragment(), TestListener {
 
         if (imageUri != null) {
 
+
+            changeToNormalState(
+                tickImage = imageView_tickFour,
+                mainView = constraintUploadImage,
+                contentProgress = contentProgressUploadImage,
+                progressBar = progressBarUploadImage,
+                textView = tvUploadImageStatus
+
+            )
+
             showView(contentProgressUploadImage)
 
             setTextOf(tvUploadImageStatus, "Uploading...")
 
-
-           fucCallback[ConstantMsgType.UPLOAD_IMAGE] = mainViewModel.uploadImageProgress(
+            fucCallback[ConstantMsgType.UPLOAD_IMAGE] = mainViewModel.uploadImageProgress(
                 contextFrag,
                 activity,
                 imageUri, object : ProgressHandler.onProgress {
@@ -1538,7 +1745,7 @@ class ChatFragment : Fragment(), TestListener {
                         try {
                             activity?.runOnUiThread {
 
-                                updateProgressBar(prgressbarUploadImg, progress = bytesSent)
+                                updateProgressBar(progressBarUploadImage, progress = bytesSent)
 
                             }
                         } catch (e: Exception) {
@@ -1588,14 +1795,15 @@ class ChatFragment : Fragment(), TestListener {
 
     }
 
-    private fun changeTextColor(textView: TextView, grey: Int) {
+    private fun changeTextColor(textView: TextView, colorResId: Int) {
 
-        textView.setTextColor(grey)
+        textView.setTextColor(ContextCompat.getColor(activity!!, colorResId))
+
     }
 
     private fun handleFinishUploadImage() {
 
-        updateProgressBar(prgressbarUploadImg)
+        updateProgressBar(progressBarUploadImage)
 
         hideView(contentProgressUploadImage)
 
@@ -1638,15 +1846,19 @@ class ChatFragment : Fragment(), TestListener {
 
         }
 
-        hideView(contentProgressReplyFileMessage)
 
-        setTextOf(tvReplayFileMessageStatus, "Get Contacts")
+        changeToNormalState(
+            tickImage = imageView_tickThree,
+            mainView = constraintReplyFileMessage,
+            contentProgress = contentProgressReplyFileMessage,
+            textView = tvReplyFileMessageStatus,
+            progressBar = progressBarReplyFileMsg
 
-        updateProgressBar(progressBarReplyFileMsg, 0)
+        )
 
-        changeImageViewResourceDone(imageView_tickThree)
+        showView(contentProgressReplyFileMessage)
 
-        changeColor(imageView_tickThree, Color.parseColor("#E7E6E6"))
+        setTextOf(tvReplyFileMessageStatus, "Get Contacts")
 
         val requestGetContact = RequestGetContact.Builder().build()
 
@@ -1686,6 +1898,16 @@ class ChatFragment : Fragment(), TestListener {
 
 
     }
+
+    private fun changeImageViewResourceToError(imageView: AppCompatImageView) {
+
+        changeImageViewColor(imageView, R.color.red_active)
+
+        imageView.setImageResource(R.drawable.ic_round_close_24px)
+
+
+    }
+
 
     private fun openImagePicker() {
 

@@ -30,9 +30,10 @@
             android:orientation="vertical">
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/constraintLayout"
+                android:id="@+id/constraintSendFileMessage"
                 style="@style/const_method"
                 android:layout_marginTop="12dp"
+                tools:background="@drawable/background_top_method_item_error"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +58,6 @@
                     android:id="@+id/progressSendFileMessage"
                     style="@style/Widget.AppCompat.ProgressBar"
                     android:layout_width="40dp"
-
                     android:layout_height="40dp"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonFileMsg"
@@ -68,7 +68,6 @@
 
                 <TextView
                     android:id="@+id/TxtViewFileMsg"
-
                     android:layout_width="wrap_content"
                     android:layout_height="20sp"
                     android:text="Send File Message"
@@ -85,11 +84,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
+                    tools:src="@drawable/ic_round_close_24px"
+                    tools:background="@drawable/default_background_rounded_rect"
+
                     android:src="@drawable/ic_done_black_24dp"
                     app:layout_constraintBottom_toBottomOf="@+id/TxtViewFileMsg"
                     app:layout_constraintEnd_toStartOf="@+id/guideline_sfilemsg_Right"
                     app:layout_constraintTop_toTopOf="@+id/TxtViewFileMsg"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <ProgressBar
                     android:id="@+id/progressBarSendFileMessage"
@@ -137,11 +139,13 @@
                     android:id="@+id/tvSendFileMessageStatus"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:padding="4dp"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline_sfilemsg_Right"
+                    app:layout_constraintEnd_toEndOf="@+id/progressBarSendFileMessage"
                     app:layout_constraintStart_toStartOf="@+id/guideline_sfilemsg"
                     app:layout_constraintTop_toBottomOf="@+id/progressBarSendFileMessage"
+                    tools:background="@drawable/default_background_rounded_rect"
                     tools:text="status progress" />
 
                 <ImageButton
@@ -155,12 +159,12 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/constraintLayout2"
+                android:id="@+id/constraintUploadFile"
                 style="@style/const_method"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+                app:layout_constraintTop_toBottomOf="@+id/constraintSendFileMessage">
 
 
                 <android.support.v7.widget.AppCompatImageView
@@ -252,8 +256,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline_UploadFile_Right"
+                    app:layout_constraintEnd_toEndOf="@+id/progressBarUploadFile"
                     app:layout_constraintStart_toStartOf="@+id/guideline_UploadFile"
                     app:layout_constraintTop_toBottomOf="@+id/progressBarUploadFile"
                     tools:text="status progress" />
@@ -269,13 +274,13 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/layoutReplayFileMessage"
+                android:id="@+id/constraintReplyFileMessage"
                 style="@style/const_method"
                 android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+                app:layout_constraintTop_toBottomOf="@+id/constraintUploadFile">
 
 
                 <android.support.v7.widget.AppCompatImageView
@@ -366,8 +371,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
+                    android:padding="4dp"
+
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline_Reply_File_Msg_Right"
+                    app:layout_constraintEnd_toEndOf="@+id/progressBarReplyFileMsg"
                     app:layout_constraintStart_toStartOf="@+id/guideline_Reply_File_Msg"
                     app:layout_constraintTop_toBottomOf="@id/progressBarReplyFileMsg"
                     tools:text="status progress" />
@@ -384,12 +391,12 @@
 
             <android.support.constraint.ConstraintLayout
 
-                android:id="@+id/constraintLayout4"
+                android:id="@+id/constraintUploadImage"
                 style="@style/const_method"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutReplayFileMessage">
+                app:layout_constraintTop_toBottomOf="@+id/constraintReplyFileMessage">
 
 
                 <android.support.v7.widget.AppCompatImageView
@@ -465,12 +472,14 @@
                     app:layout_constraintGuide_begin="73dp" />
 
                 <TextView
+                    android:padding="4dp"
+
                     android:id="@+id/tvUploadImageStatus"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline_uploadImage_right"
+                    app:layout_constraintEnd_toEndOf="@+id/progressUploadImage"
                     app:layout_constraintStart_toStartOf="@+id/guideline_uploadImage"
                     app:layout_constraintTop_toBottomOf="@+id/progressUploadImage"
                     tools:text="status progress" />
@@ -487,14 +496,14 @@
 
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/layoutSendLocationMessage"
+                android:id="@+id/constraintSendLocationMessage"
                 style="@style/const_method"
                 android:layout_width="match_parent"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+                app:layout_constraintTop_toBottomOf="@+id/constraintUploadImage">
 
 
                 <TextView
@@ -573,12 +582,14 @@
                     app:layout_constraintGuide_end="73dp" />
 
                 <TextView
+                    android:padding="4dp"
+
                     android:id="@+id/tvSendLocationStatus"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                    app:layout_constraintEnd_toEndOf="@+id/progressBarLocationMessage"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/guideline6"
                     app:layout_constraintTop_toBottomOf="@+id/progressBarLocationMessage"

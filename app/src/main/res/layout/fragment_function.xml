@@ -15,65 +15,65 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:background="@drawable/connect_button_shape"
             android:elevation="16dp"
             android:text="Connect"
             android:textColor="@color/white"
-            app:layout_constraintBottom_toTopOf="@+id/recyclerV_funcFrag"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline3"
             app:layout_constraintVertical_bias="0.782"
             tools:targetApi="lollipop" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="48dp"
-            android:layout_marginBottom="4dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
             android:gravity="center_vertical"
             android:text="SandBox"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/button_Connect"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5" />
+            app:layout_constraintBottom_toBottomOf="@+id/switchCompat_sandBox"
+            app:layout_constraintStart_toEndOf="@+id/switchCompat_sandBox"
+            app:layout_constraintTop_toTopOf="@+id/switchCompat_sandBox"
+            app:layout_constraintVertical_bias="0.25" />
+
 
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/switchCompat_sandBox"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView2"
-            app:layout_constraintEnd_toStartOf="@+id/textView2"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/button_Connect"
-            app:layout_constraintTop_toTopOf="@+id/textView2" />
+            android:layout_marginStart="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
         <TextView
             android:id="@+id/textView_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView2"
             app:layout_constraintStart_toStartOf="@+id/guideline4"
             app:layout_constraintTop_toTopOf="@+id/textView2"
-            app:layout_constraintVertical_bias="0.545"
+            app:layout_constraintVertical_bias="0.5"
             tools:text="connecting" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerV_funcFrag"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="8dp"
-            android:layout_marginTop="4dp"
-            android:background="@color/blue_grey_inactive"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:paddingTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/top_32_radius_blue_grey_inactive"
             android:scrollbarAlwaysDrawVerticalTrack="true"
             android:scrollbarSize="4dp"
             android:scrollbarThumbVertical="@drawable/progress_bar_log"
@@ -81,40 +81,25 @@
             android:verticalScrollbarPosition="right"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline2" />
+            app:layout_constraintTop_toBottomOf="@id/layoutSearchResult"
+            app:layout_constraintVertical_bias="1.0" />
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.21" />
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="85dp" />
 
         <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/AVLoadingIndicatorView"
             android:layout_width="36dp"
-            android:layout_height="37dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="16dp"
             android:visibility="gone"
             app:indicatorColor="@color/blue_active"
             app:indicatorName="BallPulseIndicator"
             app:layout_constraintBottom_toBottomOf="@+id/textView_state"
             app:layout_constraintEnd_toEndOf="@+id/button_Connect"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/textView_state"
             app:layout_constraintTop_toTopOf="@+id/textView_state"
-            app:layout_constraintVertical_bias="0.478"
+            app:layout_constraintVertical_bias="0.5"
             tools:visibility="visible" />
-
 
         <RelativeLayout
 
@@ -197,21 +182,138 @@
         </RelativeLayout>
 
 
-        <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:visibility="gone"-->
-        <!--app:backgroundTint="@color/purple_active"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--app:srcCompat="@drawable/ic_arrow_upward_black_24dp"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--app:elevation="8dp"-->
-        <!--app:fabCustomSize="48dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="20dp"-->
-        <!--app:layout_constraintStart_toStartOf="@+id/relativeMenu"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/guideline4"-->
-        <!--app:layout_constraintHorizontal_bias="0.115" android:layout_marginBottom="56dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/recyclerV_funcFrag"/>-->
+        <android.support.constraint.ConstraintLayout
+            android:translationY="-200dp"
+            tools:translationY="0dp"
+            android:elevation="8dp"
+            android:id="@+id/layoutSearchResult"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/search_result_shape"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_Connect"
+            tools:visibility="visible"
+            tools:targetApi="lollipop">
+
+            <TextView
+                android:id="@+id/tvSearchQuery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Query"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline19"
+                app:layout_constraintHorizontal_bias="0.178"
+                app:layout_constraintStart_toEndOf="@+id/imageCloseSearchResult"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.483" />
+
+            <ImageButton
+                android:id="@+id/imageButtonNextResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_downward"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/imageButtonPreviousResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_upward_black_24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvNextResult"
+                app:layout_constraintHorizontal_bias="0.341"
+                app:layout_constraintStart_toStartOf="@+id/guideline19"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/imageCloseSearchResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_round_close_white1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tvResultCount"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageButtonNextResult"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:gravity="center"
+                android:text="of"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvResultCount"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvNextResult"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView6"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.50121653" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.21" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="48dp" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="8dp" />
 
 
         <android.support.constraint.Guideline
@@ -220,6 +322,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_begin="205dp" />
+
 
     </android.support.constraint.ConstraintLayout>
 
