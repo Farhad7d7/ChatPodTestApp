@@ -22,7 +22,7 @@ class MethodList {
                 "13 Reply MSG",
                 "14 Leave THRD",
                 "15 Mute THRD",
-                "16 Un Mute THRD",
+                "16 UnMute THRD",
                 "17 Delete MSG",
                 "18 Edit MSG",
                 "19 Get history",
@@ -131,7 +131,7 @@ class MethodList {
                 "Reply To MSG",//13
                 "Leave Created THRD",//14
                 "Mute THRD",//15
-                "UnMute THRD",//16
+                "Mute THRD",//16
                 "Delete MSG",//17
                 "Edit MSG",//18
                 "Get History",//19
@@ -167,7 +167,7 @@ class MethodList {
                 "",//13
                 "",//14
                 "",//15
-                "",//16
+                "UnMute Thread",//16
                 "",//17
                 "",//18
                 "",//19

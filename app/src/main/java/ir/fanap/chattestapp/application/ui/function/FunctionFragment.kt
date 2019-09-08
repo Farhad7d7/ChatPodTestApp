@@ -32,10 +32,9 @@ import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.wang.avi.AVLoadingIndicatorView
 import ir.fanap.chattestapp.R
-import ir.fanap.chattestapp.SpecificLogFragment
+import ir.fanap.chattestapp.application.ui.log.SpecificLogFragment
 import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
@@ -52,10 +51,8 @@ import ir.fanap.chattestapp.bussines.model.Method
 import kotlinx.android.synthetic.main.fragment_function.*
 import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
-import org.json.JSONObject
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import rx.subjects.BehaviorSubject
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -91,7 +88,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private val positionUniqueIds: HashMap<Int, ArrayList<String>> = HashMap()
     private val uniqueIdLogName: HashMap<String, ArrayList<String>> = HashMap()
     private val uniqueIdLog: HashMap<String, ArrayList<String>> = HashMap()
-    private val listOfLogs: ArrayList<LogClass> = ArrayList()
+    //    private val listOfLogs: ArrayList<LogClass> = ArrayList()
     private var positionLogs: HashMap<Int, ArrayList<LogClass>> = HashMap()
 
 
@@ -158,12 +155,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         bottomSheetSearchContacts.isHideable = true
 
-//        appCompatImageView.setOnClickListener {
-//
-//
-//            showTokenDialog()
-//
-//        }
 
 
         rgSearchContactsType.setOnCheckedChangeListener { _, _ ->
@@ -365,6 +356,23 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun focusOnNextSearchResult(next: Boolean = false) {
 
+
+        /**
+         * *
+         *
+         * next = true means that we are scrolling to next position, not previous.
+         *
+         * because next item hides behind bottom menu, we plus 2 to the next position.
+         *
+         * so our item comes up and shown in middle of screen.
+         *
+         *
+         * */
+
+
+        val lastHideTime = Date().time
+
+
         activity?.runOnUiThread {
 
             tvNextResult.text = (nextSearchPosition + 1).toString()
@@ -380,8 +388,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             Handler().postDelayed({
 
+                val currentTime = Date().time
 
-                hideLastSearchedResults()
+
+                if (currentTime - lastHideTime > 3000)
+                    hideLastSearchedResults()
 
 
             }, 3000)
@@ -393,6 +404,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun hideLastSearchedResults() {
 
+
+        /**
+         *
+         * when we request for next result, if last result is highlighted,
+         *
+         * it will remain highlighted until we hide it all.
+         *
+         *
+         * */
 
         for (index in searchInMethodsResults.indices) {
 
@@ -408,6 +428,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun handleSearchContact(view: View) {
+
+
         val searchQuery = etSearchContacts.text.toString()
 
 
@@ -447,6 +469,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         searchInMethodsResults.clear()
 
         var found = false
+
+
+        //remove spaces for better search
+
 
         val queryS = query.replace(" ", "")
 
@@ -591,34 +617,34 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
         val logs = positionLogs[position]
+//
+//        if (logs != null) {
+//            for (l in logs) {
+//
+//                Log.d("LTAG", ":::::::::: LOG NAME => ${l.logName}")
+//
+//
+//            }
+//        }
 
-        if (logs != null) {
-            for (l in logs) {
-
-                Log.d("LTAG", ":::::::::: LOG NAME => ${l.logName}")
-
-
-            }
-        }
-
-
-        textView_log.text = ""
-
-        positionLogs[position]?.forEach {
-
-            textView_log.append("\n \n ..:: ${it.logName} ::.. \n \n  >> ${it.log} \n \n \n ========================== \n \n \n")
-
-        }
+//
+//        textView_log.text = ""
+//
+//        positionLogs[position]?.forEach {
+//
+//            textView_log.append("\n \n ..:: ${it.logName} ::.. \n \n  >> ${it.log} \n \n \n ========================== \n \n \n")
+//
+//        }
 
 //        textView_log.text = methods[position].log
 
-        if (textView_log.text.isEmpty()) {
-            appCompatImageView_noResponse.visibility = View.VISIBLE
-            txtView_noResponse.visibility = View.VISIBLE
-        } else {
-            appCompatImageView_noResponse.visibility = View.GONE
-            txtView_noResponse.visibility = View.GONE
-        }
+//        if (textView_log.text.isEmpty()) {
+//            appCompatImageView_noResponse.visibility = View.VISIBLE
+//            txtView_noResponse.visibility = View.VISIBLE
+//        } else {
+//            appCompatImageView_noResponse.visibility = View.GONE
+//            txtView_noResponse.visibility = View.GONE
+//        }
 
 //        bottomSheetLog.state = BottomSheetBehavior.STATE_EXPANDED
 
@@ -630,7 +656,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         bundle.putParcelableArrayList("LOGS", logs)
 
         logFragment.arguments = bundle
-
 
         logFragment.show(childFragmentManager, "LOG_FRAG")
 
@@ -959,23 +984,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if ((linearLayoutManager.findLastVisibleItemPosition() + 1) == linearLayoutManager.itemCount) {
 
 
-                    menuView.animate()
-                        .setDuration(250)
-                        .translationY(100f)
-                        .alpha(0f)
-                        .setInterpolator(LinearInterpolator())
-                        .start()
+                    //hide bottom menu
+                    hideBottomMenu(menuView)
 
 
                 } else {
 
 
-                    menuView.animate()
-                        .setDuration(250)
-                        .translationY(0f)
-                        .alpha(1f)
-                        .setInterpolator(LinearInterpolator())
-                        .start()
+                    //show bottom menu
+                    showBottomMenu(menuView)
 
 
                 }
@@ -986,6 +1003,24 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
         return view
+    }
+
+    private fun showBottomMenu(menuView: View) {
+        menuView.animate()
+            .setDuration(250)
+            .translationY(0f)
+            .alpha(1f)
+            .setInterpolator(LinearInterpolator())
+            .start()
+    }
+
+    private fun hideBottomMenu(menuView: View) {
+        menuView.animate()
+            .setDuration(250)
+            .translationY(100f)
+            .alpha(0f)
+            .setInterpolator(LinearInterpolator())
+            .start()
     }
 
     private fun initView(view: View) {
@@ -1020,7 +1055,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (it == "CHAT_READY") {
 
                     chatReady = true
+
+
                     avLoadingIndicatorView.visibility = View.GONE
+
                     textView_state.setTextColor(
                         ContextCompat.getColor(activity?.applicationContext!!, R.color.green_active)
                     )
@@ -1031,83 +1069,42 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 } else {
 
                     chatReady = false
+
+                    textView_state.setTextColor(
+                        ContextCompat.getColor(activity?.applicationContext!!, R.color.grey)
+                    )
                 }
 
 
             }
 
-
-//        logObserver
-//            .subscribeOn(AndroidSchedulers.mainThread())
-//            .doOnNext {
-//                Log.d("MTAG","on next $it")
-//            }
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe {
-//
-//                        Log.d("MTAG","CHange detected: $it")
-//            }
-//
-//
-//        observable.subscribe {
-//
-//            Log.d("MTAG","Value changed $it")
-//
-//        }
-//        pOb.subscribe {
-//
-//            Log.d("MTAG","Value changed $it")
-//        }
+        fucCallback.onInsertObserver.subscribe { pair ->
 
 
-//        fucCallback.observableKeys.subscribe{
-//            Log.d("MTAG","KEYS CHANGED: $it")
-//
-//        }
-//        fucCallback.observableVals.subscribe{
-//            Log.d("MTAG","VALUES CHANGED: $it")
-//        }
-//
-
-//        fucCallback.oKey.subscribe{
-//            Log.d("MTAG","KEY INSERTED: $it")
-//
-//        }
-//        fucCallback.oValue.subscribe{
-////            Log.d("MTAG","VALUE INSERTED: $it")
-//
-//
-//
-//
-//        }
-
-
-        fucCallback.onInsertObserver.subscribe {
-
-
-            if (it.second == "" || it.second.length < 30) return@subscribe
-
-
-
-            Log.d("LTAG", "On Insert to FUCCALLBACK $it")
-
-
-            if (positionUniqueIds[getPositionOf(it.first)] == null) {
-
-                positionUniqueIds[getPositionOf(it.first)] = ArrayList()
-
-            }
-
-            positionUniqueIds[getPositionOf(it.first)]?.add(it.second)
-
-
-
-            Log.d("LTAG", "Position Unique Ids => $positionUniqueIds")
+            saveUniqueId(pair)
 
 
         }
 
 
+
+
+
+    }
+
+    private fun saveUniqueId(pair: Pair<String, String>) {
+
+
+        if (pair.second == "" || pair.second.length < 30) return
+
+
+        if (positionUniqueIds[getPositionOf(pair.first)] == null) {
+
+            positionUniqueIds[getPositionOf(pair.first)] = ArrayList()
+
+        }
+
+        positionUniqueIds[getPositionOf(pair.first)]?.add(pair.second)
     }
 
     private fun getHistory() {
@@ -1504,7 +1501,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         functionAdapter.setErrorState(position, true)
 
-        functionAdapter.deActivateFunction(position)
+        deactiveFunction(position)
 
         when (Method.RUNNING) {
 
@@ -1954,7 +1951,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                 showToast("No Thread found with condition Group and Admin true!")
 
-                changeIconReceive(getPositionOf(ConstantMsgType.ADD_ADMIN_ROLES))
+                deactiveFunction(getPositionOf(ConstantMsgType.ADD_ADMIN_ROLES))
 
                 changeFunTwoState(getPositionOf(ConstantMsgType.ADD_ADMIN_ROLES), Method.DEACTIVE)
 
@@ -2044,11 +2041,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             }
 
-
-            //todo find correct threadId
             if (threadId == 0L) {
 
-                threadId = chatResponse.result.threads[0].id
+                val pos = getPositionOf(ConstantMsgType.REMOVE_ADMIN_ROLES)
+
+                showToast("Can't find a thread that you have set role permission")
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+                return
 
             }
 
@@ -2338,6 +2341,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val requestEditMessage = RequestEditMessage
             .Builder("this is edit ", response!!.result.messageId)
+            .typeCode("default")
             .build()
 
 
@@ -2525,11 +2529,33 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onMuteThread(response: ChatResponse<ResultMute>?) {
         super.onMuteThread(response)
+
         if (fucCallback[ConstantMsgType.MUTE_THREAD] == response?.uniqueId) {
             val position = 15
             changeIconReceive(position)
             changeFunThreeState(position, Method.DONE)
         }
+
+
+        if (fucCallback[ConstantMsgType.UNMUTE_THREAD] == response?.uniqueId) {
+            val position = 16
+            changeFunThreeState(position, Method.DONE)
+            changeFunFourState(position, Method.RUNNING)
+
+            requestUnMuteThread(response?.result)
+        }
+    }
+
+    private fun requestUnMuteThread(result: ResultMute?) {
+
+
+        val threadId = result?.threadId
+
+        val requestMuteThread = RequestMuteThread.Builder(threadId!!).build()
+
+        fucCallback[ConstantMsgType.UNMUTE_THREAD] =
+            mainViewModel.unMuteThread(requestMuteThread)
+
     }
 
     override fun onUnmuteThread(response: ChatResponse<ResultMute>?) {
@@ -2537,7 +2563,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (fucCallback[ConstantMsgType.UNMUTE_THREAD] == response?.uniqueId) {
             val position = 16
             changeIconReceive(position)
-            changeFunThreeState(position, Method.DONE)
+            changeFunFourState(position, Method.DONE)
         }
     }
 
@@ -3119,7 +3145,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             changeFunTwoState(pos, Method.DONE)
             changeFunThreeState(pos, Method.RUNNING)
 
-            requestUnmuteThread(response)
+            requestMuteThreadForUnMute(response)
         }
 
         if (fucCallback[ConstantMsgType.MUTE_THREAD] == response?.uniqueId) {
@@ -3219,10 +3245,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun requestSpamThread(response: ChatResponse<ResultThread>?) {
 
-        val targetThreadId = response?.subjectId
+        val targetThreadId = response?.result?.thread?.id
+
+        val canSpam: Boolean = response?.result?.thread?.canSpam ?: false
 
 
-        if (response?.result?.thread?.canSpam!!) {
+
+        if (canSpam) {
 
 
             val requestSpam = RequestSpam.Builder().threadId(targetThreadId!!)
@@ -3232,16 +3261,31 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
 
 
+        } else {
+
+            val pos = getPositionOf(ConstantMsgType.SPAM_THREAD)
+
+
+            deactiveFunction(pos)
+
+            changeFunThreeState(pos, Method.DEACTIVE)
+
+            showToast("Can't find a spam thread")
+
         }
 
 
     }
 
     private fun requestGetParticipants(response: ChatResponse<ResultThread>?) {
+
+
         val threadId = response!!.result.thread.id
         val requestThreadParticipant = RequestThreadParticipant.Builder(threadId).build()
         fucCallback[ConstantMsgType.GET_PARTICIPANT] =
             mainViewModel.getParticipant(requestThreadParticipant)
+
+
     }
 
     private fun sendMessageForForwardMessage(response: ChatResponse<ResultThread>?) {
@@ -3266,11 +3310,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         fucCallback[GET_HISTORY] = mainViewModel.getHistory(requestGetHistory)
     }
 
-    private fun requestUnmuteThread(response: ChatResponse<ResultThread>?) {
+    private fun requestMuteThreadForUnMute(response: ChatResponse<ResultThread>?) {
+
         val threadId = response!!.result.thread.id
+
         val requestMuteThread = RequestMuteThread.Builder(threadId).build()
+
         fucCallback[ConstantMsgType.UNMUTE_THREAD] =
-            mainViewModel.unMuteThread(requestMuteThread)
+            mainViewModel.muteThread(requestMuteThread)
+
+
     }
 
     private fun requestMuteThread(response: ChatResponse<ResultThread>?) {
@@ -3307,18 +3356,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         for (indexOfUniqueId in uniqueIds.indices) {
 
-            Log.d("LTAG", "ind")
 
             if (indexOfUniqueId == 0) continue
 
-            Log.d("LTAG", "added to fucuc")
 
             fucCallback[ConstantMsgType.FORWARD_MESSAGE] = uniqueIds[indexOfUniqueId]
 
         }
 
 
-        Log.d("LTAG", "Outside of 4")
 
 
         fucCallback[ConstantMsgType.FORWARD_MESSAGE] = uniqueIds[0]
@@ -3461,7 +3507,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val contactList = response?.result?.contacts
 
-
         if (fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId) {
 
             val pos = getPositionOf(ConstantMsgType.SPAM_THREAD)
@@ -3544,7 +3589,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val position = 16
             changeFunOneState(position, Method.DONE)
             changeFunTwoState(position, Method.RUNNING)
-            handleUnmuteThread(contactList)
+            handleUnMuteThread(contactList)
         }
 
         if (fucCallback[ConstantMsgType.MUTE_THREAD] == response?.uniqueId) {
@@ -3579,23 +3624,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (fucCallback[ConstantMsgType.CREATE_THREAD] == response?.uniqueId) {
 //            fucCallback.remove(ConstantMsgType.CREATE_THREAD)
-            handleGetThreadResponse(contactList)
+            handleGetContactForCreateThread(contactList)
+
         }
 
         if (fucCallback[ConstantMsgType.GET_CONTACT] == response?.uniqueId) {
-//            fucCallback.remove(ConstantMsgType.GET_CONTACT)
             val position = 1
             changeIconReceive(position)
             changeFunOneState(1, Method.DONE)
-
-            methods[position].methodNameFlag = true
-            var json = gson.toJson(response?.result)
-            methods[position].log = json
         }
 
         if (fucCallback[ConstantMsgType.BLOCK_CONTACT] == response?.uniqueId) {
-//            fucCallback.remove(ConstantMsgType.BLOCK_CONTACT)
-
             val pos = getPositionOf(ConstantMsgType.BLOCK_CONTACT)
             changeFunOneState(pos, Method.DONE)
             changeFunTwoState(pos, Method.RUNNING)
@@ -3618,10 +3657,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 //            handleUnBlockContact(contactList)
 //        }
         if (fucCallback[ConstantMsgType.ADD_PARTICIPANT] == response?.uniqueId) {
-            fucCallback.remove(ConstantMsgType.ADD_PARTICIPANT)
+
+
             val pos = getPositionOf(ConstantMsgType.ADD_PARTICIPANT)
 
             changeFunOneState(pos, Method.DONE)
+
             changeFunTwoState(pos, Method.RUNNING)
 
             handleAddParticipant(contactList)
@@ -3634,8 +3675,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
             val pos = getPositionOf(ConstantMsgType.FORWARD_MESSAGE)
+
             changeFunOneState(pos, Method.DONE)
+
             changeFunTwoState(pos, Method.RUNNING)
+
             handleForward(contactList)
             // CREATE WITH MESSAGE CONTACT
             // STORE THE MESSAGE ID
@@ -3646,7 +3690,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun prepareCreateThreadMessageForSpam(contactList: ArrayList<Contact>?) {
 
 
-        if (contactList != null) {
+        if (!contactList.isNullOrEmpty()) {
 
             var contactId = 0L
 
@@ -3705,6 +3749,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback[ConstantMsgType.SPAM_THREAD_MESSAGE] = uniqueIds[1]
 
 
+        } else {
+
+            showNoContactToast()
+
+            deactiveFunction(getPositionOf(ConstantMsgType.SPAM_THREAD))
+
+            changeFunTwoState(getPositionOf(ConstantMsgType.SPAM_THREAD), Method.DEACTIVE)
+
+
         }
 
 
@@ -3712,7 +3765,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun handleGetParticipant(contactList: ArrayList<Contact>?) {
 
-        if (contactList != null) {
+        if (!contactList.isNullOrEmpty()) {
             var choose = 0
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
@@ -3743,12 +3796,20 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             if (choose == 0) {
 
-                showToast("no contact found. at least add one contact with user")
+                showNoContactToast()
                 val pos = getPositionOf(ConstantMsgType.GET_PARTICIPANT)
-                changeIconReceive(pos)
+                deactiveFunction(pos)
                 changeFunTwoState(pos, Method.DEACTIVE)
 
             }
+        } else {
+
+            showNoContactToast()
+            val pos = getPositionOf(ConstantMsgType.GET_PARTICIPANT)
+            deactiveFunction(pos)
+            changeFunTwoState(pos, Method.DEACTIVE)
+
+
         }
     }
 
@@ -3788,13 +3849,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             if (choose < 2) {
 
 
-                showToast("You Have Not Enough Contact With User Id")
+                showNoContactToast()
 
                 val pos = getPositionOf(ConstantMsgType.CREATE_THREAD_WITH_FORW_MSG)
 
                 changeFunTwoState(pos, Method.DEACTIVE)
 
-                changeIconReceive(pos)
+                deactiveFunction(pos)
             }
         }
     }
@@ -3838,8 +3899,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             } else {
 
-                contactId = contactList[0].id
-
                 invList.add(Invitee(121, InviteType.Constants.TO_BE_USER_SSO_ID))
 
             }
@@ -3860,12 +3919,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             val uniqueIds = mainViewModel.createThreadWithMessage(requestCreateThread)
 
-//            uniqueIds?.forEach {
-//
-//                fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] = it
-//
-//            }
-
             fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG] = uniqueIds!![0]
 
             fucCallback[ConstantMsgType.CREATE_THREAD_WITH_MSG_MESSAGE] = uniqueIds[1]
@@ -3884,7 +3937,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (contact.isHasUser) {
 
                     val contactId = contact.id
-                    val inviteList = Array<Invitee>(1) { Invitee(contactId, 2) }
+                    val inviteList = Array<Invitee>(1) {
+                        Invitee(
+                            contactId,
+                            InviteType.Constants.TO_BE_USER_CONTACT_ID
+                        )
+                    }
                     inviteList[0].id = contactId
 
                     val uniqueId = mainViewModel.createThread(
@@ -3898,16 +3956,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 }
             }
 
-            if (choose == 1) {
+            if (choose == 0) {
 
 
-                showToast("You Have No Contact With User Id")
+                showNoContactToast()
 
                 val pos = getPositionOf(ConstantMsgType.GET_HISTORY)
 
+                deactiveFunction(pos)
+
                 changeFunTwoState(pos, Method.DEACTIVE)
 
-                changeIconReceive(pos)
 
             }
         }
@@ -3922,7 +3981,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     choose++
                     val contactId = contact.id
                     val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 2))
+                    inviteList.add(Invitee(contactId, InviteType.Constants.TO_BE_USER_CONTACT_ID))
                     val requestThreadInnerMessage =
                         RequestThreadInnerMessage.Builder().message(faker.music().genre())
                             .build()
@@ -3930,11 +3989,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
                             .build()
+
                     val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
 
                     fucCallback[ConstantMsgType.EDIT_MESSAGE_ID] = uniqueId!![1]
 
-                    uniqueId?.forEach {
+                    uniqueId.forEach {
 
                         fucCallback[ConstantMsgType.EDIT_MESSAGE] = it
                     }
@@ -3943,15 +4003,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 }
             }
 
-            if (choose == 1) {
+            if (choose == 0) {
 
-                showToast("You Have No Contact With User Id")
+                showNoContactToast()
 
                 val pos = getPositionOf(ConstantMsgType.EDIT_MESSAGE)
 
+                deactiveFunction(pos)
+
                 changeFunTwoState(pos, Method.DEACTIVE)
 
-                changeIconReceive(pos)
 
             }
         }
@@ -3987,37 +4048,53 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             if (choose == 0) {
 
 
-                showToast("You Have No User")
+                showNoContactToast()
 
                 val pos = getPositionOf(ConstantMsgType.DELETE_MESSAGE)
 
                 changeFunTwoState(pos, Method.DEACTIVE)
 
-                changeIconReceive(pos)
+                deactiveFunction(pos)
 
 
             }
         }
     }
 
-    private fun handleUnmuteThread(contactList: ArrayList<Contact>?) {
+    private fun handleUnMuteThread(contactList: ArrayList<Contact>?) {
+
         if (contactList != null) {
             var choose = 0
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
 
                     val contactId = contact.id
-                    val inviteList = Array<Invitee>(1, { i -> Invitee(contactId, 2) })
+                    val inviteList =
+                        Array(1) { Invitee(contactId, InviteType.Constants.TO_BE_USER_CONTACT_ID) }
                     inviteList[0].id = contactId
 
                     val uniqueId = mainViewModel.createThread(
                         ThreadType.Constants.NORMAL, inviteList, "", ""
                         , "", ""
                     )
+                    choose++
                     fucCallback[ConstantMsgType.UNMUTE_THREAD] = uniqueId
                     break
 
                 }
+            }
+
+            if (choose == 0) {
+
+                showNoContactToast()
+
+                val pos = getPositionOf(ConstantMsgType.UNMUTE_THREAD)
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+
             }
         }
     }
@@ -4029,23 +4106,41 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (contact.isHasUser) {
                     val contactId = contact.id
 
-                    val inviteList = Array<Invitee>(1, { i -> Invitee(contactId, 2) })
-                    inviteList[0].id = contactId
+                    val inviteList =
+                        Array(1) { Invitee(contactId, InviteType.Constants.TO_BE_USER_CONTACT_ID) }
 
                     val uniqueId = mainViewModel.createThread(
                         ThreadType.Constants.NORMAL, inviteList, "", ""
                         , "", ""
                     )
+                    choose++
                     fucCallback[ConstantMsgType.MUTE_THREAD] = uniqueId
                     break
 
                 }
             }
+
+            if (choose == 0) {
+
+                showNoContactToast()
+
+                val pos = getPositionOf(ConstantMsgType.MUTE_THREAD)
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+            }
         }
     }
 
     private fun handleLeaveThread(contactList: ArrayList<Contact>?) {
+
+        val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
+
+
         if (contactList != null) {
+            var choose = 0
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
                     val contactId = contact.id
@@ -4058,22 +4153,42 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                             .message(requestThreadInnerMessage)
                             .build()
                     val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    choose++
                     if (uniqueId?.get(0) != null) {
                         fucCallback[ConstantMsgType.LEAVE_THREAD] = uniqueId[0]
                     }
                     break
                 }
             }
+
+            if (choose == 0) {
+
+                showNoContactToast()
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+
+            }
+
         } else {
-            showToast("You Have no contact")
-            val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
-            changeIconReceive(pos)
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
             changeFunTwoState(pos, Method.DEACTIVE)
         }
     }
 
     private fun handleReplyMessage(contactList: ArrayList<Contact>?) {
+
+        val pos = getPositionOf(ConstantMsgType.REPLY_MESSAGE)
+
+        var choose = 0
+
         if (contactList != null) {
+
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
                     val contactId = contact.id
@@ -4087,12 +4202,25 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                             .message(requestThreadInnerMessage)
                             .build()
                     val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    choose++
                     fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = uniqueId!![0]
                     fucCallback[ConstantMsgType.REPLY_MESSAGE_ID] = uniqueId[1]
                     break
 
                 }
             }
+        }
+
+
+
+        if (choose == 0) {
+
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
+            changeFunTwoState(pos, Method.DEACTIVE)
+
         }
     }
 
@@ -4115,6 +4243,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun handleForward(contactList: ArrayList<Contact>?) {
 
 
+        var choose = 0
+
         if (contactList != null) {
 
 
@@ -4122,19 +4252,19 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             val ivList = ArrayList<Invitee>()
 
+            ivList.add(Invitee(121, InviteType.Constants.TO_BE_USER_SSO_ID))
+
+            ivList.add(Invitee(122, InviteType.Constants.TO_BE_USER_SSO_ID))
 
 
             for (contact: Contact in contactList) {
 
-                if (contactIdsList.size == 2) break
 
                 if (contact.isHasUser) {
 
+                    if (contactIdsList.size == 2) break
+
                     contactIdsList.add(contact.id)
-
-                } else {
-
-                    ivList.add(Invitee(contact.id, 2))
 
                 }
 
@@ -4146,30 +4276,27 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                 val inviteList = ArrayList<Invitee>()
 
-                inviteList.add(Invitee(contactIdsList[0], 2))
+                inviteList.add(
+                    Invitee(
+                        contactIdsList[0],
+                        InviteType.Constants.TO_BE_USER_CONTACT_ID
+                    )
+                )
 
-                contactBIdType = 2
+                contactBIdType = InviteType.Constants.TO_BE_USER_CONTACT_ID
 
                 val requestThreadInnerMessage =
                     RequestThreadInnerMessage.Builder().message(faker.music().genre())
                         .build()
+
                 val requestCreateThread: RequestCreateThread =
-                    RequestCreateThread.Builder(0, inviteList)
+                    RequestCreateThread.Builder(ThreadType.Constants.NORMAL, inviteList)
                         .message(requestThreadInnerMessage)
                         .build()
-                val uniqueId =
-                    mainViewModel.createThreadWithMessage(requestCreateThread)
-//                fucCallback[ConstantMsgType.FORWARD_MESSAGE] = uniqueId!![0]
 
+                val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
 
-//                uniqueId?.forEach {
-//
-//                    fucCallback[ConstantMsgType.FORWARD_MESSAGE] = it
-//
-//                }
-//
-//                fucCallback[ConstantMsgType.FORWARD_MESSAGE] = ""
-
+                saveUniqueId(Pair(first = ConstantMsgType.FORWARD_MESSAGE, second = uniqueId!![0]))
 
                 fucCallback[ConstantMsgType.FORWARD_MESSAGE_ID] = uniqueId!![1]
 
@@ -4191,31 +4318,33 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             } else if (ivList.size > 0) {
 
-                contactBIdType = 2
+
+                val inviteList = ArrayList<Invitee>()
+
+                inviteList.add(
+                    ivList[0]
+                )
+
+
+                contactBIdType = InviteType.Constants.TO_BE_USER_SSO_ID
 
 
                 val requestThreadInnerMessage =
                     RequestThreadInnerMessage.Builder().message(faker.music().genre())
                         .build()
                 val requestCreateThread: RequestCreateThread =
-                    RequestCreateThread.Builder(0, ivList)
+                    RequestCreateThread.Builder(0, inviteList)
                         .message(requestThreadInnerMessage)
                         .build()
                 val uniqueId =
                     mainViewModel.createThreadWithMessage(requestCreateThread)
 //                fucCallback[ConstantMsgType.FORWARD_MESSAGE] = uniqueId!![0]
 
-                uniqueId?.forEach {
 
-                    fucCallback[ConstantMsgType.FORWARD_MESSAGE] = it
-
-                }
-
-                fucCallback[ConstantMsgType.FORWARD_MESSAGE] = ""
-
-
+                saveUniqueId(Pair(first = ConstantMsgType.FORWARD_MESSAGE, second = uniqueId!![0]))
 
                 fucCallback[ConstantMsgType.FORWARD_MESSAGE_ID] = uniqueId!![1]
+
 
 
                 if (ivList.size > 1) {
@@ -4223,7 +4352,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     fucCallback[ConstantMsgType.FORWARD_MESSAGE_CONTACT_B] = ivList[1].id.toString()
 
                 } else {
-
 
                     fucCallback[ConstantMsgType.FORWARD_MESSAGE_CONTACT_B] = ivList[0].id.toString()
 
@@ -4233,56 +4361,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             }
 
-
-//            for (contact: Contact in contactList) {
-//
-//                if (contact.isHasUser) {
-//
-//                    val contactId = contact.id
-//
-//                    val inviteList = ArrayList<Invitee>()
-//
-//                    inviteList.add(Invitee(contactId, 1))
-//
-//
-//                    when (step) {
-//
-//
-//                        1 -> {
-//
-//                            val requestThreadInnerMessage =
-//                                RequestThreadInnerMessage.Builder().message(faker.music().genre())
-//                                    .build()
-//                            val requestCreateThread: RequestCreateThread =
-//                                RequestCreateThread.Builder(0, inviteList)
-//                                    .message(requestThreadInnerMessage)
-//                                    .build()
-//                            val uniqueId =
-//                                mainViewModel.createThreadWithMessage(requestCreateThread)
-//                            fucCallback[ConstantMsgType.FORWARD_MESSAGE] = uniqueId!![0]
-//                            fucCallback[ConstantMsgType.FORWARD_MESSAGE_ID] = uniqueId[1]
-//                            step++
-//
-//                        }
-//
-//                        2 ->{
-//
-//
-//
-//
-//                        }
-//                    }
-//
-//                }
-//            }
-
-
         }
     }
 
     private fun handleAddParticipant(contactList: ArrayList<Contact>?) {
+        var choose = 0
         if (contactList != null) {
-            var choose = 0
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
                     val contactId = contact.id
@@ -4302,6 +4386,19 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     }
                 }
             }
+        }
+
+        if (choose == 0) {
+
+            val pos = getPositionOf(ConstantMsgType.ADD_PARTICIPANT)
+
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
+            changeFunTwoState(pos, Method.DEACTIVE)
+
+
         }
     }
 
@@ -4333,8 +4430,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         var send = false
 
         if (contactList != null) {
-
-
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
                     val contactId = contact.id
@@ -4358,18 +4453,38 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (!send) {
 
+            showNoContactToast()
             changeIconReceive(position)
             changeFunOneState(position, Method.DEACTIVE)
             changeFunTwoState(position, Method.DEACTIVE)
             changeFunThreeState(position, Method.DEACTIVE)
-
-            showToast("You have neither a thread nor a contact to send message")
 
 
         }
     }
 
     private fun showToast(message: String) {
+
+        try {
+            activity?.runOnUiThread {
+
+                Toast.makeText(
+                    activity,
+                    message,
+                    Toast.LENGTH_LONG
+                ).show()
+
+
+            }
+        } catch (e: Exception) {
+            Log.e("MTAG", e.message)
+
+        }
+    }
+
+    private fun showNoContactToast() {
+
+        val message = "You haven't any contact with user (hasUser = true)"
 
         try {
             activity?.runOnUiThread {
@@ -4480,13 +4595,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (targetContactId == 0L) {
 
 
-            showToast("You Have no valid contact to update")
+            showNoContactToast()
 
             val position = getPositionOf(ConstantMsgType.UPDATE_CONTACT)
 
-            changeIconReceive(position)
+            deactiveFunction(position)
 
-            changeFunOneState(position, Method.DEACTIVE)
+            changeFunTwoState(position, Method.DEACTIVE)
 
             return
 
@@ -4520,11 +4635,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             if (targetContactId == 0L) {
 
 
-                showToast("You Have No Contact with user")
+                showNoContactToast()
 
                 val pos = getPositionOf(ConstantMsgType.BLOCK_CONTACT)
 
-                changeIconReceive(pos)
+                deactiveFunction(pos)
 
                 changeFunTwoState(pos, Method.DEACTIVE)
 
@@ -4573,11 +4688,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
     private fun unMuteThread() {
-        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
-        fucCallback[ConstantMsgType.UNMUTE_THREAD] = mainViewModel.getContact(requestGetContact)
         val position = 16
         changeIconSend(position)
         changeFunOneState(position, Method.RUNNING)
+        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+        fucCallback[ConstantMsgType.UNMUTE_THREAD] = mainViewModel.getContact(requestGetContact)
 
 //        val requestMuteThread = RequestMuteThread.Builder(threadId).build()
 //        mainViewModel.unMuteThread(requestMuteThread)
@@ -4633,8 +4748,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             .firstName(faker.name()?.firstName())
             .lastName(faker.name()?.lastName())
             .build()
+
+
         val uniqueId = mainViewModel.addContacts(requestAddContact)
+
         fucCallback[ConstantMsgType.ADD_CONTACT] = uniqueId
+
         val position = 3
         changeIconSend(position)
         changeFunOneState(position, Method.RUNNING)
@@ -4887,15 +5006,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 }
             }
 
-//            if (targetParticipant == null) {
-//
-//                if (participants.size > 1) {
-//
-//                    targetParticipant = participants[0]
-//
-//                }
-//
-//            }
 
             if (targetParticipant != null) {
 
@@ -4914,52 +5024,38 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             } else {
 
+                targetParticipant = participants.last()
 
-                val pos = getPositionOf(ConstantMsgType.REMOVE_PARTICIPANT)
+                showToast("No regular participant found. Removing an Admin...")
 
-//            setErrorOnFunctionInPosition()
-                changeIconReceive(pos)
-                changeFunThreeState(pos, Method.DEACTIVE)
+                val parIdList = ArrayList<Long>()
 
-                showToast("There is no participant in this thread. Please add someone")
+                parIdList.add(targetParticipant.id)
+
+                val requestRemoveParticipant =
+                    RequestRemoveParticipants.Builder(response.subjectId, parIdList)
+                        .build()
+
+                fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] =
+                    mainViewModel.removeParticipant(requestRemoveParticipant)
+
 
             }
 
 
         } else {
 
-            showToast("There is no participant in this thread. Please add someone")
-
+            showToast("No participant found to remove")
 
             val pos = getPositionOf(ConstantMsgType.REMOVE_PARTICIPANT)
 
-//            setErrorOnFunctionInPosition()
-            changeIconReceive(pos)
+            deactiveFunction(pos)
+
             changeFunThreeState(pos, Method.DEACTIVE)
 
 
         }
 
-
-//        if (contactList != null) {
-//            for (contact: Contact in contactList) {
-//                if (contact.isHasUser) {
-//                    val contactId = contact.id
-//                    val inviteList = ArrayList<Invitee>()
-//                    inviteList.add(Invitee(contactId, 1))
-//                    val requestThreadInnerMessage =
-//                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
-//                    val requestCreateThread: RequestCreateThread =
-//                        RequestCreateThread.Builder(0, inviteList)
-//                            .message(requestThreadInnerMessage)
-//                            .build()
-//
-////                    val uniqueId = mainViewModel.createThread(requestCreateThread)
-////                    fucCallback[ConstantMsgType.CREATE_THREAD] = uniqueId
-//                    break
-//                }
-//            }
-//        }
     }
 
     //handle getContact response to create thread
@@ -4974,26 +5070,20 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
      * <p>
      * int CHANNEL = 8;
      */
-    private fun handleGetThreadResponse(contactList: ArrayList<Contact>?) {
+    private fun handleGetContactForCreateThread(contactList: ArrayList<Contact>?) {
+
+        val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
+
+        var choose = 0
+
         if (contactList != null) {
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
                     val contactId = contact.id
                     val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 2))
-//                    val requestThreadInnerMessage =
-//                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
-//                    val requestCreateThread: RequestCreateThread =
-//                        RequestCreateThread.Builder(0, inviteList)
-//                            .message(requestThreadInnerMessage)
-//                            .build()
-//                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
-//
-//                    fucCallback[ConstantMsgType.CREATE_THREAD] = uniqueId!![0]
+                    inviteList.add(Invitee(contactId, InviteType.Constants.TO_BE_USER_CONTACT_ID))
 
-                    val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
-
-
+                    choose++
 
                     createThreadChannel(inviteList)
                     createThreadChannelGroup(inviteList)
@@ -5003,6 +5093,21 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     break
                 }
             }
+        }
+
+
+        if (choose == 0) {
+
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
+            changeFunOneState(pos, Method.DEACTIVE)
+            changeFunTwoState(pos, Method.DEACTIVE)
+            changeFunThreeState(pos, Method.DEACTIVE)
+            changeFunFourState(pos, Method.DEACTIVE)
+
+
         }
     }
 
@@ -5063,7 +5168,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
         activity?.runOnUiThread {
-            functionAdapter.deActivateFunction(position)
+            deactiveFunction(position)
         }
 
 //        activity?.runOnUiThread {
@@ -5074,6 +5179,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 ////            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
 ////                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
 //        }
+    }
+
+    private fun deactiveFunction(pos: Int) {
+        functionAdapter.deActivateFunction(pos)
     }
 
     /* visibility of progress bar*/
@@ -5161,124 +5270,137 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
-    override fun onLogEventWithName(logName: String, json: String) {
-        super.onLogEventWithName(logName, json)
+//    override fun onLogEventWithName(logName: String, json: String) {
+//        super.onLogEventWithName(logName, json)
+//
+//
+//
+//        listOfLogs.addAll(refactorLog(logName = logName,log = json,gson = gson))
+//
+//
+////        val jsonReader = try {
+////            JSONObject(json)
+////        } catch (e: Exception) {
+////            Log.e("LTAG", e.message)
+////            null
+////        }
+////
+////
+////        if (!jsonReader?.has("uniqueId")!! || jsonReader["uniqueId"] == "") {
+////
+////            try {
+////
+////                if (jsonReader.has("content")) {
+////
+////
+////                    val contentString = jsonReader["content"].toString()
+////
+////                    val content = JSONObject(contentString)
+////
+////                    if (content.has("uniqueIds")) {
+////
+////                        val jsonUniqueIds = content["uniqueIds"].toString()
+////
+////                        val uniqueIdsList: ArrayList<String> =
+////                            gson.fromJson(jsonUniqueIds, object : TypeToken<ArrayList<String>>() {
+////
+////                            }.type)
+////
+////                        uniqueIdsList.forEach {
+////
+////                            addToLogsAndLogNames(it, logName, json)
+////
+////                        }
+////
+////
+////                    }
+////
+////
+////                }
+////            } catch (e: Exception) {
+////                Log.e("LTAG", e.message)
+////            }
+////
+////
+////
+////            return
+////
+////        }
+////
+////
+////        val uniqueId: String = jsonReader["uniqueId"].toString()
+////
+////
+////
+////        if (uniqueId[0] == '[') {
+////
+////            val uniqueIdsList: ArrayList<String> =
+////                gson.fromJson(uniqueId, object : TypeToken<ArrayList<String>>() {
+////
+////                }.type)
+////
+////            uniqueIdsList.forEach {
+////
+////                addToLogsAndLogNames(it, logName, json)
+////
+////            }
+////
+////            return
+////
+////        }
+////
+////        addToLogsAndLogNames(uniqueId, logName, json)
+//
+//
+//    }
 
-
-        val jsonReader = try {
-            JSONObject(json)
-        } catch (e: Exception) {
-            Log.e("LTAG", e.message)
-            null
-        }
-
-
-
-
-
-        if (!jsonReader?.has("uniqueId")!! || jsonReader["uniqueId"] == "") {
-
-
-            try {
-                if (jsonReader.has("content")) {
-
-
-                    val contentString = jsonReader["content"].toString()
-
-                    val content = JSONObject(contentString)
-
-                    if (content.has("uniqueIds")) {
-
-                        val jsonUniqueIds = content["uniqueIds"].toString()
-
-                        val uniqueIdsList: ArrayList<String> =
-                            gson.fromJson(jsonUniqueIds, object : TypeToken<ArrayList<String>>() {
-
-                            }.type)
-
-                        uniqueIdsList.forEach {
-
-                            addToLogsAndLogNames(it, logName, json)
-
-                        }
-
-
-                    }
-
-
-                }
-            } catch (e: Exception) {
-                Log.e("LTAG", e.message)
-            }
-
-
-
-            return
-
-        }
-
-
-        val uniqueId: String = jsonReader["uniqueId"].toString()
-
-
-
-        if (uniqueId[0] == '[') {
-
-            val uniqueIdsList: ArrayList<String> =
-                gson.fromJson(uniqueId, object : TypeToken<ArrayList<String>>() {
-
-                }.type)
-
-            uniqueIdsList.forEach {
-
-                addToLogsAndLogNames(it, logName, json)
-
-            }
-
-            return
-
-        }
-
-        addToLogsAndLogNames(uniqueId, logName, json)
-
-
-    }
-
-    private fun addToLogsAndLogNames(uniqueId: String, logName: String, log: String) {
-
-
-        listOfLogs.add(LogClass(uniqueId = uniqueId, logName = logName, log = log))
-
-
-        if (uniqueIdLogName[uniqueId] == null) {
-
-            uniqueIdLogName[uniqueId] = ArrayList()
-
-        }
-
-        if (uniqueIdLog[uniqueId] == null) {
-
-            uniqueIdLog[uniqueId] = ArrayList()
-
-        }
-
-
-
-        uniqueIdLogName[uniqueId]!!.add(logName)
-
-
-        uniqueIdLog[uniqueId]!!.add(log)
-
-
-    }
+//    private fun addToLogsAndLogNames(uniqueId: String, logName: String, log: String) {
+//
+//
+//        listOfLogs.add(LogClass(uniqueId = uniqueId, logName = logName, log = log))
+//
+//
+//        if (uniqueIdLogName[uniqueId] == null) {
+//
+//            uniqueIdLogName[uniqueId] = ArrayList()
+//
+//        }
+//
+//        if (uniqueIdLog[uniqueId] == null) {
+//
+//            uniqueIdLog[uniqueId] = ArrayList()
+//
+//        }
+//
+//
+//
+//        uniqueIdLogName[uniqueId]!!.add(logName)
+//
+//
+//        uniqueIdLog[uniqueId]!!.add(log)
+//
+//
+//    }
 
     private fun setLogsToPosition(position: Int) {
 
 
+        /**
+         *
+         * 1. loop through all received logs
+         *
+         * 2. loop through all uniqueIds of specific function at specific position
+         *
+         * 3. Map logs to functions by uniqueId
+         *
+         *
+         * */
+
+        val listOfLogs = mainViewModel.listOfLogs
+
         positionLogs[position] = ArrayList()
 
         //for each unique id that set to this position
-
         positionUniqueIds[position]?.forEach {
 
                 uniqueId ->
@@ -5300,14 +5422,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     }
 
-    class Variable<T>(private val defaultValue: T) {
-        var value: T = defaultValue
-            set(value) {
-                field = value
-                observable.onNext(value)
-            }
-        val observable = BehaviorSubject.create(value)
-    }
+
 
 
 }

@@ -15,17 +15,16 @@ import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.content.Context
 import android.text.Html
+import android.util.Log
 import com.fanap.podchat.mainmodel.ChatMessage
 import com.fanap.podchat.util.ChatMessageType
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.application.ui.IOnBackPressed
+import rx.android.schedulers.AndroidSchedulers
 
 
-
-
-
-class LogFragment : Fragment(), TestListener, IOnBackPressed {
+class LogFragment : Fragment(), TestListener {
 
 
     private lateinit var mainViewModel: MainViewModel
@@ -47,7 +46,6 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setHasOptionsMenu(true)
 
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerV_funcLog)
@@ -63,6 +61,7 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
         recyclerView.adapter = logAdapter
         val linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
+
 
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -131,7 +130,10 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
             val fv = linearLayoutManager.findFirstVisibleItemPosition() - 1
 
-            recyclerView.smoothScrollToPosition(fv)
+            if (fv < 0)
+                recyclerView.smoothScrollToPosition(0)
+            else
+                recyclerView.smoothScrollToPosition(fv)
 
         }
 
@@ -153,44 +155,49 @@ class LogFragment : Fragment(), TestListener, IOnBackPressed {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application)
             .create(MainViewModel::class.java)
+
         mainViewModel.setTestListener(this)
-        setHasOptionsMenu(true)
 
-    }
 
-    override fun onBackPressed(): Boolean {
-        if (searchView.isIconified) {
-            searchView.setIconifiedByDefault(true)
-            return true
+        mainViewModel.listOfLogs.onInsertObserver
+
+            .subscribe {
+
+            Log.d("LTAG","New log added $it")
+
         }
-        return false
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-        menu?.clear()
-        inflater?.inflate(R.menu.menu_log, menu)
-        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
-        searchView.maxWidth = Int.MAX_VALUE
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                logAdapter.filter.filter(p0)
-                return false
-            }
-
-            override fun onQueryTextChange(p0: String?): Boolean {
-                logAdapter.filter.filter(p0)
-                return false
-            }
-
-        })
 
     }
+
+
+
+//    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+//        super.onCreateOptionsMenu(menu, inflater)
+//        menu?.clear()
+//        inflater?.inflate(R.menu.menu_log, menu)
+//        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+//        searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
+//        searchView.maxWidth = Int.MAX_VALUE
+//
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(p0: String?): Boolean {
+//                logAdapter.filter.filter(p0)
+//                return false
+//            }
+//
+//            override fun onQueryTextChange(p0: String?): Boolean {
+//                logAdapter.filter.filter(p0)
+//                return false
+//            }
+//
+//        })
+//
+//    }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId

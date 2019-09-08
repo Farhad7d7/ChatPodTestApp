@@ -8,7 +8,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.view.animation.BounceInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -42,6 +44,10 @@ class FunctionAdapter(
             if (methods[position].isExpanded) View.VISIBLE else View.GONE
 
         viewHolder.buttonExpand.rotation = if (methods[position].isExpanded) 90f else 0f
+
+        viewHolder.buttonRun.scaleX = if(methods[position].isActive) 0.6f else 1f
+
+        viewHolder.buttonRun.scaleY = if(methods[position].isActive) 0.6f else 1f
 
 
 
@@ -396,6 +402,8 @@ class FunctionAdapter(
 
                 viewHolder.imgViewHasError.visibility = View.GONE
 
+                setPulseAnim(viewHolder.buttonRun)
+
             }
 
 
@@ -417,6 +425,9 @@ class FunctionAdapter(
                 viewHolder.imgViewHasError.visibility = View.GONE
 
                 viewHolder.progressMethod.visibility = View.GONE
+
+
+                scaleBackAnim(viewHolder.buttonRun)
 
 
             }
@@ -448,6 +459,8 @@ class FunctionAdapter(
                 viewHolder.imgViewHasError.visibility = View.GONE
 
                 viewHolder.progressMethod.visibility = View.INVISIBLE
+
+
 
 
             }
@@ -498,18 +511,52 @@ class FunctionAdapter(
 
     }
 
+    private fun scaleBackAnim(view: View) {
+
+        view.animate()
+            .setDuration(750)
+            .setInterpolator(LinearInterpolator())
+            .scaleX(1f)
+            .scaleY(1f)
+            .withEndAction {
+
+
+            }
+            .start()
+
+    }
+
+    private fun setPulseAnim(view: View) {
+
+
+        view.animate()
+            .setDuration(750)
+            .setInterpolator(LinearInterpolator())
+            .scaleX(0.6f)
+            .scaleY(0.6f)
+            .withEndAction {
+
+
+            }
+            .start()
+
+
+    }
+
+
+
     private fun runMethod(
         viewHolder: ViewHolder,
         position: Int
     ) {
 
 
-
         viewHolderListener.onIconClicked(viewHolder)
 
         if (!methods[position].isExpanded) {
 
-            viewHolder.buttonExpand.animate().rotation(90f).setDuration(250).setInterpolator(BounceInterpolator())
+            viewHolder.buttonExpand.animate().rotation(90f).setDuration(250)
+                .setInterpolator(BounceInterpolator())
                 .start()
 
             methods[position].isExpanded = true

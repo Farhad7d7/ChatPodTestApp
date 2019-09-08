@@ -33,7 +33,7 @@ import com.fanap.podchat.util.FileUtils
 import com.fanap.podchat.util.InviteType
 import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
-import ir.fanap.chattestapp.SpecificLogFragment
+import ir.fanap.chattestapp.application.ui.log.SpecificLogFragment
 import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType

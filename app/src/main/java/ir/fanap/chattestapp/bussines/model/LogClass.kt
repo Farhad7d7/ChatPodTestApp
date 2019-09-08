@@ -9,8 +9,7 @@ data class LogClass(val uniqueId:String,val logName: String, val log: String) : 
         parcel.readString(),
         parcel.readString(),
         parcel.readString()
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(uniqueId)

@@ -17,6 +17,7 @@ import com.fanap.podchat.requestobject.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import ir.fanap.chattestapp.application.ui.log.refactorLog
 import ir.fanap.chattestapp.application.ui.util.SmartArrayList
 import ir.fanap.chattestapp.bussines.model.LogClass
 import org.json.JSONObject
@@ -50,11 +51,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
 
-
-
-
-
-
+            override fun OnNotSeenDuration(resultNotSeen: OutPutNotSeenDurations?) {
+                super.OnNotSeenDuration(resultNotSeen)
+            }
 
             override fun onGetThreadParticipant(content: String?, response: ChatResponse<ResultParticipant>?) {
                 super.onGetThreadParticipant(content, response)
@@ -258,76 +257,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun saveLogs(logName: String?, json: String?) {
 
-        val jsonReader = try {
-            JSONObject(json)
-        } catch (e: Exception) {
-            null
-        }
 
-        if (!jsonReader?.has("uniqueId")!! || jsonReader["uniqueId"] == "") {
-
-            try {
-
-                if (jsonReader.has("content")) {
-
-
-                    val contentString = jsonReader["content"].toString()
-
-                    val content = JSONObject(contentString)
-
-                    if (content.has("uniqueIds")) {
-
-                        val jsonUniqueIds = content["uniqueIds"].toString()
-
-                        val uniqueIdsList: ArrayList<String> =
-                            gson.fromJson(jsonUniqueIds, object : TypeToken<ArrayList<String>>() {
-
-                            }.type)
-
-                        uniqueIdsList.forEach {
-
-                            addToLogsAndLogNames(it, logName, json)
-
-                        }
-
-
-                    }
-
-
-                }
-            } catch (e: Exception) {
-                Log.e("LTAG", e.message)
-            }
-
-            return
-
-        }
-
-
-        val uniqueId: String = jsonReader["uniqueId"].toString()
-
-
-
-        if (uniqueId[0] == '[') {
-
-            val uniqueIdsList: ArrayList<String> =
-                gson.fromJson(uniqueId, object : TypeToken<ArrayList<String>>() {
-
-                }.type)
-
-            uniqueIdsList.forEach {
-
-                addToLogsAndLogNames(it, logName, json)
-
-            }
-
-            return
-
-        }
-
-        addToLogsAndLogNames(uniqueId, logName, json)
-
-
+        listOfLogs.addAll(refactorLog(logName=logName!!,log = json!!,gson = gson))
 
 
     }
@@ -445,18 +376,6 @@ fun uploadImageProgress(
 
     fun addContacts(requestAddContact: RequestAddContact): String {
 
-        chat.addListener(object : ChatListener {
-
-            override fun onLogEvent(logName: String?, json: String?) {
-
-
-            }
-
-            override fun onContactAdded(content: String?, response: ChatResponse<ResultAddContact>?) {
-                super.onContactAdded(content, response)
-                testListener.onAddContact(response)
-            }
-        })
         return chat.addContact(requestAddContact)
     }
 

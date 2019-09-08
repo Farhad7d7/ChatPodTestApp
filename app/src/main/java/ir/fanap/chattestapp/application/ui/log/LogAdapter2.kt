@@ -30,48 +30,32 @@ class LogAdapter2(val logs: ArrayList<LogClass>) : RecyclerView.Adapter<LogAdapt
 
 
 
-        viewHolder.tvLogName.text = "..:: ${logs[position].logName} ::.."
+
         val logText = logs[position].log
-
-        var beautifyText: String
-
-        beautifyText = logText.replace("{","{<br>")
-        beautifyText =beautifyText.replace("[","[<br>")
-        beautifyText =beautifyText.replace("}","<br>}")
-        beautifyText =beautifyText.replace("]","<br>]")
-        beautifyText =beautifyText.replace(",",",<br>")
-        beautifyText =beautifyText.replace("\n","<br>")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-//            beautifyText = logText.replace("{","{<br>")
-//            beautifyText =beautifyText.replace("[","[<br>")
-//            beautifyText =beautifyText.replace("}","<br>}")
-//            beautifyText =beautifyText.replace("]","<br>]")
-//            beautifyText =beautifyText.replace(",",",<br>")
-//            beautifyText =beautifyText.replace("\n","<br>")
+            viewHolder.textViewLog.text = Html.fromHtml(logText,Html.FROM_HTML_MODE_LEGACY)
 
-            viewHolder.textViewLog.text = Html.fromHtml(beautifyText,Html.FROM_HTML_MODE_LEGACY)
-            
+            viewHolder.tvLogName.text = Html.fromHtml("..:: ${logs[position].logName} ::.." ,Html.FROM_HTML_MODE_LEGACY)
+
+
+
+
         }else{
 
-//            beautifyText = logText.replace("{","\t{\n")
-//            beautifyText =beautifyText.replace("[","\t[\n")
-//            beautifyText =beautifyText.replace("}","\n\t}")
-//            beautifyText =beautifyText.replace("]","\n\t]")
-//            beautifyText =beautifyText.replace(",",",\n")
-            
-            viewHolder.textViewLog.text = Html.fromHtml(beautifyText)
+            viewHolder.textViewLog.text = Html.fromHtml(logText)
+
+            viewHolder.tvLogName.text = Html.fromHtml("..:: ${logs[position].logName} ::..")
 
         }
 
         viewHolder.logNum.text = "#${(position+1)}"
 
-
         viewHolder.btnCopy.setOnClickListener {
 
+            setClipboard(context = viewHolder.itemView.context , text =  viewHolder.textViewLog.text.toString() )
 
-            setClipboard(context = viewHolder.itemView.context , text = logText)
         }
 
     }

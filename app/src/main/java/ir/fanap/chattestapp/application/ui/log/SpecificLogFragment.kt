@@ -1,4 +1,4 @@
-package ir.fanap.chattestapp
+package ir.fanap.chattestapp.application.ui.log
 
 
 import android.os.Bundle
@@ -9,10 +9,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import ir.fanap.chattestapp.application.ui.log.LogAdapter2
+import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.bussines.model.LogClass
-import kotlinx.android.synthetic.main.bottom_sheet_log.*
-import kotlinx.android.synthetic.main.fragment_log.*
 import kotlinx.android.synthetic.main.specific_log_fragment.*
 import kotlinx.android.synthetic.main.specific_log_fragment.fabGoTop
 
@@ -52,8 +50,7 @@ class SpecificLogFragment : BottomSheetDialogFragment() {
     private fun initial() {
 
 
-
-        if(logs.isEmpty()){
+        if (logs.isEmpty()) {
 
             imgViewNoLog.visibility = View.VISIBLE
             tvNoLog.visibility = View.VISIBLE
@@ -76,7 +73,7 @@ class SpecificLogFragment : BottomSheetDialogFragment() {
         }
 
         fabGoDown.hide()
-        
+
         fabGoTop.hide()
 
         buttonCloseLogs.show()
@@ -110,20 +107,19 @@ class SpecificLogFragment : BottomSheetDialogFragment() {
 
                 }
 
-                if((lastItem + 1) == itemCount){
+                if ((lastItem + 1) == itemCount) {
                     fabGoDown.hide()
                     fabClear.hide()
 //                    buttonCloseLogs.hide()
                 }
 
-                if(first == 0){
+                if (first == 0) {
                     fabGoTop.hide()
 
                 }
 
 
             }
-
 
 
         })
@@ -133,7 +129,10 @@ class SpecificLogFragment : BottomSheetDialogFragment() {
             val ls = linearLayoutManager.findLastVisibleItemPosition() + 1
 
 
-            recyclerViewLogs.smoothScrollToPosition(ls)
+            if (ls <= logs.size)
+                recyclerViewLogs.smoothScrollToPosition(ls)
+            else
+                recyclerViewLogs.smoothScrollToPosition(logs.size)
 
         }
 
@@ -148,10 +147,13 @@ class SpecificLogFragment : BottomSheetDialogFragment() {
         fabGoTop.setOnClickListener {
 
 
-
             val fv = linearLayoutManager.findFirstVisibleItemPosition() - 1
 
-            recyclerViewLogs.smoothScrollToPosition(fv)
+            if (fv < 0)
+                recyclerViewLogs.smoothScrollToPosition(0)
+            else
+                recyclerViewLogs.smoothScrollToPosition(fv)
+
 
         }
 
@@ -169,12 +171,11 @@ class SpecificLogFragment : BottomSheetDialogFragment() {
             dialog.dismiss()
 
         }
-        
-        
+
 
     }
 
-    fun addLog(logs:ArrayList<LogClass> ){
+    fun addLog(logs: ArrayList<LogClass>) {
 
 
         this.logs = logs

@@ -92,11 +92,13 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
             android:visibility="gone"
             app:indicatorColor="@color/blue_active"
             app:indicatorName="BallPulseIndicator"
             app:layout_constraintBottom_toBottomOf="@+id/textView_state"
             app:layout_constraintEnd_toEndOf="@+id/button_Connect"
+            app:layout_constraintStart_toEndOf="@+id/textView_state"
             app:layout_constraintTop_toTopOf="@+id/textView_state"
             app:layout_constraintVertical_bias="0.5"
             tools:visibility="visible" />
@@ -217,8 +219,8 @@
 
             <ImageButton
                 android:id="@+id/imageButtonNextResult"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginEnd="16dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_downward"
@@ -228,8 +230,8 @@
 
             <ImageButton
                 android:id="@+id/imageButtonPreviousResult"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_upward_black_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -240,8 +242,8 @@
 
             <ImageButton
                 android:id="@+id/imageCloseSearchResult"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginStart="16dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_round_close_white1"
