@@ -330,6 +330,25 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         }
 
+
+        //todo add run all button
+//
+//        textView_state.setOnClickListener {
+//
+//
+//            for (i in 0..31) {
+//
+//
+//               Handler().postDelayed({
+//
+//                   runMethodAtPosition(i)
+//
+//               },1500)
+//            }
+//
+//
+//        }
+
     }
 
     private fun showPreviousSearchResult() {
@@ -663,10 +682,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
-    //todo add run all button
-    //todo test on sand box
-    //todo fix conditions that no contact with HasUser field = true occurs
-
     override fun onIconClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
 
         var position = clickedViewHolder.adapterPosition
@@ -674,9 +689,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         runMethodAtPosition(position)
 
-//        for(i in 0..29){
-//            runMethodAtPosition(i)
-//        }
 
     }
 
@@ -686,6 +698,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         removeErrorStateOnFunctionInPosition(position)
 
         positionUniqueIds[position] = ArrayList()
+
+        recyclerView.smoothScrollToPosition(position)
 
 
         when (position) {
@@ -1085,9 +1099,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
         }
-
-
-
 
 
     }
@@ -3258,7 +3269,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 .build()
 
 
-            fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
+            showToast("SENDING SPAM REQUEST")
+//            fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
 
 
         } else {
@@ -4521,7 +4533,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 targetContactId = blockList.result.contacts[0].id
 
                 val requestUnBlock = RequestUnBlock.Builder()
-                    .contactId(targetContactId)
+                    .blockId(targetContactId)
                     .build()
 
                 fucCallback[ConstantMsgType.UNBLOCK_CONTACT] = mainViewModel.unBlock(requestUnBlock)
@@ -4565,7 +4577,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun handleUpdateContact(contactList: ArrayList<Contact>?) {
 
-        var targetContactId = 0L
+        var selected = false
+
 
         if (contactList != null) {
             for (contact: Contact in contactList) {
@@ -4584,16 +4597,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                         .email(email)
                         .build()
 
-                    val uniqueId = mainViewModel.updateContact(requestUpdateContact)
-                    fucCallback[ConstantMsgType.UPDATE_CONTACT] = uniqueId
+                    fucCallback[ConstantMsgType.UPDATE_CONTACT] =
+                        mainViewModel.updateContact(requestUpdateContact)
+                    selected = true
                     break
                 }
             }
         }
 
 
-        if (targetContactId == 0L) {
-
+        if (!selected) {
 
             showNoContactToast()
 
@@ -5421,8 +5434,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
     }
-
-
 
 
 }

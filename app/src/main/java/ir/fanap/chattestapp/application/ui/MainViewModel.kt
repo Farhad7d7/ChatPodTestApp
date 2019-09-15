@@ -51,6 +51,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
 
+
+            //todo implement not seen duration
             override fun OnNotSeenDuration(resultNotSeen: OutPutNotSeenDurations?) {
                 super.OnNotSeenDuration(resultNotSeen)
             }

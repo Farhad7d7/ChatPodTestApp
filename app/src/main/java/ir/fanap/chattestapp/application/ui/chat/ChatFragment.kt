@@ -20,6 +20,7 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.support.design.circularreveal.CircularRevealCompat
 import android.support.design.circularreveal.cardview.CircularRevealCardView
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -36,7 +37,9 @@ import com.github.javafaker.Faker
 import ir.fanap.chattestapp.application.ui.log.SpecificLogFragment
 import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
+import ir.fanap.chattestapp.application.ui.util.ChooseFileBottomSheetDialog
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
+import ir.fanap.chattestapp.application.ui.util.IPickFile
 import ir.fanap.chattestapp.application.ui.util.SmartHashMap
 import ir.fanap.chattestapp.bussines.model.LogClass
 import kotlinx.android.synthetic.main.fragment_chat.*
@@ -99,7 +102,9 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var imgViewMap: AppCompatImageView
     private lateinit var imgViewCheckLocationMessage: AppCompatImageView
     private lateinit var imageViewSelectedPic: AppCompatImageView
-    private lateinit var circularCard: CircularRevealCardView
+//    private lateinit var circularCard: View
+
+//    private lateinit var filePickerBottomSheet:BottomSheetBehavior<View>
 
     private val positionUniqueId: HashMap<Int, ArrayList<String>> = HashMap()
 
@@ -111,7 +116,9 @@ class ChatFragment : Fragment(), TestListener {
 //    private lateinit var imBtnShowFileMessageLog : ImageButton
 
 
-    var isOpen = false
+    var isAttachFileWindowOpen = false
+
+    private lateinit var filePicker:ChooseFileBottomSheetDialog
 
     private val faker: Faker = Faker()
 
@@ -174,26 +181,26 @@ class ChatFragment : Fragment(), TestListener {
 
 //        val appCmpImgViewFolder: AppCompatImageView = view.findViewById(R.id.appCompatImageView_folder)
 
-        val appCompatImageViewGallery: AppCompatImageView =
-            view.findViewById(R.id.appCompatImageView_gallery)
+//        val appCompatImageViewGallery: AppCompatImageView =
+//            view.findViewById(R.id.appCompatImageView_gallery)
+//
+//        val appCompatImageViewFile: AppCompatImageView =
+//            view.findViewById(R.id.appCompatImageView_folder)
+//
 
-        val appCompatImageViewFile: AppCompatImageView =
-            view.findViewById(R.id.appCompatImageView_folder)
 
-
-
-        appCompatImageViewFile.setOnClickListener {
-
-            runScaleAnim(it)
-
-            openFilePicker()
-
-        }
-
-        appCompatImageViewGallery.setOnClickListener {
-            runScaleAnim(it)
-            openImagePicker()
-        }
+//        appCompatImageViewFile.setOnClickListener {
+//
+//            runScaleAnim(it)
+//
+//            openFilePicker()
+//
+//        }
+//
+//        appCompatImageViewGallery.setOnClickListener {
+//            runScaleAnim(it)
+//            openImagePicker()
+//        }
 
 
 
@@ -204,7 +211,7 @@ class ChatFragment : Fragment(), TestListener {
             runScaleAnim(it)
 
 
-            if (!isOpen) {
+            if (!isAttachFileWindowOpen) {
 
                 openCircularCard()
 
@@ -269,44 +276,52 @@ class ChatFragment : Fragment(), TestListener {
 
     private fun closeCircularCard() {
 
-        val x = circularCard.left
-        val y = circularCard.bottom
-
-        val endRadius = max(circularCard.width, circularCard.height)
-        val startRadius = 0
+        if (!isAttachFileWindowOpen) return
 
 
-        val anim: Animator =
-            CircularRevealCompat.createCircularReveal(
-                circularCard,
-                x.toFloat(),
-                y.toFloat(),
-                startRadius.toFloat(),
-                endRadius.toFloat()
-            )
+//        filePickerBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
+
+//        val x = circularCard.left
+//        val y = circularCard.bottom
+//
+//        val endRadius = max(circularCard.width, circularCard.height)
+//        val startRadius = 0
+//
+//
+//        val anim: Animator =
+//            CircularRevealCompat.createCircularReveal(
+//                circularCard,
+//                x.toFloat(),
+//                y.toFloat(),
+//                startRadius.toFloat(),
+//                endRadius.toFloat()
+//            )
+//
+//
+//        anim.addListener(object : Animator.AnimatorListener {
+//            override fun onAnimationStart(p0: Animator?) {
+//
+//            }
+//
+//            override fun onAnimationCancel(p0: Animator?) {
+//            }
+//
+//            override fun onAnimationRepeat(p0: Animator?) {
+//            }
+//
+//            override fun onAnimationEnd(p0: Animator?) {
+//                circularCard.visibility = View.GONE
+//            }
+//        })
 
 
-        anim.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(p0: Animator?) {
+//        anim.interpolator = AccelerateDecelerateInterpolator()
+//        anim.duration = 150
+//        anim.start()
 
-            }
+        filePicker.dismiss()
 
-            override fun onAnimationCancel(p0: Animator?) {
-            }
-
-            override fun onAnimationRepeat(p0: Animator?) {
-            }
-
-            override fun onAnimationEnd(p0: Animator?) {
-                circularCard.visibility = View.GONE
-            }
-        })
-
-
-        anim.interpolator = AccelerateDecelerateInterpolator()
-        anim.duration = 150
-        anim.start()
-        isOpen = false
+        isAttachFileWindowOpen = false
 
         changeColor(atach_file, R.color.grey_active)
 
@@ -314,29 +329,37 @@ class ChatFragment : Fragment(), TestListener {
 
     private fun openCircularCard() {
 
-        val x = circularCard.left
-        val y = circularCard.bottom
 
-        val startRadius = 0
+        if(isAttachFileWindowOpen) return
 
-        val endRadius = hypot(circularCard.width.toDouble(), circularCard.height.toDouble())
-
-        val anim: Animator =
-            CircularRevealCompat.createCircularReveal(
-                circularCard,
-                x.toFloat(),
-                y.toFloat(),
-                startRadius.toFloat(),
-                endRadius.toFloat()
-            )
+        filePicker.show(childFragmentManager,"FILE_PICKER")
 
 
-        anim.interpolator = AccelerateDecelerateInterpolator()
-        circularCard.visibility = View.VISIBLE
-        circularCard.requestFocus()
-        anim.duration = 150
-        anim.start()
-        isOpen = true
+//        filePickerBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+
+//        val x = circularCard.left
+//        val y = circularCard.bottom
+//
+//        val startRadius = 0
+//
+//        val endRadius = hypot(circularCard.width.toDouble(), circularCard.height.toDouble())
+//
+//        val anim: Animator =
+//            CircularRevealCompat.createCircularReveal(
+//                circularCard,
+//                x.toFloat(),
+//                y.toFloat(),
+//                startRadius.toFloat(),
+//                endRadius.toFloat()
+//            )
+//
+//
+//        anim.interpolator = AccelerateDecelerateInterpolator()
+//        circularCard.visibility = View.VISIBLE
+//        circularCard.requestFocus()
+//        anim.duration = 150
+//        anim.start()
+        isAttachFileWindowOpen = true
 
         changeColor(atach_file, R.color.blue_inactive)
     }
@@ -434,9 +457,6 @@ class ChatFragment : Fragment(), TestListener {
         if (chatResponse?.uniqueId == fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE]) {
 
 
-
-
-
             prepareSendLocationMessage(chatResponse?.result?.threads)
 
 
@@ -465,7 +485,7 @@ class ChatFragment : Fragment(), TestListener {
 
             }
         } catch (e: Exception) {
-            Log.e("MTAG",e.message)
+            Log.e("MTAG", e.message)
         }
 
 
@@ -566,7 +586,7 @@ class ChatFragment : Fragment(), TestListener {
         super.onUploadFile(response)
 
 
-        if(response?.uniqueId == null) return
+        if (response?.uniqueId == null) return
 
 
 
@@ -799,11 +819,56 @@ class ChatFragment : Fragment(), TestListener {
         imgViewCheckLocationMessage = view.findViewById(R.id.checkBoxLocationMessage)
 
 
-        circularCard = view.findViewById(R.id.ccv_attachment_reveal)
+//        circularCard = view.findViewById(R.id.ccv_attachment_reveal)
+//
+//        filePickerBottomSheet = BottomSheetBehavior.from(circularCard)
+//
+//        filePickerBottomSheet.isHideable = true
+//
+//        filePickerBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
+
+
+        filePicker = ChooseFileBottomSheetDialog()
+
+        filePicker.setPickerListener(object : IPickFile{
+
+            override fun onSelect(type: Int) {
+
+                when(type){
+
+                    ChooseFileBottomSheetDialog.FILE -> openFilePicker()
+
+                    ChooseFileBottomSheetDialog.IMAGE -> openImagePicker()
+
+                }
+
+                closeCircularCard()
+
+
+
+            }
+        })
+
+
+
 
         imageViewSelectedPic = view.findViewById(R.id.imgViewSelectedPic)
 
         tvPickedFileName = view.findViewById(R.id.tvFileName)
+
+        val scrollView: ScrollView = view.findViewById(R.id.scrollView3)
+
+
+
+
+
+        scrollView.viewTreeObserver.addOnScrollChangedListener {
+
+
+            closeCircularCard()
+
+
+        }
 
 
     }
@@ -1480,6 +1545,16 @@ class ChatFragment : Fragment(), TestListener {
                             if (bytesSent < 95)
                                 updateProgressBar(progressBarSendFileMessage, bytesSent)
 
+                            if (bytesSent == 100) {
+
+                                setTextOf(
+                                    tvSendFileMessageStatus,
+                                    "Upload finished. Prepare sending message..."
+                                )
+
+
+                            }
+
 
                         }
                     } catch (e: Exception) {
@@ -1673,7 +1748,7 @@ class ChatFragment : Fragment(), TestListener {
 
             fucCallback[ConstantMsgType.UPLOAD_FILE] = mainViewModel.uploadFileProgress(
                 requestUploadFile,
-                object : ProgressHandler.onProgressFile{
+                object : ProgressHandler.onProgressFile {
 
                     override fun onProgress(
                         uniqueId: String?,
