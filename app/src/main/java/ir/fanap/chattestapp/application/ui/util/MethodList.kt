@@ -40,6 +40,7 @@ class MethodList {
                 "31 Spam/Report Thread",
                 "32 Pin/Unpin Thread",
                 "33 Pin/Unpin Message",
+
                 "34 Get Mention List",
                 "35 Get Current User Roles",
                 "36 Update Chat Profile"
