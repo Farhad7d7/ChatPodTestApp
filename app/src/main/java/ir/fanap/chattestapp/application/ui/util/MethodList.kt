@@ -37,7 +37,14 @@ class MethodList {
                 "28 Get Deliver List",
                 "29 Get Seen List",
                 "30 Search Contact",
-                "31 Spam/Report Thread"
+                "31 Spam/Report Thread",
+                "32 Pin/Unpin Thread",
+                "33 Pin/Unpin Message",
+                "34 Get Mention List",
+                "35 Get Current User Roles",
+                "36 Update Chat Profile"
+//                "34 Pin Message",
+//                "35 UnpinMessage"
             )
 
 
@@ -74,7 +81,13 @@ class MethodList {
                 "Get THRDs",//28
                 "Get THRDs",//29
                 "Search in Contacts",//30
-                "Get Contacts"//31
+                "Get Contacts",//31 spam thread
+                "Get Contacts",//32 Pin Thread,
+                "Get Contacts", //33 Pin Message
+                "Get Threads",//34
+                "Get Contacts", //35
+                "Update Bio"
+
             )
 
         val methodFuncTwo: MutableList<String> =
@@ -110,7 +123,12 @@ class MethodList {
                 "Send Text MSG",//28
                 "Send Text MSG",//29
                 "",//30
-                "Create THRD With MSG"
+                "Create THRD With MSG", // 31
+                "Create Thread", //32
+                "Create Group & Send Message", //33 Pin/Unpin Message
+                "Find Mentioned Threads",//34
+                "Create Group", //35
+                "Get User Info"
             )
 
         val methodFuncThree: MutableList<String> =
@@ -146,7 +164,12 @@ class MethodList {
                 "Get MSG Seen List",//28
                 "Get MSG Deliver List",//29
                 "",//30
-                "Spam/Report Thread"
+                "Spam/Report Thread",
+                "Pin Thread",//32
+                "Pin Message",//33
+                "Get Mention List",//
+                "Get Current User Roles",//35
+            ""
             )
 
         val methodFuncFour: MutableList<String> =
@@ -182,6 +205,11 @@ class MethodList {
                 "",//28
                 "",//29
                 "",//30
+                "",//31
+                "Unpin Thread",//32
+                "Unpin Message",//33
+                "",//34
+                "",//35
             ""
             )
     }

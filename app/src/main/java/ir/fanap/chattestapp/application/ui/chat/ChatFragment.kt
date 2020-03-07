@@ -102,19 +102,8 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var imgViewMap: AppCompatImageView
     private lateinit var imgViewCheckLocationMessage: AppCompatImageView
     private lateinit var imageViewSelectedPic: AppCompatImageView
-//    private lateinit var circularCard: View
-
-//    private lateinit var filePickerBottomSheet:BottomSheetBehavior<View>
 
     private val positionUniqueId: HashMap<Int, ArrayList<String>> = HashMap()
-
-
-//    private lateinit var imBtnShowFileMessageLog : ImageButton
-//    private lateinit var imBtnShowUploadFileLog : ImageButton
-//    private lateinit var imBtnShowFileMessageLog : ImageButton
-//    private lateinit var imBtnShowFileMessageLog : ImageButton
-//    private lateinit var imBtnShowFileMessageLog : ImageButton
-
 
     var isAttachFileWindowOpen = false
 
@@ -142,25 +131,6 @@ class ChatFragment : Fragment(), TestListener {
         contextFrag = context!!
     }
 
-    /*private <T extends View & CircularRevealWidget> void circularRevealFromMiddle(@NonNull final T circularRevealWidget) {
-    circularRevealWidget.post(new Runnable() {
-        @Override
-        public void run() {
-            int viewWidth = circularRevealWidget.getWidth();
-            int viewHeight = circularRevealWidget.getHeight();
-
-            int viewDiagonal = (int) Math.sqrt(viewWidth * viewWidth + viewHeight * viewHeight);
-
-            final AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.playTogether(
-                    CircularRevealCompat.createCircularReveal(circularRevealWidget, viewWidth / 2, viewHeight / 2, 10, viewDiagonal / 2),
-                    ObjectAnimator.ofArgb(circularRevealWidget, CircularRevealWidget.CircularRevealScrimColorProperty.CIRCULAR_REVEAL_SCRIM_COLOR, Color.RED, Color.TRANSPARENT));
-
-            animatorSet.setDuration(5000);
-            animatorSet.start();
-        }
-    });
-}*/
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -1577,7 +1547,7 @@ class ChatFragment : Fragment(), TestListener {
                     val contactId = contact.id
 
                     val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 2))
+                    inviteList.add(Invitee(contactId.toString(), 2))
                     val requestThreadInnerMessage =
                         RequestThreadInnerMessage.Builder().message(faker.music().genre())
                             .build()
@@ -1625,7 +1595,7 @@ class ChatFragment : Fragment(), TestListener {
             if (contact.isHasUser) {
 
                 val list =
-                    Array(1) { Invitee(contact.id, InviteType.Constants.TO_BE_USER_CONTACT_ID) }
+                    Array(1) { Invitee(contact.id.toString(), InviteType.Constants.TO_BE_USER_CONTACT_ID) }
 
                 fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = mainViewModel.createThread(
                     ThreadType.Constants.NORMAL, list, "nothing", ""
@@ -1643,7 +1613,7 @@ class ChatFragment : Fragment(), TestListener {
             val contactId = 121L
 
             val inviteList = ArrayList<Invitee>()
-            inviteList.add(Invitee(contactId, 1))
+            inviteList.add(Invitee(contactId.toString(), 1))
 
             val list = Array(1) { Invitee(inviteList[0].id, 1) }
 
@@ -1738,6 +1708,7 @@ class ChatFragment : Fragment(), TestListener {
                 progressBar = progressBarUploadFile
 
             )
+
 
 
             showView(contentProgressUploadFile)

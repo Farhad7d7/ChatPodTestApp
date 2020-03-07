@@ -1,5 +1,9 @@
 package ir.fanap.chattestapp.application.ui
 
+import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
+import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
+import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
+import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.model.*
 
@@ -110,6 +114,46 @@ interface TestListener {
     }
 
     fun onUploadFile(response: ChatResponse<ResultFile>?) {
+
+
+    }
+
+    fun onPinThread(response: ChatResponse<ResultPinThread>?) {
+
+
+    }
+
+    fun onUnPinThread(response: ChatResponse<ResultPinThread>?) {
+
+
+    }
+
+    fun onMessagePinned(response: ChatResponse<ResultPinMessage>?) {
+
+
+    }
+
+    fun onMessageUnPinned(response: ChatResponse<ResultPinMessage>?) {
+
+
+    }
+
+    fun onGetMentionList(response: ChatResponse<ResultHistory>?) {
+
+
+    }
+
+    fun onGetCurrentUserRoles(response: ChatResponse<ResultCurrentUserRoles>?) {
+
+
+    }
+
+    fun onChatProfileUpdated(response: ChatResponse<ResultUpdateProfile>?) {
+
+
+    }
+
+    fun onGetUserInfo(response: ChatResponse<ResultUserInfo>?) {
 
 
     }

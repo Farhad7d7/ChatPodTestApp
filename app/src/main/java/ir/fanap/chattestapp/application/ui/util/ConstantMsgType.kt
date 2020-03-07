@@ -5,6 +5,11 @@ import android.support.annotation.StringDef
 class ConstantMsgType {
 
     companion object {
+        const val UPDATE_CHAT_PROFILE = "UPDATE_CHAT_PROFILE"
+        const val GET_CURRENT_USER_ROLES = "GET_CURRENT_USER_ROLES"
+        const val GET_MENTION_LIST = "GET_MENTION_LIST"
+        const val PIN_UN_PIN_MESSAGE = "PIN AND UNPIN MESSAGE"
+        const val PIN_UN_PIN_THREAD = "PIN AND UNPIN THREAD"
         const val SPAM_THREAD_MESSAGE= "SPAM_THREAD_MESSAGE"
         const val UPLOAD_IMAGE = "UPLOAD_IMAGE"
         const val UPLOAD_FILE = "UPLOAD_FILE"
@@ -105,7 +110,11 @@ class ConstantMsgType {
         SEARCH_CONTACT,
         SEND_LOCATION_MESSAGE,
         GET_BLOCK_LIST,
-        FORWARD_MESSAGE_CONTACT_B
+        FORWARD_MESSAGE_CONTACT_B,
+        PIN_UN_PIN_THREAD,
+        PIN_UN_PIN_MESSAGE,
+        GET_CURRENT_USER_ROLES,
+        UPDATE_CHAT_PROFILE
     )
 
     @Retention(AnnotationRetention.SOURCE)

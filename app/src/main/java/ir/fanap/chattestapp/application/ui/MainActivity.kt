@@ -15,6 +15,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_bubble)
+
+
         val titles = arrayOf("Chat", "Function", "Log")
         val viewPager: ViewPager = findViewById(R.id.view_pager)
         val pagerAdapter = PagerAdapter(supportFragmentManager, titles)

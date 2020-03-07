@@ -19,10 +19,10 @@ import android.widget.Toast
 import ir.fanap.chattestapp.R
 
 
-class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>(),Filterable {
+class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>(),
+    Filterable {
 
     var filteredLogs: MutableList<String> = logs
-
 
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
@@ -32,12 +32,12 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
         var beautifyText: String
 
-        beautifyText = logText.replace("{","{<br>")
-        beautifyText =beautifyText.replace("[","[<br>")
-        beautifyText =beautifyText.replace("}","<br>}")
-        beautifyText =beautifyText.replace("]","<br>]")
-        beautifyText =beautifyText.replace(",",",<br>")
-        beautifyText =beautifyText.replace("\n","<br>")
+        beautifyText = logText.replace("{", "{<br>")
+        beautifyText = beautifyText.replace("[", "[<br>")
+        beautifyText = beautifyText.replace("}", "<br>}")
+        beautifyText = beautifyText.replace("]", "<br>]")
+        beautifyText = beautifyText.replace(",", ",<br>")
+        beautifyText = beautifyText.replace("\n", "<br>")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
@@ -48,34 +48,36 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 //            beautifyText =beautifyText.replace(",",",<br>")
 //            beautifyText =beautifyText.replace("\n","<br>")
 
-            viewHolder.textViewLog.text = Html.fromHtml(beautifyText,Html.FROM_HTML_MODE_LEGACY)
-            
-        }else{
+            viewHolder.textViewLog.text = Html.fromHtml(beautifyText, Html.FROM_HTML_MODE_LEGACY)
+
+        } else {
 
 //            beautifyText = logText.replace("{","\t{\n")
 //            beautifyText =beautifyText.replace("[","\t[\n")
 //            beautifyText =beautifyText.replace("}","\n\t}")
 //            beautifyText =beautifyText.replace("]","\n\t]")
 //            beautifyText =beautifyText.replace(",",",\n")
-            
+
             viewHolder.textViewLog.text = Html.fromHtml(beautifyText)
 
         }
 
-        viewHolder.logNum.text = "#${(position+1)}"
+        viewHolder.logNum.text = "#${(position + 1)}"
 
 
         viewHolder.btnCopy.setOnClickListener {
 
 
-            setClipboard(context = viewHolder.itemView.context , text =  viewHolder.textViewLog.text.toString() )
+            setClipboard(
+                context = viewHolder.itemView.context,
+                text = viewHolder.textViewLog.text.toString()
+            )
         }
 
     }
 
 
-
-    fun clearLog(){
+    fun clearLog() {
 
         logs.clear()
         filteredLogs.clear()
@@ -83,9 +85,10 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
         //changed
 
     }
+
     override fun getFilter(): Filter {
 
-        return object : Filter(){
+        return object : Filter() {
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
 
                 filteredLogs = results?.values as MutableList<String>
@@ -93,11 +96,11 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
             }
 
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                var charString:String = constraint.toString()
+                var charString: String = constraint.toString()
                 if (charString.isEmpty()) {
                     filteredLogs = logs
-                }else{
-                var filteredLogsLst: MutableList<String> = mutableListOf()
+                } else {
+                    var filteredLogsLst: MutableList<String> = mutableListOf()
                     for (row in logs) {
                         if (row.toLowerCase().contains(charString.toLowerCase())) {
                             filteredLogsLst.add(row)
@@ -114,30 +117,32 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
         }
     }
+
     override fun getItemCount(): Int {
         return logs.size
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, p1: Int): ViewHolder {
-        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_log, viewGroup, false)
+        val view =
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.item_log, viewGroup, false)
         return ViewHolder(view)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textViewLog: TextView = itemView.findViewById(R.id.textView_log)
         var logNum: TextView = itemView.findViewById(R.id.tvLogNum)
-        val btnCopy : FloatingActionButton = itemView.findViewById(R.id.btnCopy)
+        val btnCopy: FloatingActionButton = itemView.findViewById(R.id.btnCopy)
     }
 
 
     //Added
     private fun setClipboard(context: Context, text: String) {
 
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = android.content.ClipData.newPlainText("Copied Text", text)
-            clipboard.primaryClip = clip
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = android.content.ClipData.newPlainText("Copied Text", text)
+        clipboard.primaryClip = clip
 
-        Toast.makeText(context,"Text Copied to clipboard",Toast.LENGTH_LONG)
+        Toast.makeText(context, "Text Copied to clipboard", Toast.LENGTH_LONG)
             .show()
 
 
