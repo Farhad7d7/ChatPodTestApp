@@ -4,9 +4,6 @@ buildscript {
     repositories {
         jcenter()
         google()
-//        maven {
-//            url "https://maven.google.com"
-//        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
@@ -32,6 +29,10 @@ allprojects {
         maven {
             url 'http://www.idescout.com/maven/repo/'
             name 'IDEScout, Inc.'
+        }
+
+        flatDir {
+            dirs 'libs'
         }
     }
 }

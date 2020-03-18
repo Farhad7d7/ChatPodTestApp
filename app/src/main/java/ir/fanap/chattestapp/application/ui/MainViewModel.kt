@@ -1,10 +1,13 @@
 package ir.fanap.chattestapp.application.ui
 
+import android.app.Activity
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.content.Context
 import android.net.Uri
 import android.support.v4.app.FragmentActivity
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
@@ -20,6 +23,7 @@ import com.fanap.podchat.mainmodel.Invitee
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.mainmodel.RequestSearchContact
 import com.fanap.podchat.model.*
+import com.fanap.podchat.notification.INotification
 import com.fanap.podchat.requestobject.*
 import com.fanap.podchat.util.NetworkPingSender
 import com.google.gson.Gson
@@ -31,6 +35,8 @@ import rx.subjects.PublishSubject
 import kotlin.collections.ArrayList
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+        val NOTIFICATION_APPLICATION_ID = "a7ef47ebe966e41b612216b457ccba222a33332de52e948c66708eb4e3a5328f";
 
     val listOfLogs: SmartArrayList<LogClass> = SmartArrayList()
 
@@ -54,6 +60,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         chat.setNetworkStateConfig(networkStateConfig)
 
         chat.isLoggable(true)
+
+
 
         chat.addListener(object : ChatListener {
 
@@ -361,6 +369,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+
+    public fun setNotif(activity: Activity){
+
+        chat.enableNotification(NOTIFICATION_APPLICATION_ID,activity
+        ) { userId -> Log.d("MTAG","new USer name $userId" ) }
+
+    }
     private fun saveLogs(logName: String?, json: String?) {
 
 

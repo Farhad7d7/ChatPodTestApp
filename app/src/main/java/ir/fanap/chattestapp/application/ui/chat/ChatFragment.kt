@@ -32,6 +32,7 @@ import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import com.fanap.podchat.util.FileUtils
 import com.fanap.podchat.util.InviteType
+import com.fanap.podchat.util.TextMessageType
 import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
 import ir.fanap.chattestapp.application.ui.log.SpecificLogFragment
@@ -1464,7 +1465,8 @@ class ChatFragment : Fragment(), TestListener {
 
 
         val requestFileMessage =
-            RequestFileMessage.Builder(activity, response!!.result.thread.id, fileUri).build()
+            RequestFileMessage.Builder(activity, response!!.result.thread.id, fileUri,
+                TextMessageType.Constants.FILE).build()
 
 
 
@@ -1549,7 +1551,9 @@ class ChatFragment : Fragment(), TestListener {
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId.toString(), 2))
                     val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre())
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.FILE
+                        ).message(faker.music().genre())
                             .build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)

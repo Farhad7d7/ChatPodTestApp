@@ -10,6 +10,7 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.NestedScrollView
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.*
 import android.text.InputType
@@ -61,6 +62,7 @@ import ir.fanap.chattestapp.bussines.model.Method
 import kotlinx.android.synthetic.main.fragment_function.*
 import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
+import org.w3c.dom.Text
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.*
@@ -1208,6 +1210,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             }
 
+        mainViewModel.setNotif(this.activity!!)
         fucCallback.onInsertObserver.subscribe { pair ->
 
 
@@ -2255,9 +2258,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             TEST_THREAD_ID = threadId
 
 
-            val requestGetAdmin = RequestGetAdmin.Builder()
+            val requestGetAdmin = RequestGetAdmin.Builder(TEST_THREAD_ID)
                 .admin(true)
-                .threadId(threadId)
                 .count(50)
                 .build()
 
@@ -2308,7 +2310,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             TEST_THREAD_ID = threadId
 
 
-            val requestThreadParticipant = RequestGetAdmin.Builder()
+            val requestThreadParticipant = RequestGetAdmin.Builder(threadId)
                 .threadId(threadId)
                 .count(50)
                 .build()
@@ -2358,9 +2360,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             TEST_THREAD_ID = threadId
 
-            val requestGetAdmin = RequestGetAdmin.Builder()
+            val requestGetAdmin = RequestGetAdmin.Builder(threadId)
                 .admin(true)
-                .threadId(threadId)
                 .count(50)
                 .build()
 
@@ -2526,7 +2527,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
             val requestThreadInnerMessage =
-                RequestThreadInnerMessage.Builder().message(faker.music().genre())
+                RequestThreadInnerMessage.Builder(TextMessageType.Constants.TEXT).message(faker.music().genre())
                     .forwardedMessageIds(forwList).build()
 
 
@@ -2802,7 +2803,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
         if (fucCallback[ConstantMsgType.UNBLOCK_CONTACT] == chatResponse?.uniqueId) {
             fucCallback.remove(ConstantMsgType.UNBLOCK_CONTACT)
-            val contactId = chatResponse?.result?.contact?.id
+            val contactId = chatResponse?.result?.contact?.blockId
             if (contactId != null) {
                 val requestUnBlock = RequestUnBlock.Builder()
                     .contactId(contactId)
@@ -4330,8 +4331,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     ): RequestCreateThread {
 
         val message = RequestThreadInnerMessage
-            .Builder()
-            .type(1)
+            .Builder(TextMessageType.Constants.TEXT)
             .message(innerMessageText)
             .build()
 
@@ -4583,7 +4583,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
             val message = RequestThreadInnerMessage
-                .Builder()
+                .Builder(TextMessageType.Constants.TEXT)
                 .message("Test create thread with message at: " + Date().toString())
 //                .forwardedMessageIds(listForwardIds)
                 .build()
@@ -4666,7 +4666,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                         )
                     )
                     val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre())
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre())
                             .build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
@@ -4712,7 +4714,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     inviteList.add(Invitee(contactId.toString(), 2))
                     val requestThreadInnerMessage =
                         RequestThreadInnerMessage
-                            .Builder()
+                            .Builder(TextMessageType.Constants.TEXT)
                             .message(faker.music().genre())
                             .build()
                     val requestCreateThread: RequestCreateThread =
@@ -4830,7 +4832,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 2))
                     val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -4879,7 +4883,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 2))
                     val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -4969,7 +4975,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 contactBIdType = InviteType.Constants.TO_BE_USER_CONTACT_ID
 
                 val requestThreadInnerMessage =
-                    RequestThreadInnerMessage.Builder().message(faker.music().genre())
+                    RequestThreadInnerMessage.Builder(
+                        TextMessageType.Constants.TEXT
+                    ).message(faker.music().genre())
                         .build()
 
                 val requestCreateThread: RequestCreateThread =
@@ -5013,7 +5021,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
                 val requestThreadInnerMessage =
-                    RequestThreadInnerMessage.Builder().message(faker.music().genre())
+                    RequestThreadInnerMessage.Builder(
+                        TextMessageType.Constants.TEXT
+                    ).message(faker.music().genre())
                         .build()
                 val requestCreateThread: RequestCreateThread =
                     RequestCreateThread.Builder(0, inviteList)
@@ -5120,7 +5130,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 2))
                     val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -5201,7 +5213,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             if (blockList.result.contacts.isNotEmpty()) {
 
 
-                targetContactId = blockList.result.contacts[0].id
+                targetContactId = blockList.result.contacts[0].blockId
 
                 val requestUnBlock = RequestUnBlock.Builder()
                     .blockId(targetContactId)
