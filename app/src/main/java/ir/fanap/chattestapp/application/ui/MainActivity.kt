@@ -10,8 +10,6 @@ import ir.fanap.chattestapp.R
 class MainActivity : AppCompatActivity() {
 
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_bubble)
@@ -28,7 +26,11 @@ class MainActivity : AppCompatActivity() {
             override fun onPageScrollStateChanged(state: Int) {
             }
 
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
             }
 
             override fun onPageSelected(position: Int) {
@@ -42,15 +44,14 @@ class MainActivity : AppCompatActivity() {
         viewPager.offscreenPageLimit = 2
 
 
-
     }
 
     //
     override fun onBackPressed() {
-//        val fragment: LogFragment = supportFragmentManager.findFragmentByTag("LogFragment") as LogFragment
-//        (fragment as? IOnBackPressed)?.onBackPressed()?.not()?.let {
-//            super.onBackPressed()
-//        }
+        super.onBackPressed()
+//        finish()
+//        android.os.Process.killProcess(android.os.Process.myPid())
+
     }
 
 

@@ -158,5 +158,10 @@ interface TestListener {
 
     }
 
+    fun onConnectWithOTP(token: String?) {
+
+
+    }
+
 
 }

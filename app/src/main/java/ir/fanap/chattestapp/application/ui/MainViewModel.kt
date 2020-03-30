@@ -8,6 +8,7 @@ import android.net.Uri
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
@@ -25,18 +26,21 @@ import com.fanap.podchat.mainmodel.RequestSearchContact
 import com.fanap.podchat.model.*
 import com.fanap.podchat.notification.INotification
 import com.fanap.podchat.requestobject.*
+import com.fanap.podchat.util.ChatStateType
 import com.fanap.podchat.util.NetworkPingSender
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.application.ui.log.refactorLog
 import ir.fanap.chattestapp.application.ui.util.SmartArrayList
 import ir.fanap.chattestapp.bussines.model.LogClass
+import ir.fanap.chattestapp.bussines.token.TokenHandler
 import rx.subjects.PublishSubject
 import kotlin.collections.ArrayList
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-        val NOTIFICATION_APPLICATION_ID = "a7ef47ebe966e41b612216b457ccba222a33332de52e948c66708eb4e3a5328f";
+    val NOTIFICATION_APPLICATION_ID =
+        "a7ef47ebe966e41b612216b457ccba222a33332de52e948c66708eb4e3a5328f";
 
     val listOfLogs: SmartArrayList<LogClass> = SmartArrayList()
 
@@ -47,10 +51,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var observable: PublishSubject<String> = PublishSubject.create()
     var observableLog: PublishSubject<String> = PublishSubject.create()
 
+    var tokenHandler: TokenHandler? = null
+
+    private var chatState: String? = ""
+
     init {
 
         val networkStateConfig = NetworkPingSender.NetworkStateConfig()
-            .setHostName("chat-sandbox.pod.ir")
+//            .setHostName("chat-sandbox.pod.ir")
+            .setHostName("msg.pod.ir")
             .setPort(443)
             .setDisConnectionThreshold(2)
             .setInterval(7000)
@@ -68,7 +77,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             override fun onChatState(state: String?) {
                 super.onChatState(state)
 
-                observable.onNext(state)
+                try {
+                    observable.onNext(state)
+                    chatState = state
+                } catch (e: Exception) {
+                }
+
 
             }
 
@@ -133,7 +147,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onGetThreadParticipant(
                 content: String?,
-                response: ChatResponse<ResultParticipant>?) {
+                response: ChatResponse<ResultParticipant>?
+            ) {
                 super.onGetThreadParticipant(content, response)
 
                 testListener.onGetThreadParticipant(response)
@@ -148,7 +163,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onError(content: String?, OutPutError: ErrorOutPut?) {
                 super.onError(content, OutPutError)
+
                 testListener.onError(OutPutError)
+
+                if (OutPutError!!.errorCode == 21L) {
+
+                    tokenHandler!!.refreshToken()
+
+                }
+
+
             }
 
             override fun onCreateThread(content: String?, response: ChatResponse<ResultThread>?) {
@@ -367,15 +391,66 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onUploadFile(response)
             }
         })
+
+
+        if(tokenHandler == null){
+
+            tokenHandler = TokenHandler(application)
+
+            tokenHandler!!.addListener(object : TokenHandler.ITokenHandler {
+                override fun onGetToken(token: String?) {
+
+                    handleTokenReceived(token)
+
+                }
+
+                override fun onTokenRefreshed(token: String?) {
+
+                    handleTokenReceived(token)
+
+                }
+
+                override fun onError(message: String?) {
+
+                    try {
+                        Toast.makeText(application,message,Toast.LENGTH_LONG);
+                    } catch (e: Exception) {
+                    }
+                }
+            })
+
+        }
+
+
+    }
+
+    private fun handleTokenReceived(token: String?) {
+
+        !token.isNullOrBlank().apply {
+
+            if (chatState!! == ChatStateType.ChatSateConstant.ASYNC_READY) {
+
+                chat.setToken(token)
+
+            } else {
+
+                testListener.onConnectWithOTP(token)
+
+            }
+
+        }
+
     }
 
 
-    public fun setNotif(activity: Activity){
+    public fun setNotif(activity: Activity) {
 
-        chat.enableNotification(NOTIFICATION_APPLICATION_ID,activity
-        ) { userId -> Log.d("MTAG","new USer name $userId" ) }
+        chat.enableNotification(
+            NOTIFICATION_APPLICATION_ID, activity
+        ) { userId -> Log.d("MTAG", "new USer name $userId") }
 
     }
+
     private fun saveLogs(logName: String?, json: String?) {
 
 
@@ -669,6 +744,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getUserInfo(): String {
 
         return chat.getUserInfo(null)
+
+    }
+
+    fun verifyOTPCode(entry: String) {
+
+        tokenHandler!!.verifyNumber(entry)
+    }
+
+    fun checkNumber(entry: String) {
+
+        tokenHandler!!.handshake(entry)
+    }
+
+    fun closeChat() {
+
+        Log.i("OTP","CLOSING CHAT...")
+        chat.closeChat()
+
 
     }
 

@@ -12,9 +12,7 @@
 /captures
 .externalNativeBuild
 
-/app/src/main/res/values/main_server_config.xml
-/app/src/main/res/values/sandbox_server_config.xml
-/app/src/main/res/values/local_server_config.xml
+/app/src/main/res/values/configs.xml
 
 
 # Built application files

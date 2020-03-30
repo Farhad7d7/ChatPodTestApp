@@ -108,7 +108,7 @@ class ChatFragment : Fragment(), TestListener {
 
     var isAttachFileWindowOpen = false
 
-    private lateinit var filePicker:ChooseFileBottomSheetDialog
+    private lateinit var filePicker: ChooseFileBottomSheetDialog
 
     private val faker: Faker = Faker()
 
@@ -172,8 +172,6 @@ class ChatFragment : Fragment(), TestListener {
 //            runScaleAnim(it)
 //            openImagePicker()
 //        }
-
-
 
 
         atach_file.setOnClickListener {
@@ -301,9 +299,9 @@ class ChatFragment : Fragment(), TestListener {
     private fun openCircularCard() {
 
 
-        if(isAttachFileWindowOpen) return
+        if (isAttachFileWindowOpen) return
 
-        filePicker.show(childFragmentManager,"FILE_PICKER")
+        filePicker.show(childFragmentManager, "FILE_PICKER")
 
 
 //        filePickerBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
@@ -801,11 +799,11 @@ class ChatFragment : Fragment(), TestListener {
 
         filePicker = ChooseFileBottomSheetDialog()
 
-        filePicker.setPickerListener(object : IPickFile{
+        filePicker.setPickerListener(object : IPickFile {
 
             override fun onSelect(type: Int) {
 
-                when(type){
+                when (type) {
 
                     ChooseFileBottomSheetDialog.FILE -> openFilePicker()
 
@@ -814,7 +812,6 @@ class ChatFragment : Fragment(), TestListener {
                 }
 
                 closeCircularCard()
-
 
 
             }
@@ -1077,6 +1074,7 @@ class ChatFragment : Fragment(), TestListener {
         mainViewModel.observable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { Log.d("CHAT_TEST_UI", "UI ERROR") }
             .subscribe {
 
                 if (it == "CHAT_READY") {
@@ -1465,8 +1463,10 @@ class ChatFragment : Fragment(), TestListener {
 
 
         val requestFileMessage =
-            RequestFileMessage.Builder(activity, response!!.result.thread.id, fileUri,
-                TextMessageType.Constants.FILE).build()
+            RequestFileMessage.Builder(
+                activity, response!!.result.thread.id, fileUri,
+                TextMessageType.Constants.FILE
+            ).build()
 
 
 
@@ -1599,7 +1599,12 @@ class ChatFragment : Fragment(), TestListener {
             if (contact.isHasUser) {
 
                 val list =
-                    Array(1) { Invitee(contact.id.toString(), InviteType.Constants.TO_BE_USER_CONTACT_ID) }
+                    Array(1) {
+                        Invitee(
+                            contact.id.toString(),
+                            InviteType.Constants.TO_BE_USER_CONTACT_ID
+                        )
+                    }
 
                 fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = mainViewModel.createThread(
                     ThreadType.Constants.NORMAL, list, "nothing", ""

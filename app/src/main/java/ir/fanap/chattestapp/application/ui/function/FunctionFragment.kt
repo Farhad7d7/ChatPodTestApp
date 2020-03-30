@@ -10,7 +10,6 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.NestedScrollView
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.*
 import android.text.InputType
@@ -62,7 +61,6 @@ import ir.fanap.chattestapp.bussines.model.Method
 import kotlinx.android.synthetic.main.fragment_function.*
 import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
-import org.w3c.dom.Text
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.*
@@ -110,25 +108,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private lateinit var textView_state: TextView
     private lateinit var textView_log: TextView
     private lateinit var functionAdapter: FunctionAdapter
-    private var sandbox = false
+    private var mainServer = false
     private val faker: Faker = Faker()
-
-
-    /**
-     *
-     * MainServer Config:
-     *
-     *
-     */
-
-    private val main_name = "MainServer"
-    private var main_TOKEN = "b4735b4c3e5a4b4798ac3eb523087efc"
-    private val main_socketAddress = "wss://msg.pod.ir/ws"
-    private val main_serverName = "chat-server"
-    private val main_appId = "POD-Chat"
-    private val main_ssoHost = "http://accounts.pod.ir/"
-    private val main_platformHost = "https://api.pod.ir/srv/core/"
-    private val main_fileServer = "https://core.pod.ir/"
 
 
     private var TOKEN = "aa0e0d7b200e4012abd85203a56fed17"
@@ -152,15 +133,28 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
     /**
+     *
+     * MainServer Config:
+     *
+     *
+     */
+
+
+    private val main_socketAddress = MyApp.getInstance().getString(R.string.socketAddress)
+    private val main_platformHost = MyApp.getInstance().getString(R.string.platformHost)
+    private val main_fileServer = MyApp.getInstance().getString(R.string.fileServer)
+
+
+    /**
      * LOCAL Mehdi Sheikh Hosseini
      */
 
 //    works:
-    private val socketAddress =
-        MyApp.getInstance().getString(R.string.local_server_name) // {**REQUIRED**} Socket Address
-    private val platformHost = MyApp.getInstance().getString(R.string.platformHost)
-    private val fileServer =
-        MyApp.getInstance().getString(R.string.fileServer) // {**REQUIRED**} File Server Address
+//    private val socketAddress =
+//        MyApp.getInstance().getString(R.string.integration_serverName) // {**REQUIRED**} Socket Address
+//    private val platformHost = MyApp.getInstance().getString(R.string.platformHost)
+//    private val fileServer =
+//        MyApp.getInstance().getString(R.string.fileServer) // {**REQUIRED**} File Server Address
 
 
     companion object {
@@ -650,11 +644,33 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 tokenFragment.dismiss()
 
             }
+
+            override fun onOTPEntered(entry: String) {
+
+                mainViewModel.verifyOTPCode(entry)
+
+                tokenFragment.dismiss()
+            }
+
+            override fun onNumberEntered(entry: String) {
+
+                mainViewModel.checkNumber(entry)
+
+            }
         })
 
 
     }
 
+
+    override fun onConnectWithOTP(token: String?) {
+
+        TOKEN = token!!
+
+        connect()
+
+
+    }
 
     override fun onLogClicked(position: Int) {
 
@@ -836,8 +852,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
-
-    private fun updateChatProfile(){
+    private fun updateChatProfile() {
 
         val pos = getPositionOf(ConstantMsgType.UPDATE_CHAT_PROFILE)
 
@@ -846,18 +861,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         changeFunOneState(pos, Method.RUNNING)
 
 
-        val request: RequestUpdateProfile = RequestUpdateProfile.Builder("Updated by Test app at ${Date()}" )
-            .build()
+        val request: RequestUpdateProfile =
+            RequestUpdateProfile.Builder("Updated by Test app at ${Date()}")
+                .build()
 
 
         fucCallback[ConstantMsgType.UPDATE_CHAT_PROFILE] = mainViewModel.updateChatProfile(request)
 
 
-
-
-
     }
-
 
 
     private fun getCurrentUserRoles() {
@@ -1098,10 +1110,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         recyclerView.childCount
         buttonConnect.setOnClickListener { connect() }
 
-        sandbox = switchCompat_sandBox.isChecked
+        mainServer = switchCompat_sandBox.isChecked
 
         switchCompat_sandBox.setOnCheckedChangeListener { _, isChecked ->
-            sandbox = isChecked
+            mainServer = isChecked
         }
 
 
@@ -1134,8 +1146,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         })
 
 
+
+
+
         return view
     }
+
 
     private fun showBottomMenu(menuView: View) {
         menuView.animate()
@@ -1181,8 +1197,19 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         mainViewModel.observable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnError {
+                Log.e("CHAT_TEST_UI", "Message ${it.message} ")
+            }
             .subscribe {
-                textView_state.text = it
+
+
+                try {
+                    textView_state.text = it
+                } catch (e: Exception) {
+                    Log.e("CHAT_TEST_UI", "1")
+                }
+
+
 
                 if (it == "CHAT_READY") {
 
@@ -1191,9 +1218,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                     avLoadingIndicatorView.visibility = View.GONE
 
-                    textView_state.setTextColor(
-                        ContextCompat.getColor(activity?.applicationContext!!, R.color.green_active)
-                    )
+                    try {
+                        textView_state.setTextColor(
+                            ContextCompat.getColor(
+                                activity?.applicationContext!!,
+                                R.color.green_active
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Log.e("CHAT_TEST_UI", "2")
+
+                    }
 
 
 //                    buttonConnect.animate().scaleX(0.2f).setDuration(450).setInterpolator(BounceInterpolator()).start()
@@ -1202,15 +1237,21 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                     chatReady = false
 
-                    textView_state.setTextColor(
-                        ContextCompat.getColor(activity?.applicationContext!!, R.color.grey)
-                    )
+                    try {
+                        textView_state.setTextColor(
+                            ContextCompat.getColor(activity?.applicationContext!!, R.color.grey)
+                        )
+                    } catch (e: Exception) {
+                        Log.e("CHAT_TEST_UI", "3")
+
+                    }
                 }
 
 
             }
 
         mainViewModel.setNotif(this.activity!!)
+
         fucCallback.onInsertObserver.subscribe { pair ->
 
 
@@ -1221,6 +1262,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
     }
+
+//    override fun onStop() {
+//        super.onStop()
+//        mainViewModel.closeChat()
+//    }
+
+//    override fun onResume() {
+//        super.onResume()
+//        connect()
+//    }
 
     private fun saveUniqueId(pair: Pair<String, String>) {
 
@@ -1274,11 +1325,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val uniqueId = response?.uniqueId
 
-        if(uniqueId != null && uniqueId == fucCallback[ConstantMsgType.UPDATE_CHAT_PROFILE]){
+        if (uniqueId != null && uniqueId == fucCallback[ConstantMsgType.UPDATE_CHAT_PROFILE]) {
 
             val pos = getPositionOf(ConstantMsgType.UPDATE_CHAT_PROFILE)
 
-            changeFunTwoState(pos,Method.DONE)
+            changeFunTwoState(pos, Method.DONE)
 
             changeIconReceive(pos)
 
@@ -1292,22 +1343,18 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val uniqueId = response?.uniqueId
 
-        if(uniqueId != null && uniqueId == fucCallback[ConstantMsgType.UPDATE_CHAT_PROFILE]){
+        if (uniqueId != null && uniqueId == fucCallback[ConstantMsgType.UPDATE_CHAT_PROFILE]) {
 
             val pos = getPositionOf(ConstantMsgType.UPDATE_CHAT_PROFILE)
 
-            changeFunOneState(pos,Method.DONE)
+            changeFunOneState(pos, Method.DONE)
 
-            changeFunTwoState(pos,Method.RUNNING)
+            changeFunTwoState(pos, Method.RUNNING)
 
             fucCallback[ConstantMsgType.UPDATE_CHAT_PROFILE] = mainViewModel.getUserInfo()
 
 
-
         }
-
-
-
 
 
     }
@@ -2527,7 +2574,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
             val requestThreadInnerMessage =
-                RequestThreadInnerMessage.Builder(TextMessageType.Constants.TEXT).message(faker.music().genre())
+                RequestThreadInnerMessage.Builder(TextMessageType.Constants.TEXT)
+                    .message(faker.music().genre())
                     .forwardedMessageIds(forwList).build()
 
 
@@ -3905,7 +3953,21 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         avLoadingIndicatorView.visibility = View.VISIBLE
 
-        if (sandbox) {
+        if (mainServer) {
+
+            mainViewModel.connect(
+                main_socketAddress,
+                sand_appId,
+                serverName,
+                TOKEN,
+                ssoHost,
+                main_platformHost,
+                main_fileServer,
+                typeCode
+            )
+
+
+        } else {
 
             //sandBox
             mainViewModel.connect(
@@ -3918,23 +3980,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 sandFileServer,
                 typeCode
             )
-        } else {
 
-            //Local
-//            mainViewModel.connect(
-//                BuildConfig.SOCKET_ADDRESS, BuildConfig.APP_ID, BuildConfig.SERVER_NAME
-//                , TOKEN, BuildConfig.SSO_HOST, BuildConfig.PLATFORM_HOST, BuildConfig.FILE_SERVER, null
-//            )
-            mainViewModel.connect(
-                socketAddress,
-                sand_appId,
-                serverName,
-                TOKEN,
-                ssoHost,
-                platformHost,
-                fileServer,
-                typeCode
-            )
         }
     }
 
@@ -5869,14 +5915,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             deactiveFunction(position)
         }
 
-//        activity?.runOnUiThread {
-//            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
-//            viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progressMethod)?.visibility = View.GONE
-////            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-////                ?.setImageResource(R.drawable.ic_round_done_all_24px)
-////            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-////                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
-//        }
+
     }
 
     private fun deactiveFunction(pos: Int) {
@@ -5885,18 +5924,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     /* visibility of progress bar*/
     private fun changeIconSend(position: Int) {
-
-//        activity?.runOnUiThread {
-//
-//            val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-//            viewHolder.itemView.findViewById<ProgressBar>(R.id.progressMethod).visibility = View.VISIBLE
-//
-////            viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-////                .setImageResource(R.drawable.ic_round_done_all_24px)
-//        }
-//
-//
-//
 
         if (chatReady)
             activity?.runOnUiThread {
@@ -5966,119 +5993,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         //CreateThread with message
         //get that message id and thread id and call reply Message
     }
-
-
-//    override fun onLogEventWithName(logName: String, json: String) {
-//        super.onLogEventWithName(logName, json)
-//
-//
-//
-//        listOfLogs.addAll(refactorLog(logName = logName,log = json,gson = gson))
-//
-//
-////        val jsonReader = try {
-////            JSONObject(json)
-////        } catch (e: Exception) {
-////            Log.e("LTAG", e.message)
-////            null
-////        }
-////
-////
-////        if (!jsonReader?.has("uniqueId")!! || jsonReader["uniqueId"] == "") {
-////
-////            try {
-////
-////                if (jsonReader.has("content")) {
-////
-////
-////                    val contentString = jsonReader["content"].toString()
-////
-////                    val content = JSONObject(contentString)
-////
-////                    if (content.has("uniqueIds")) {
-////
-////                        val jsonUniqueIds = content["uniqueIds"].toString()
-////
-////                        val uniqueIdsList: ArrayList<String> =
-////                            gson.fromJson(jsonUniqueIds, object : TypeToken<ArrayList<String>>() {
-////
-////                            }.type)
-////
-////                        uniqueIdsList.forEach {
-////
-////                            addToLogsAndLogNames(it, logName, json)
-////
-////                        }
-////
-////
-////                    }
-////
-////
-////                }
-////            } catch (e: Exception) {
-////                Log.e("LTAG", e.message)
-////            }
-////
-////
-////
-////            return
-////
-////        }
-////
-////
-////        val uniqueId: String = jsonReader["uniqueId"].toString()
-////
-////
-////
-////        if (uniqueId[0] == '[') {
-////
-////            val uniqueIdsList: ArrayList<String> =
-////                gson.fromJson(uniqueId, object : TypeToken<ArrayList<String>>() {
-////
-////                }.type)
-////
-////            uniqueIdsList.forEach {
-////
-////                addToLogsAndLogNames(it, logName, json)
-////
-////            }
-////
-////            return
-////
-////        }
-////
-////        addToLogsAndLogNames(uniqueId, logName, json)
-//
-//
-//    }
-
-//    private fun addToLogsAndLogNames(uniqueId: String, logName: String, log: String) {
-//
-//
-//        listOfLogs.add(LogClass(uniqueId = uniqueId, logName = logName, log = log))
-//
-//
-//        if (uniqueIdLogName[uniqueId] == null) {
-//
-//            uniqueIdLogName[uniqueId] = ArrayList()
-//
-//        }
-//
-//        if (uniqueIdLog[uniqueId] == null) {
-//
-//            uniqueIdLog[uniqueId] = ArrayList()
-//
-//        }
-//
-//
-//
-//        uniqueIdLogName[uniqueId]!!.add(logName)
-//
-//
-//        uniqueIdLog[uniqueId]!!.add(log)
-//
-//
-//    }
 
     private fun setLogsToPosition(position: Int) {
 
