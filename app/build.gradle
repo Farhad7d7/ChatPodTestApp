@@ -4,14 +4,20 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
+ext {
+
+    chatSdkVersion = "0.6.3.22"
+
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "ir.fanap.chattestapp"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 5
-        versionName "0.6.2.21"
+        versionCode 8
+        versionName chatSdkVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        vectorDrawables.setUseSupportLibrary(true)
         multiDexEnabled true
@@ -23,18 +29,21 @@ android {
         android.applicationVariants.all { variant ->
             variant.outputs.all {
 
-                outputFileName = "PodChatTestApp-v"+defaultConfig.versionName + ".apk"
+                outputFileName = "PodChatTestApp-v" + defaultConfig.versionName + ".apk"
 
 
-            }}
+            }
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+//        debug {
+//            minifyEnabled true
+//            shrinkResources true
+//            debuggable true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        }
 
     }
     /*In order to fix this issue
@@ -85,7 +94,8 @@ dependencies {
 
 
     //CHAT
-    implementation 'com.fanap.chat:podchat:0.6.2.21'
+    implementation("com.fanap.chat:podchat:$chatSdkVersion")
+
     implementation project(':tmtp_sdk_notif')
 
 
@@ -94,8 +104,12 @@ dependencies {
     //okHttp
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
 
-    
+    implementation 'com.android.support:multidex:1.0.3'
+
+
 }
+
+
 configurations {
 
     compile.exclude module: 'tmtp_sdk'

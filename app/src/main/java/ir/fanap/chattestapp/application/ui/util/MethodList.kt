@@ -43,9 +43,8 @@ class MethodList {
 
                 "34 Get Mention List",
                 "35 Get Current User Roles",
-                "36 Update Chat Profile"
-//                "34 Pin Message",
-//                "35 UnpinMessage"
+                "36 Update Chat Profile",
+                "37 Is Public Thread Name Available"
             )
 
 
@@ -82,12 +81,13 @@ class MethodList {
                 "Get THRDs",//28
                 "Get THRDs",//29
                 "Search in Contacts",//30
-                "Get Contacts",//31 spam thread
+                "Get Threads",//31 spam thread
                 "Get Contacts",//32 Pin Thread,
                 "Get Contacts", //33 Pin Message
                 "Get Threads",//34
                 "Get Contacts", //35
-                "Update Bio"
+                "Update Bio",
+                "Is name available" //37
 
             )
 
@@ -124,12 +124,13 @@ class MethodList {
                 "Send Text MSG",//28
                 "Send Text MSG",//29
                 "",//30
-                "Create THRD With MSG", // 31
+                "", // 31
                 "Create Thread", //32
                 "Create Group & Send Message", //33 Pin/Unpin Message
                 "Find Mentioned Threads",//34
                 "Create Group", //35
-                "Get User Info"
+                "Get User Info",
+                 "" // 37
             )
 
         val methodFuncThree: MutableList<String> =
@@ -165,12 +166,13 @@ class MethodList {
                 "Get MSG Seen List",//28
                 "Get MSG Deliver List",//29
                 "",//30
-                "Spam/Report Thread",
+                "",
                 "Pin Thread",//32
                 "Pin Message",//33
                 "Get Mention List",//
                 "Get Current User Roles",//35
-            ""
+            "",
+                "" // 37
             )
 
         val methodFuncFour: MutableList<String> =
@@ -211,7 +213,8 @@ class MethodList {
                 "Unpin Message",//33
                 "",//34
                 "",//35
-            ""
+            "",
+                "" // 37
             )
     }
 }

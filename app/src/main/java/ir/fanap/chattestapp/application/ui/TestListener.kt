@@ -2,6 +2,7 @@ package ir.fanap.chattestapp.application.ui
 
 import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
 import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
+import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
@@ -159,6 +160,12 @@ interface TestListener {
     }
 
     fun onConnectWithOTP(token: String?) {
+
+
+    }
+
+    fun onCheckIsNameAvailable(response: ChatResponse<ResultIsNameAvailable>?) {
+
 
 
     }

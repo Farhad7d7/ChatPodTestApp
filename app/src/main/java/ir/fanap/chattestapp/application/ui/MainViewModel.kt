@@ -17,6 +17,8 @@ import com.fanap.podchat.chat.pin.pin_message.model.RequestPinMessage
 import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
 import com.fanap.podchat.chat.pin.pin_thread.model.RequestPinThread
 import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
+import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
+import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
@@ -27,13 +29,15 @@ import com.fanap.podchat.model.*
 import com.fanap.podchat.notification.INotification
 import com.fanap.podchat.requestobject.*
 import com.fanap.podchat.util.ChatStateType
-import com.fanap.podchat.util.NetworkPingSender
+import com.fanap.podchat.util.NetworkUtils.NetworkPingSender
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.application.ui.log.refactorLog
 import ir.fanap.chattestapp.application.ui.util.SmartArrayList
 import ir.fanap.chattestapp.bussines.model.LogClass
 import ir.fanap.chattestapp.bussines.token.TokenHandler
+import rx.exceptions.MissingBackpressureException
+import rx.exceptions.OnErrorNotImplementedException
 import rx.subjects.PublishSubject
 import kotlin.collections.ArrayList
 
@@ -58,12 +62,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
 
         val networkStateConfig = NetworkPingSender.NetworkStateConfig()
-//            .setHostName("chat-sandbox.pod.ir")
             .setHostName("msg.pod.ir")
             .setPort(443)
             .setDisConnectionThreshold(2)
-            .setInterval(7000)
-            .setConnectTimeout(10000)
+            .setInterval(5000)
+            .setConnectTimeout(3500)
             .build()
 
         chat.setNetworkStateConfig(networkStateConfig)
@@ -81,6 +84,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     observable.onNext(state)
                     chatState = state
                 } catch (e: Exception) {
+                    observable.onError(e)
+                } catch (be: MissingBackpressureException) {
+                    observable.onError(be)
+                } catch (il: IllegalStateException) {
+                    observable.onError(il)
+                } catch (oe: OnErrorNotImplementedException) {
+                    observable.onError(oe)
                 }
 
 
@@ -173,6 +183,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
 
+            }
+
+            override fun onUniqueNameIsAvailable(response: ChatResponse<ResultIsNameAvailable>?) {
+                super.onUniqueNameIsAvailable(response)
+                testListener.onCheckIsNameAvailable(response)
             }
 
             override fun onCreateThread(content: String?, response: ChatResponse<ResultThread>?) {
@@ -393,7 +408,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         })
 
 
-        if(tokenHandler == null){
+        if (tokenHandler == null) {
 
             tokenHandler = TokenHandler(application)
 
@@ -413,7 +428,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 override fun onError(message: String?) {
 
                     try {
-                        Toast.makeText(application,message,Toast.LENGTH_LONG);
+                        Toast.makeText(application.applicationContext, message, Toast.LENGTH_LONG)
+                            .show()
                     } catch (e: Exception) {
                     }
                 }
@@ -606,7 +622,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.deleteMessage(requestDeleteMessage, null)
     }
 
-    fun getThread(requestThread: RequestThread): String {
+    fun getThreads(requestThread: RequestThread): String {
         return chat.getThreads(requestThread, null)
     }
 
@@ -759,10 +775,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun closeChat() {
 
-        Log.i("OTP","CLOSING CHAT...")
+        Log.i("OTP", "CLOSING CHAT...")
         chat.closeChat()
 
 
+    }
+
+    fun checkIsNameAvailable(request: RequestCheckIsNameAvailable?): String {
+
+        return chat.isNameAvailable(request)
     }
 
 

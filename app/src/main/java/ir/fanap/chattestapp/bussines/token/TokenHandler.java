@@ -224,7 +224,7 @@ public class TokenHandler {
 
     public void refreshToken() {
 
-        if(refreshToken.isEmpty()){
+        if (refreshToken.isEmpty()) {
 
             return;
         }
@@ -234,13 +234,26 @@ public class TokenHandler {
                     @Override
                     public void onResponse(Call<SSoTokenRes> call, Response<SSoTokenRes> response) {
 
-                        Log.i("OTP", "Token Refreshed");
+                        if (response.body() != null && response.isSuccessful() && response.body().getResult() != null) {
 
-                        refreshToken = response.body().getResult().getRefreshToken();
 
-                        listener.onTokenRefreshed(response.body().getResult().getAccessToken());
+                            Log.i("OTP", "Token Refreshed");
 
-                        saveToken(refreshToken);
+                            refreshToken = response.body().getResult().getRefreshToken();
+
+                            listener.onTokenRefreshed(response.body().getResult().getAccessToken());
+
+                            saveToken(refreshToken);
+
+
+                        } else {
+
+                            Log.i("OTP", "Token refresh failed");
+                            listener.onError("refresh failed");
+
+                        }
+
+
                     }
 
                     @Override

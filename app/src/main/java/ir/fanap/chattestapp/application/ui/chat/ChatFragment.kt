@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import ir.fanap.chattestapp.R
-import android.animation.Animator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProvider
@@ -18,12 +17,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.support.design.circularreveal.CircularRevealCompat
-import android.support.design.circularreveal.cardview.CircularRevealCardView
-import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.*
 import com.fanap.podchat.ProgressHandler
@@ -48,8 +43,6 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
 import java.util.ArrayList
-import kotlin.math.hypot
-import kotlin.math.max
 
 @SuppressLint("SetTextI18n")
 class ChatFragment : Fragment(), TestListener {
@@ -412,7 +405,7 @@ class ChatFragment : Fragment(), TestListener {
         setTextOf(tvSendLocationMessageStatus, "Get List of threads...")
 
 
-        fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel.getThread(requestThread)
+        fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel.getThreads(requestThread)
 
 
     }

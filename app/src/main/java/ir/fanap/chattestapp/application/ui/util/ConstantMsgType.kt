@@ -5,6 +5,7 @@ import android.support.annotation.StringDef
 class ConstantMsgType {
 
     companion object {
+        const val IS_NAME_AVAILABLE = "IS_NAME_AVAILABLE"
         const val UPDATE_CHAT_PROFILE = "UPDATE_CHAT_PROFILE"
         const val GET_CURRENT_USER_ROLES = "GET_CURRENT_USER_ROLES"
         const val GET_MENTION_LIST = "GET_MENTION_LIST"
