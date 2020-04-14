@@ -1005,8 +1005,8 @@ class ChatFragment : Fragment(), TestListener {
                 threadId?.toLong()!!,
                 messageId!!,
                 fileUri,
-                activity
-            ).build()
+                activity,
+                TextMessageType.Constants.FILE).build()
 
 
 

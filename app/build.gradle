@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 
 ext {
 
-    chatSdkVersion = "0.6.3.22"
+    chatSdkVersion = "0.6.3.4"
 
 }
 

@@ -1,8 +1,5 @@
 package ir.fanap.chattestapp.application.ui.util
 
-
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.*
@@ -11,7 +8,7 @@ import ir.fanap.chattestapp.R
 import kotlinx.android.synthetic.main.fragment_token.*
 
 
-class TokenFragment : DialogFragment() {
+class TokenFragment : FullViewDialogFragment() {
 
 
     lateinit var iDialogToken: IDialogToken
@@ -28,16 +25,7 @@ class TokenFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
-
-        dialog.window?.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
+        super.onCreateView(inflater, container, savedInstanceState)
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_token, container, false)

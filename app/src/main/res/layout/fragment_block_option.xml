@@ -1,179 +1,288 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     tools:context=".application.ui.BlockOptionFragment">
 
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        app:cardBackgroundColor="@color/gery_inactive"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp"
+        app:cardMaxElevation="8dp"
+        app:cardUseCompatPadding="true">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:textColor="@color/grey"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Block" />
-
-
-    <TextView
-        android:id="@+id/textView10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:text="Target Contact:"
-        android:textColor="@color/grey_light"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/tvTargetContact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView10"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView10"
-        app:layout_constraintTop_toTopOf="@+id/textView10"
-        tools:text="Farhad Kheirkhah" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
 
-    <EditText
-        android:id="@+id/etTargetField"
-        android:layout_width="wrap_content"
-        android:minWidth="140dp"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:hint="enter value here"
-        app:layout_constraintBottom_toBottomOf="@+id/textView11"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView11"
-        app:layout_constraintTop_toTopOf="@+id/textView11"
-        tools:text="fkheirkhah" />
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:textColor="@color/grey"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Block" />
 
 
-    <TextView
-        android:id="@+id/textView11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Target Field:"
-        android:textColor="@color/grey_light"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/textView10"
-        app:layout_constraintTop_toBottomOf="@+id/textView10"
-        tools:ignore="HardcodedText" />
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Target Contact:"
+                android:textColor="@color/grey_light"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+                tools:ignore="HardcodedText" />
 
-    <TextView
-        android:id="@+id/actionType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textColor="@color/grey"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/textView10"
-        app:layout_constraintTop_toBottomOf="@+id/textView11"
-        tools:text="Block With:" />
+            <TextView
+                android:id="@+id/textView101"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Target Thread:"
+                android:textColor="@color/grey_light"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/textView10"
+                tools:ignore="HardcodedText" />
 
-
-    <android.support.design.button.MaterialButton
-        android:id="@+id/btnWithUserId"
-        android:layout_width="140dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="24dp"
-        android:backgroundTint="@color/grey"
-        android:text="User Id"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toStartOf="@+id/actionType"
-        app:layout_constraintTop_toBottomOf="@+id/actionType"
-        tools:targetApi="lollipop" />
-
-    <android.support.design.button.MaterialButton
-        android:id="@+id/btnWithCoreUserId"
-        android:layout_width="140dp"
-        android:layout_height="90dp"
-        android:layout_marginStart="44dp"
-        android:backgroundTint="@color/grey"
-        android:text="Core User Id"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnWithUserId"
-        app:layout_constraintTop_toTopOf="@+id/btnWithUserId"
-        tools:targetApi="lollipop" />
-
-    <android.support.design.button.MaterialButton
-        android:id="@+id/btnWithUsername"
-        android:layout_width="140dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="36dp"
-        android:backgroundTint="@color/grey"
-        android:text="Username"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toStartOf="@+id/btnWithUserId"
-        app:layout_constraintTop_toBottomOf="@+id/btnWithUserId"
-        tools:targetApi="lollipop" />
+            <TextView
+                android:id="@+id/tvTargetThread"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:gravity="center"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView101"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline26"
+                app:layout_constraintTop_toTopOf="@+id/textView101"
+                tools:text="Thread Name" />
 
 
-    <android.support.design.button.MaterialButton
-        android:id="@+id/btnWithContactId"
-        android:layout_width="140dp"
-        android:layout_height="90dp"
-        android:layout_marginStart="224dp"
-        android:backgroundTint="@color/grey"
-        android:text="Contact Id"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/btnWithUsername"
-        app:layout_constraintEnd_toEndOf="@+id/btnWithCoreUserId"
-        app:layout_constraintStart_toStartOf="@+id/actionType"
-        app:layout_constraintTop_toTopOf="@+id/btnWithUsername"
-        tools:targetApi="lollipop" />
+            <TextView
+                android:id="@+id/tvTargetContact"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView10"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline26"
+                app:layout_constraintTop_toTopOf="@+id/textView10"
+                app:layout_constraintVertical_bias="0.0"
+                tools:text="Farhad Kheirkhah" />
 
-    <android.support.design.button.MaterialButton
-        android:id="@+id/btnCancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:width="120dp"
-        android:backgroundTint="@color/grey_active"
-        android:shadowColor="@color/blue_grey_active"
-        android:shadowRadius="32dp"
-        android:text="Cancel"
-        android:textColor="@color/white"
-        app:cornerRadius="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.124"
-        app:layout_constraintStart_toStartOf="parent"
-        app:rippleColor="@color/orange_active"
-        tools:targetApi="lollipop" />
+            <EditText
+                android:id="@+id/etTargetField"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="enter value here"
+                android:minWidth="140dp"
+                android:textColor="@color/grey"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView11"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline26"
+                app:layout_constraintTop_toTopOf="@+id/textView11"
+                tools:text="fkheirkhah" />
 
 
-    <android.support.design.button.MaterialButton
-        android:id="@+id/btnDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:width="180dp"
-        android:backgroundTint="@color/green_inactive"
-        android:shadowColor="@color/blue_grey_active"
-        android:shadowRadius="32dp"
-        android:text="OK"
-        android:textColor="@color/white"
-        app:cornerRadius="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/btnCancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnCancel"
-        app:layout_constraintTop_toTopOf="@+id/btnCancel"
-        app:rippleColor="@color/orange_active"
-        tools:targetApi="lollipop" />
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Target Value:"
+                android:textColor="@color/grey_light"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/textView101"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tvActionType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/grey"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/textView11"
+                tools:text="Block With:" />
+
+            <TextView
+                android:id="@+id/tvBlockMode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvActionType"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline26"
+                app:layout_constraintTop_toTopOf="@+id/tvActionType"
+                tools:text="User Id" />
 
 
-</android.support.constraint.ConstraintLayout>
+            <Button
+                android:id="@+id/btnWithUserId"
+                style="@style/main_button_style"
+                android:layout_marginTop="24dp"
+                android:text="User Id"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/tvActionType"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:layout_marginTop="8dp"
+                android:id="@+id/btnWithCustomContactId"
+                style="@style/custom_button_style"
+                android:text="Custom Contact Id"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/btnWithThreadId"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:layout_marginTop="8dp"
+                android:id="@+id/btnWithCustomUserId"
+                style="@style/custom_button_style"
+                android:text="Custom User Id"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/btnWithCustomContactId"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:layout_marginTop="8dp"
+                android:id="@+id/btnWithThreadId"
+                style="@style/main_button_style"
+                android:layout_width="0dp"
+                android:text="Thread Id"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/btnWithUserId"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:visibility="gone"
+                android:id="@+id/btnWithBlockId"
+                style="@style/main_button_style"
+                android:layout_width="0dp"
+                android:layout_marginTop="8dp"
+                android:text="Block Id"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/btnWithUserId"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:id="@+id/btnWithContactId"
+                style="@style/main_button_style"
+                android:layout_marginStart="56dp"
+                android:text="Contact Id"
+                app:layout_constraintBottom_toBottomOf="@+id/btnWithUserId"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toEndOf="@+id/btnWithUserId"
+                app:layout_constraintTop_toTopOf="@+id/btnWithUserId"
+                app:layout_constraintVertical_bias="0.0"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:backgroundTint="@color/grey_active"
+                android:shadowColor="@color/blue_grey_active"
+                android:shadowRadius="16"
+                android:text="Cancel"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/guideline24"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:id="@+id/btnCustomThreadId"
+                style="@style/custom_button_style"
+                android:layout_marginTop="8dp"
+                android:text="Custom Thread Id"
+                app:layout_constraintBottom_toTopOf="@+id/guideline25"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/btnWithCustomUserId"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <Button
+                android:visibility="gone"
+                android:id="@+id/btnCustomBlockId"
+                style="@style/custom_button_style"
+                android:layout_marginTop="8dp"
+                android:text="Custom Block Id"
+                app:layout_constraintBottom_toTopOf="@+id/guideline25"
+                app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline23"
+                app:layout_constraintTop_toBottomOf="@+id/btnWithCustomUserId"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="16dp" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="16dp" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.8" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.50364965" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
+</RelativeLayout>
+
+

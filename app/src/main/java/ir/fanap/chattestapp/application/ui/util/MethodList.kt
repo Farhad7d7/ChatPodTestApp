@@ -95,7 +95,7 @@ class MethodList {
             arrayListOf(
                 "CHANNEL_GROUP",//0
                 "",//1
-                "Block Contact",//2
+                "Get Threads",//2
                 "",//3
                 "",//4
                 "",//5
@@ -137,7 +137,7 @@ class MethodList {
             arrayListOf(
                 "PUBLIC_GROUP",//0
                 "",//1
-                "",//2
+                "Block Contact",//2
                 "",//3
                 "",//4
                 "",//5
