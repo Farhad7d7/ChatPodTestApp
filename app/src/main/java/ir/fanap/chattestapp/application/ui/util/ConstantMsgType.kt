@@ -5,6 +5,7 @@ import android.support.annotation.StringDef
 class ConstantMsgType {
 
     companion object {
+        const val CREATE_PUBLIC_THREAD = "CREATE_PUBLIC_THREAD"
         const val IS_NAME_AVAILABLE = "IS_NAME_AVAILABLE"
         const val UPDATE_CHAT_PROFILE = "UPDATE_CHAT_PROFILE"
         const val GET_CURRENT_USER_ROLES = "GET_CURRENT_USER_ROLES"
@@ -43,6 +44,7 @@ class ConstantMsgType {
         const val REPLY_MESSAGE = "REPLY_MESSAGE"
         const val REPLY_MESSAGE_ID = "REPLY_MESSAGE_ID"
         const val REPLY_MESSAGE_THREAD_ID = "REPLY_MESSAGE_THREAD_ID"
+        const val REPLY_MESSAGE_THREAD_USER_GROUP_HASH = "REPLY_MESSAGE_THREAD_USER_GROUP_HASH"
         const val LEAVE_THREAD = "LEAVE_THREAD"
         const val MUTE_THREAD = "MUTE_THREAD"
         const val UNMUTE_THREAD = "UNMUTE_THREAD"
@@ -52,6 +54,7 @@ class ConstantMsgType {
         const val EDIT_MESSAGE_ID = "EDIT_MESSAGE_ID"
         const val GET_HISTORY = "GET_HISTORY"
         const val SEND_FILE_MESSAGE = "SEND_FILE_MESSAGE"
+        const val CREATE_THREAD_WITH_FILE = "CREATE_THREAD_WITH_FILE"
         const val REPLY_FILE_MESSAGE = "REPLY_FILE_MESSAGE"
         const val CREATE_THREAD_WITH_FORW_MSG = "CREATE_THREAD_WITH_FORW_MSG"
         const val CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID = "CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID"
@@ -87,6 +90,7 @@ class ConstantMsgType {
         REPLY_MESSAGE,
         REPLY_MESSAGE_ID,
         REPLY_MESSAGE_THREAD_ID,
+        REPLY_MESSAGE_THREAD_USER_GROUP_HASH,
         LEAVE_THREAD,
         UNMUTE_THREAD,
         MUTE_THREAD,

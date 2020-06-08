@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 
 ext {
 
-    chatSdkVersion = "0.6.3.4"
+    chatSdkVersion = "0.7.2.2"
 
 }
 
@@ -16,7 +16,7 @@ android {
         applicationId "ir.fanap.chattestapp"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 8
+        versionCode 11
         versionName chatSdkVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        vectorDrawables.setUseSupportLibrary(true)
@@ -26,6 +26,7 @@ android {
 
     }
     buildTypes {
+
         android.applicationVariants.all { variant ->
             variant.outputs.all {
 
@@ -96,9 +97,6 @@ dependencies {
     //CHAT
     implementation("com.fanap.chat:podchat:$chatSdkVersion")
 
-    implementation project(':tmtp_sdk_notif')
-
-
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     //okHttp
@@ -107,11 +105,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
 
-}
 
 
-configurations {
-
-    compile.exclude module: 'tmtp_sdk'
 
 }

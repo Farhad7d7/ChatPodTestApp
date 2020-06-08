@@ -6,7 +6,7 @@ class MethodList {
     companion object {
         val methodNames: MutableList<String> =
             arrayListOf(
-                "0 Create THRD",
+                "0 Create Normal THRD",
                 "1 Get Contact",
                 "2 Block Contact",
                 "3 Add Contact",
@@ -40,17 +40,17 @@ class MethodList {
                 "31 Spam/Report Thread",
                 "32 Pin/Unpin Thread",
                 "33 Pin/Unpin Message",
-
                 "34 Get Mention List",
                 "35 Get Current User Roles",
                 "36 Update Chat Profile",
-                "37 Is Public Thread Name Available"
+                "37 Is Public Thread Name Available",
+                "38 Create Public THRD"
             )
 
 
         val methodFuncOne: MutableList<String> =
             arrayListOf(
-                "CHANNEL",//0
+                "Get Contacts",//0
                 "Get Contacts List",//1
                 "Get Contacts List",//2
                 "Add New Contact",//3
@@ -87,13 +87,14 @@ class MethodList {
                 "Get Threads",//34
                 "Get Contacts", //35
                 "Update Bio",
-                "Is name available" //37
+                "Is name available", //37
+                "Get Contacts" //38
 
             )
 
         val methodFuncTwo: MutableList<String> =
             arrayListOf(
-                "CHANNEL_GROUP",//0
+                "Create THRD",//0
                 "",//1
                 "Get Threads",//2
                 "",//3
@@ -130,12 +131,13 @@ class MethodList {
                 "Find Mentioned Threads",//34
                 "Create Group", //35
                 "Get User Info",
-                 "" // 37
+                "",// 37
+                "Is Public Name Available" // 38
             )
 
         val methodFuncThree: MutableList<String> =
             arrayListOf(
-                "PUBLIC_GROUP",//0
+                "",//0
                 "",//1
                 "Block Contact",//2
                 "",//3
@@ -171,13 +173,14 @@ class MethodList {
                 "Pin Message",//33
                 "Get Mention List",//
                 "Get Current User Roles",//35
-            "",
-                "" // 37
+                "",
+                "", // 37
+                "Create Public THRD" // 38
             )
 
         val methodFuncFour: MutableList<String> =
             arrayListOf(
-                "OWNER_GROUP",//0
+                "",//0
                 "",//1
                 "",//2
                 "",//3
@@ -197,7 +200,7 @@ class MethodList {
                 "",//17
                 "",//18
                 "",//19
-                "Create THRD With FWRD MSG",
+                "Create THRD With FRWD MSG",
                 "",//21
                 "",//22
                 "",//23
@@ -213,8 +216,9 @@ class MethodList {
                 "Unpin Message",//33
                 "",//34
                 "",//35
-            "",
-                "" // 37
+                "",
+                "", // 37
+                "" // 38
             )
     }
 }

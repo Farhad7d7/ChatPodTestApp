@@ -2,11 +2,11 @@ package ir.fanap.chattestapp.application.ui
 
 import android.app.Activity
 import android.app.Application
+import android.app.NotificationManager
 import android.arch.lifecycle.AndroidViewModel
 import android.content.Context
 import android.net.Uri
 import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
@@ -18,20 +18,22 @@ import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
 import com.fanap.podchat.chat.pin.pin_thread.model.RequestPinThread
 import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
 import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
+import com.fanap.podchat.chat.thread.public_thread.RequestCreatePublicThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
 import com.fanap.podchat.mainmodel.Invitee
-import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.mainmodel.RequestSearchContact
+import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.model.*
-import com.fanap.podchat.notification.INotification
+import com.fanap.podchat.notification.CustomNotificationConfig
 import com.fanap.podchat.requestobject.*
 import com.fanap.podchat.util.ChatStateType
 import com.fanap.podchat.util.NetworkUtils.NetworkPingSender
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.application.ui.log.refactorLog
 import ir.fanap.chattestapp.application.ui.util.SmartArrayList
 import ir.fanap.chattestapp.bussines.model.LogClass
@@ -39,12 +41,9 @@ import ir.fanap.chattestapp.bussines.token.TokenHandler
 import rx.exceptions.MissingBackpressureException
 import rx.exceptions.OnErrorNotImplementedException
 import rx.subjects.PublishSubject
-import kotlin.collections.ArrayList
+import java.io.File
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-
-    val NOTIFICATION_APPLICATION_ID =
-        "a7ef47ebe966e41b612216b457ccba222a33332de52e948c66708eb4e3a5328f";
 
     val listOfLogs: SmartArrayList<LogClass> = SmartArrayList()
 
@@ -71,8 +70,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         chat.setNetworkStateConfig(networkStateConfig)
 
-        chat.isLoggable(true)
+//        chat.isCacheables(true)
 
+        chat.isLoggable(true)
 
 
         chat.addListener(object : ChatListener {
@@ -459,13 +459,58 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    public fun setNotif(activity: Activity) {
+    fun setupNotification(activity: Activity) {
 
-        chat.enableNotification(
-            NOTIFICATION_APPLICATION_ID, activity
-        ) { userId -> Log.d("MTAG", "new USer name $userId") }
+        val notificationConfig =
+            CustomNotificationConfig.Builder(activity)
+                .setChannelName("MY TEST APP")
+                .setChannelId("TEST APP")
+                .setChannelDescription("Fanap soft test app notification channel")
+                .setIcon(R.drawable.ic_message)
+                .setNotificationImportance(NotificationManager.IMPORTANCE_DEFAULT)
+                .build()
+
+
+        chat.setupNotification(notificationConfig)
 
     }
+//        val notificationConfig = CustomNotificationConfig.Builder(
+//            NOTIFICATION_APPLICATION_ID,
+//            activity
+//        )
+//            .setChannelName("PODCHAT_TEST_CHANNEL")
+//            .setChannelId("PODCHATTEST")
+//            .setChannelDescription("Fanap soft podchat notification channel")
+//            .setNotificationImportance(NotificationManager.IMPORTANCE_DEFAULT)
+//            .build()
+//
+//
+//        chat.enableNotification(
+//            notificationConfig, object : INotification {
+//                override fun onUserIdUpdated(userId: String?) {
+//
+//                    Log.d("MTAG", "new User name $userId")
+//                }
+//
+//                override fun onPushMessageReceived(message: String?) {
+//                    super.onPushMessageReceived(message)
+//
+//                    Log.d("MTAG", "new Push message $message")
+//
+//                    ShowNotificationHelper.showNotification(
+//                        "from Test App",
+//                        message,
+//                        getApplication(),
+//                        MainActivity::class.java,
+//                        null,
+//                        R.drawable.fanap_logo
+//                    )
+//                }
+//            })
+//
+//
+//
+//    }
 
     private fun saveLogs(logName: String?, json: String?) {
 
@@ -488,8 +533,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun connect(
-        socketAddress: String, appId: String, severName: String, token: String,
-        ssoHost: String, platformHost: String, fileServer: String, typeCode: String?
+        socketAddress: String,
+        appId: String,
+        severName: String,
+        token: String,
+        ssoHost: String,
+        platformHost: String,
+        fileServer: String,
+        podSpaceUrl: String,
+        typeCode: String?
     ) {
 
         val rb: RequestConnect = RequestConnect.Builder(
@@ -499,7 +551,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             token,
             ssoHost,
             platformHost,
-            fileServer
+            fileServer,
+            podSpaceUrl
         ).build()
 
         chat.connect(rb)
@@ -518,7 +571,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun uploadImage(activity: FragmentActivity?, uri: Uri): String {
-        return chat.uploadImage(activity, uri)
+
+        val req = RequestUploadImage.Builder(activity, uri)
+            .build();
+
+        return chat.uploadImage(req)
     }
 
     fun uploadImageProgress(
@@ -527,7 +584,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         uri: Uri?,
         progress: ProgressHandler.onProgress
     ): String {
-        return chat.uploadImageProgress(activity, uri, progress)
+
+        val req = RequestUploadImage.Builder(activity, uri)
+            .build();
+
+        return chat.uploadImageProgress(req, progress)
     }
 
     fun uploadImageProgress(
@@ -784,6 +845,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun checkIsNameAvailable(request: RequestCheckIsNameAvailable?): String {
 
         return chat.isNameAvailable(request)
+    }
+
+    fun createThread(request: RequestCreateThread?): String {
+
+        return chat.createThread(request)
+
+    }
+
+    fun createPublicThread(request: RequestCreatePublicThread?): String {
+
+        return chat.createThread(request)
+    }
+
+    fun setDownloadDire(cacheDir: File?) {
+
+        chat.setDownloadDirectory(cacheDir)
+
+    }
+
+    fun createThreadWithFile(
+        request: RequestCreateThreadWithFile,
+        progress: ProgressHandler.sendFileMessage
+    ): ArrayList<String> {
+
+        return chat.createThreadWithFile(request, progress)
+
     }
 
 

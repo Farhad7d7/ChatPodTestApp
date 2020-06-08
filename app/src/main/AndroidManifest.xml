@@ -22,6 +22,8 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="n">
 
+
+
         <activity android:name=".application.ui.MainActivity">
             <!--<meta-data-->
             <!--android:name="android.app.searchable"-->
@@ -36,6 +38,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
     </application>
 
 </manifest>

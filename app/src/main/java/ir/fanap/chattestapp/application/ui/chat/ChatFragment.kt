@@ -42,7 +42,8 @@ import kotlinx.android.synthetic.main.fragment_chat.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
-import java.util.ArrayList
+import java.util.*
+import kotlin.collections.HashMap
 
 @SuppressLint("SetTextI18n")
 class ChatFragment : Fragment(), TestListener {
@@ -457,6 +458,7 @@ class ChatFragment : Fragment(), TestListener {
 
 
             val targetThreadId = threads[0].id
+            val targetThreadHash = threads[0].userGroupHash
 
 //            val center = "-1"
             val center = "35.7003510,51.3376472"
@@ -466,6 +468,7 @@ class ChatFragment : Fragment(), TestListener {
                 .message("This is location ")
                 .activity(activity)
                 .threadId(targetThreadId)
+                .setUserGroupHash(targetThreadHash)
                 .build()
 
             fucCallback[ConstantMsgType.SEND_LOCATION_MESSAGE] = mainViewModel
@@ -549,9 +552,6 @@ class ChatFragment : Fragment(), TestListener {
 
 
         if (response?.uniqueId == null) return
-
-
-
 
         if (response?.uniqueId == fucCallback[ConstantMsgType.SEND_FILE_MESSAGE]) {
 
@@ -862,6 +862,14 @@ class ChatFragment : Fragment(), TestListener {
         }
 
 
+        if (fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FILE] == response?.uniqueId) {
+
+            handleFinishCreateThreadWithFile()
+
+
+        }
+
+
         if (fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] == response?.uniqueId) {
 
             try {
@@ -956,6 +964,30 @@ class ChatFragment : Fragment(), TestListener {
         }
     }
 
+    private fun handleFinishCreateThreadWithFile() {
+
+        try {
+
+            activity?.runOnUiThread {
+
+                changeImageViewColorToGreen(checkBox_CreateThreadWithFile)
+
+                hideView(progressCreateThreadWithFile)
+
+                changeImageViewResourceToDoneAll(checkBox_CreateThreadWithFile)
+
+                updateProgressBar(progressBarCreateThreadWithFile)
+
+                setTextOf(tvCTWFUploadStatus, "Message Sent Successfully")
+
+                changeTextColorToGreen(tvCTWFUploadStatus)
+
+            }
+        } catch (e: Exception) {
+            Log.e("MTAG", e.message)
+        }
+    }
+
     private fun handleFinishSendLocationMessage() {
 
         activity?.runOnUiThread {
@@ -998,7 +1030,11 @@ class ChatFragment : Fragment(), TestListener {
 
 
         val messageId = response?.result?.messageId
+
         val threadId = fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID]
+
+        val userGroupHash = fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_USER_GROUP_HASH]
+
         val replyFileMessage = RequestReplyFileMessage
             .Builder(
                 "this is replyMessage",
@@ -1006,7 +1042,10 @@ class ChatFragment : Fragment(), TestListener {
                 messageId!!,
                 fileUri,
                 activity,
-                TextMessageType.Constants.FILE).build()
+                TextMessageType.Constants.POD_SPACE_FILE
+            )
+            .setUserGroupHashCode(userGroupHash)
+            .build()
 
 
 
@@ -1162,7 +1201,15 @@ class ChatFragment : Fragment(), TestListener {
         }
 
 
+        buttonCreateThreadWithFile.setOnClickListener {
+
+            createThreadWithFile()
+
+        }
+
+
     }
+
 
     private fun showLogsFor(position: Int) {
 
@@ -1215,11 +1262,20 @@ class ChatFragment : Fragment(), TestListener {
     override fun onGetContact(response: ChatResponse<ResultContact>?) {
         super.onGetContact(response)
 
+        if (response?.uniqueId == null) return
 
         if (fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] == response?.uniqueId) {
 
             handleSendFileMsg(response!!.result.contacts)
         }
+
+        if (fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FILE] == response?.uniqueId) {
+
+            handleCreateThreadWithFile(response!!.result.contacts)
+
+        }
+
+
 
         if (fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] == response?.uniqueId) {
 
@@ -1416,6 +1472,8 @@ class ChatFragment : Fragment(), TestListener {
         super.onCreateThread(response)
 
 
+        if (response?.uniqueId == null) return
+
 
         if (fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] == response?.uniqueId) {
 
@@ -1431,12 +1489,23 @@ class ChatFragment : Fragment(), TestListener {
             handleOnReplyFileMessageThreadCreate(response)
 
         }
+
+        if (fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FILE] == response?.uniqueId) {
+
+            onThreadWithFileCreated(response)
+
+        }
+
+
     }
 
     private fun handleOnReplyFileMessageThreadCreate(response: ChatResponse<ResultThread>?) {
 
         fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] =
             response?.result?.thread?.id.toString()
+
+        fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_USER_GROUP_HASH] =
+            response?.result?.thread?.userGroupHash!!
 
         try {
             activity?.runOnUiThread {
@@ -1452,14 +1521,36 @@ class ChatFragment : Fragment(), TestListener {
 
     }
 
+    private fun onThreadWithFileCreated(response: ChatResponse<ResultThread>?) {
+
+        try {
+            activity?.runOnUiThread {
+
+                changeImageViewColorToGreen(checkBox_CreateThreadWithFile)
+
+                changeImageViewResourceDone(checkBox_CreateThreadWithFile)
+
+                setTextOf(tvCTWFUploadStatus, "Sending File Message...")
+
+                increaseProgressOf(progressBarCreateThreadWithFile)
+
+            }
+        } catch (e: Exception) {
+        }
+
+
+    }
+
     private fun handleSendFileMessage(response: ChatResponse<ResultThread>?) {
 
 
         val requestFileMessage =
             RequestFileMessage.Builder(
                 activity, response!!.result.thread.id, fileUri,
-                TextMessageType.Constants.FILE
-            ).build()
+                TextMessageType.Constants.POD_SPACE_FILE
+            )
+                .setUserGroupHash(response.result.thread.userGroupHash)
+                .build()
 
 
 
@@ -1545,7 +1636,7 @@ class ChatFragment : Fragment(), TestListener {
                     inviteList.add(Invitee(contactId.toString(), 2))
                     val requestThreadInnerMessage =
                         RequestThreadInnerMessage.Builder(
-                            TextMessageType.Constants.FILE
+                            TextMessageType.Constants.TEXT
                         ).message(faker.music().genre())
                             .build()
                     val requestCreateThread: RequestCreateThread =
@@ -1632,6 +1723,102 @@ class ChatFragment : Fragment(), TestListener {
         }
     }
 
+    private fun handleCreateThreadWithFile(contactList: ArrayList<Contact>) {
+
+        try {
+            activity?.runOnUiThread {
+
+                increaseProgressOf(progressBarCreateThreadWithFile)
+
+                setTextOf(tvCTWFUploadStatus, "Creating Thread...")
+            }
+        } catch (e: Exception) {
+        }
+
+        var choose = 0
+
+
+        for (contact: Contact in contactList) {
+
+            if (contact.isHasUser) {
+
+                val list =
+                    Array(1) {
+                        Invitee(
+                            contact.id.toString(),
+                            InviteType.Constants.TO_BE_USER_CONTACT_ID)
+                    }
+
+
+                val requestUploadFile = RequestUploadFile
+                    .Builder(activity, fileUri).build()
+
+                val request = RequestCreateThreadWithFile
+                    .Builder(ThreadType.Constants.NORMAL,
+                    list.asList(), requestUploadFile,
+                    TextMessageType.Constants.POD_SPACE_FILE).build()
+
+
+                val uniqueIds =
+                    mainViewModel.createThreadWithFile(request,
+                        object : ProgressHandler.sendFileMessage {
+
+                            override fun onFinishImage(
+                                json: String?,
+                                chatResponse: ChatResponse<ResultImageFile>?
+                            ) {
+                                super.onFinishImage(json, chatResponse)
+                            }
+
+                            override fun onFinishFile(
+                                json: String?,
+                                chatResponse: ChatResponse<ResultFile>?
+                            ) {
+                                super.onFinishFile(json, chatResponse)
+                            }
+
+                            override fun onProgressUpdate(
+                                uniqueId: String?,
+                                progress: Int,
+                                totalBytesSent: Int,
+                                totalBytesToSend: Int
+                            ) {
+                                super.onProgressUpdate(
+                                    uniqueId,
+                                    progress,
+                                    totalBytesSent,
+                                    totalBytesToSend
+                                )
+
+                                activity?.runOnUiThread {
+
+                                    setTextOf(tvCTWFUploadStatus, "$progress%")
+
+                                    updateProgressBar(progressBarCreateThreadWithFile, progress)
+
+                                }
+
+
+                            }
+                        })
+
+
+
+                fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FILE] = uniqueIds[0]
+
+                choose++
+
+                break
+            }
+        }
+
+        if (choose == 0) {
+            showToast("No Contact Found")
+        }
+
+
+    }
+
     private fun sendFileMsg() {
 
 
@@ -1681,6 +1868,50 @@ class ChatFragment : Fragment(), TestListener {
 
     }
 
+
+    private fun createThreadWithFile() {
+
+        if (!chatReady) {
+
+
+            showToast("Chat is not ready")
+
+            return
+
+        }
+
+        if (fileUri != null) {
+
+            changeToNormalState(
+                tickImage = checkBox_CreateThreadWithFile,
+                mainView = constraintCreateThreadWithFile,
+                contentProgress = progressCreateThreadWithFile,
+                textView = tvCTWFUploadStatus,
+                progressBar = progressBarCreateThreadWithFile
+
+            )
+
+
+            changeTextAndColorToGreyOf(tvCTWFUploadStatus, "Getting Contacts...")
+
+            showView(progressCreateThreadWithFile)
+
+            val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+            val uniqueId = mainViewModel.getContact(requestGetContact)
+            fucCallback[ConstantMsgType.CREATE_THREAD_WITH_FILE] = uniqueId
+
+
+        } else {
+
+            showToast("Pick a file our image first")
+
+            openCircularCard()
+
+        }
+
+
+    }
+
     private fun appendTextToTextView(textView: TextView, text: String) {
 
         textView.append(text)
@@ -1708,7 +1939,6 @@ class ChatFragment : Fragment(), TestListener {
                 contentProgress = contentProgressUploadFile,
                 textView = tvUploadFileStatus,
                 progressBar = progressBarUploadFile
-
             )
 
 
@@ -1717,7 +1947,8 @@ class ChatFragment : Fragment(), TestListener {
 
             setTextOf(tvUploadFileStatus, "Uploading...")
 
-            val requestUploadFile = RequestUploadFile.Builder(activity, fileUri).build()
+            val requestUploadFile = RequestUploadFile
+                .Builder(activity, fileUri).build()
 
             fucCallback[ConstantMsgType.UPLOAD_FILE] = mainViewModel.uploadFileProgress(
                 requestUploadFile,
@@ -1745,8 +1976,17 @@ class ChatFragment : Fragment(), TestListener {
 
                     }
 
-                    override fun onProgressUpdate(bytesSent: Int) {
+                    override fun onFinish(imageJson: String?, fileImageUpload: FileUpload?) {
+                        super.onFinish(imageJson, fileImageUpload)
 
+
+                    }
+
+                    override fun onImageFinish(
+                        imageJson: String?,
+                        chatResponse: ChatResponse<ResultImageFile>?
+                    ) {
+                        super.onImageFinish(imageJson, chatResponse)
                     }
                 })
 

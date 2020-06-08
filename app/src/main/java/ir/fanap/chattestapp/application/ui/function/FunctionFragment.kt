@@ -30,6 +30,7 @@ import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
 import com.fanap.podchat.chat.pin.pin_thread.model.RequestPinThread
 import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
 import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
+import com.fanap.podchat.chat.thread.public_thread.RequestCreatePublicThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
@@ -46,7 +47,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.wang.avi.AVLoadingIndicatorView
 import ir.fanap.chattestapp.R
-import ir.fanap.chattestapp.application.ui.BlockOptionFragment
+import ir.fanap.chattestapp.application.ui.MainActivity
 import ir.fanap.chattestapp.application.ui.log.SpecificLogFragment
 import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
@@ -69,6 +70,7 @@ import rx.schedulers.Schedulers
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.random.Random
 
 class FunctionFragment : Fragment(),
     FunctionAdapter.ViewHolderListener,
@@ -117,7 +119,7 @@ class FunctionFragment : Fragment(),
     private val faker: Faker = Faker()
 
 
-    private var TOKEN = "aa0e0d7b200e4012abd85203a56fed17"
+    private var TOKEN = "128ffece74294fc4b269805b09a2bf49"
 
 
     private val ssoHost = MyApp.getInstance().getString(R.string.sandbox_ssoHost)
@@ -155,6 +157,7 @@ class FunctionFragment : Fragment(),
     private val main_socketAddress = MyApp.getInstance().getString(R.string.socketAddress)
     private val main_platformHost = MyApp.getInstance().getString(R.string.platformHost)
     private val main_fileServer = MyApp.getInstance().getString(R.string.fileServer)
+    private val podSpaceUrl = MyApp.getInstance().getString(R.string.podspace_file_server_sand)
 
 
     /**
@@ -183,16 +186,10 @@ class FunctionFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
         bottomSheetSearch = BottomSheetBehavior.from(bottom_sheet_search)
-
         bottomSheetSearchContacts = BottomSheetBehavior.from(bottom_sheet_search_contacts)
-
         bottomSheetSearch.isHideable = true
-
         bottomSheetSearchContacts.isHideable = true
-
 
 
         rgSearchContactsType.setOnCheckedChangeListener { _, _ ->
@@ -213,9 +210,6 @@ class FunctionFragment : Fragment(),
             }
 
         }
-
-
-
         etSearchContacts.setOnEditorActionListener { v, actionId, event ->
 
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -232,7 +226,6 @@ class FunctionFragment : Fragment(),
 
 
         }
-
         btnCancelContacts.setOnClickListener {
 
 
@@ -241,26 +234,14 @@ class FunctionFragment : Fragment(),
             bottomSheetSearchContacts.state = BottomSheetBehavior.STATE_HIDDEN
 
         }
-
-
-
-
-
-
         fltBtnSetToken.setOnClickListener {
 
             showTokenDialog()
 
         }
-
-
         fltBtnSearchMethod.setOnClickListener {
-
             showSearchInMethods()
-
         }
-
-
         btnSearch.setOnClickListener {
 
             val query = etSearch.text.toString()
@@ -279,15 +260,9 @@ class FunctionFragment : Fragment(),
 
 
         }
-
         btnCancel.setOnClickListener {
-
-
             bottomSheetSearch.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-
-
-
         bottomSheetSearch.setBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
 
@@ -312,7 +287,6 @@ class FunctionFragment : Fragment(),
 
             }
         })
-
         bottomSheetSearchContacts.setBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
 
@@ -337,45 +311,30 @@ class FunctionFragment : Fragment(),
 
             }
         })
-
         imageButtonNextResult.setOnClickListener {
 
 
             showNextSearchResult()
 
         }
-
         imageButtonPreviousResult.setOnClickListener {
-
-
             showPreviousSearchResult()
-
-
         }
-
         imageCloseSearchResult.setOnClickListener {
-
-
             closeSearchResult()
-
-
         }
 
     }
 
     private fun showPreviousSearchResult() {
 
-
         if (nextSearchPosition > 0)
             nextSearchPosition--
 
         focusOnNextSearchResult()
 
-
     }
-
     private fun showNextSearchResult() {
-
 
         if (nextSearchPosition < searchInMethodsResults.size - 1)
             nextSearchPosition++
@@ -383,8 +342,6 @@ class FunctionFragment : Fragment(),
         focusOnNextSearchResult(next = true)
 
     }
-
-
     private fun focusOnNextSearchResult(next: Boolean = false) {
 
 
@@ -432,7 +389,6 @@ class FunctionFragment : Fragment(),
         }
 
     }
-
     private fun hideLastSearchedResults() {
 
 
@@ -457,7 +413,6 @@ class FunctionFragment : Fragment(),
         }
 
     }
-
     private fun handleSearchContact(view: View) {
 
 
@@ -481,8 +436,6 @@ class FunctionFragment : Fragment(),
 
         searchContact(searchQuery)
     }
-
-
     private fun hideKeyboard(context: Context?, view: View) {
 
         val imm: InputMethodManager =
@@ -492,8 +445,6 @@ class FunctionFragment : Fragment(),
 
 
     }
-
-
     private fun searchInMethodsWith(query: String) {
 
 
@@ -552,7 +503,6 @@ class FunctionFragment : Fragment(),
 
 
     }
-
     private fun showSearchResult() {
 
         layoutSearchResult.animate()
@@ -568,7 +518,6 @@ class FunctionFragment : Fragment(),
             .start()
 
     }
-
     private fun closeSearchResult() {
 
 
@@ -592,7 +541,6 @@ class FunctionFragment : Fragment(),
             .start()
 
     }
-
     private fun hideAllSearchResult() {
 
 
@@ -603,16 +551,9 @@ class FunctionFragment : Fragment(),
         }
 
     }
-
     private fun showSearchInMethods() {
-
-
         bottomSheetSearch.state = BottomSheetBehavior.STATE_EXPANDED
-
-
     }
-
-
     private fun showTokenDialog() {
 
         val tokenFragment = TokenFragment()
@@ -657,8 +598,6 @@ class FunctionFragment : Fragment(),
 
 
     }
-
-
     override fun onConnectWithOTP(token: String?) {
 
         TOKEN = token!!
@@ -847,9 +786,42 @@ class FunctionFragment : Fragment(),
                 isNameAvailable()
 
             }
+            38 -> {
+
+                createPublicThread()
+            }
 
 
         }
+    }
+
+    private fun createPublicThread() {
+
+        val pos = getPositionOf(ConstantMsgType.CREATE_PUBLIC_THREAD)
+
+        changeIconSend(pos)
+
+        if (contactList.isNullOrEmpty()) {
+
+            changeFunOneState(pos, Method.RUNNING)
+
+            val requestGetContact: RequestGetContact = RequestGetContact
+                .Builder()
+                .build()
+
+            fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] =
+                mainViewModel.getContact(requestGetContact)
+
+        } else {
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+            fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] = createIsNameAvailableRequest()
+        }
+
+
     }
 
     private fun isNameAvailable() {
@@ -860,13 +832,18 @@ class FunctionFragment : Fragment(),
 
         changeFunOneState(pos, Method.RUNNING)
 
+        fucCallback[ConstantMsgType.IS_NAME_AVAILABLE] = createIsNameAvailableRequest()
+
+
+    }
+
+    private fun createIsNameAvailableRequest(): String {
+
         val request = RequestCheckIsNameAvailable
             .Builder("Thread_Name_${Date().time}")
             .build()
 
-        fucCallback[ConstantMsgType.IS_NAME_AVAILABLE] = mainViewModel.checkIsNameAvailable(request)
-
-
+        return mainViewModel.checkIsNameAvailable(request)
     }
 
 
@@ -1141,31 +1118,15 @@ class FunctionFragment : Fragment(),
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
-
                 if ((linearLayoutManager.findLastVisibleItemPosition() + 1) == linearLayoutManager.itemCount) {
-
-
                     //hide bottom menu
                     hideBottomMenu(menuView)
-
-
                 } else {
-
-
                     //show bottom menu
                     showBottomMenu(menuView)
-
-
                 }
-
-
             }
         })
-
-
-
-
 
         return view
     }
@@ -1234,6 +1195,7 @@ class FunctionFragment : Fragment(),
                     chatReady = true
 
 
+
                     avLoadingIndicatorView.visibility = View.GONE
 
                     try {
@@ -1268,7 +1230,7 @@ class FunctionFragment : Fragment(),
 
             }
 
-        mainViewModel.setNotif(this.activity!!)
+//        mainViewModel.setupNotification(activity!!)
 
         fucCallback.onInsertObserver.subscribe { pair ->
 
@@ -1277,6 +1239,12 @@ class FunctionFragment : Fragment(),
 
 
         }
+
+
+
+        mainViewModel.setDownloadDire(context?.cacheDir)
+
+        mainViewModel.setupNotification(activity!!)
 
 
     }
@@ -1353,7 +1321,19 @@ class FunctionFragment : Fragment(),
 
         }
 
+        if (fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CREATE_PUBLIC_THREAD)
+
+            changeFunTwoState(pos, Method.DONE)
+
+            createPublicThreadNow(response?.result?.uniqueName)
+
+
+        }
+
     }
+
 
     override fun onGetUserInfo(response: ChatResponse<ResultUserInfo>?) {
         super.onGetUserInfo(response)
@@ -1750,6 +1730,8 @@ class FunctionFragment : Fragment(),
 
             "IS_NAME_AVAILABLE" -> 37
 
+            "CREATE_PUBLIC_THREAD" -> 38
+
 
             else -> -1
         }
@@ -1832,6 +1814,8 @@ class FunctionFragment : Fragment(),
         super.onGetThread(chatResponse)
 
         updateThreadList(chatResponse)
+
+        if(chatResponse?.uniqueId.isNullOrBlank()) return;
 
         if (fucCallback[ConstantMsgType.BLOCK_CONTACT] == chatResponse?.uniqueId) {
 
@@ -3621,6 +3605,18 @@ class FunctionFragment : Fragment(),
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
         super.onCreateThread(response)
 
+
+        if (fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CREATE_PUBLIC_THREAD)
+
+            changeIconReceive(pos)
+
+            changeFunThreeState(pos, Method.DONE)
+
+
+        }
+
         if (fucCallback[ConstantMsgType.GET_CURRENT_USER_ROLES] == response?.uniqueId) {
 
             val position = getPositionOf(ConstantMsgType.GET_CURRENT_USER_ROLES)
@@ -3764,7 +3760,7 @@ class FunctionFragment : Fragment(),
         if (fucCallback[ConstantMsgType.CREATE_THREAD] == response?.uniqueId) {
             val position = 0
             changeIconReceive(position)
-            methods[position].methodNameFlag = true
+            changeFunTwoState(position, Method.DONE)
         }
 
         if (fucCallback[ConstantMsgType.CREATE_THREAD_CHANNEL] == response?.uniqueId) {
@@ -4032,6 +4028,7 @@ class FunctionFragment : Fragment(),
                 ssoHost,
                 main_platformHost,
                 main_fileServer,
+                podSpaceUrl,
                 typeCode
             )
 
@@ -4047,6 +4044,7 @@ class FunctionFragment : Fragment(),
                 ssoHost,
                 sandPlatformHost,
                 sandFileServer,
+                podSpaceUrl,
                 typeCode
             )
 
@@ -4131,6 +4129,13 @@ class FunctionFragment : Fragment(),
         super.onGetContact(response)
 
         updateContactsList(response)
+
+
+        if (fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] == response?.uniqueId) {
+
+            fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] = createIsNameAvailableRequest()
+
+        }
 
         if (fucCallback[ConstantMsgType.GET_CURRENT_USER_ROLES] == response?.uniqueId) {
 
@@ -4256,9 +4261,7 @@ class FunctionFragment : Fragment(),
         }
 
         if (fucCallback[ConstantMsgType.CREATE_THREAD] == response?.uniqueId) {
-//            fucCallback.remove(ConstantMsgType.CREATE_THREAD)
-            handleGetContactForCreateThread(contactList)
-
+            createThreadNow()
         }
 
         if (fucCallback[ConstantMsgType.GET_CONTACT] == response?.uniqueId) {
@@ -4467,6 +4470,28 @@ class FunctionFragment : Fragment(),
         } else {
 
             invList.add(Invitee("2", InviteType.Constants.TO_BE_USER_SSO_ID))
+
+        }
+        return invList
+    }
+
+    private fun createInviteeFromContactList(
+        contactList: List<Contact>,
+        inviteType: Int
+    ): ArrayList<Invitee> {
+
+        val invList = ArrayList<Invitee>()
+
+        contactList.forEach { contact ->
+
+            when (inviteType) {
+                InviteType.Constants.TO_BE_USER_ID ->  invList.add(Invitee(contact.userId, inviteType))
+                InviteType.Constants.TO_BE_USER_USERNAME ->  invList.add(Invitee(contact.linkedUser.username, inviteType))
+                InviteType.Constants.TO_BE_USER_CELLPHONE_NUMBER ->  invList.add(Invitee(contact.cellphoneNumber, inviteType))
+                InviteType.Constants.TO_BE_USER_CONTACT_ID ->  invList.add(Invitee(contact.id, inviteType))
+            }
+
+
 
         }
         return invList
@@ -5293,7 +5318,8 @@ class FunctionFragment : Fragment(),
 
             val targetContact: BlockedContact = blockedList[0]
 
-            val blockOptionFragment = BlockOptionFragment()
+            val blockOptionFragment =
+                BlockOptionFragment()
 
             val requestUnBlockBuilder = RequestUnBlock.Builder()
 
@@ -5533,7 +5559,8 @@ class FunctionFragment : Fragment(),
 
         val targetThread = getBlockableThread()
 
-        val blockOptionFragment = BlockOptionFragment()
+        val blockOptionFragment =
+            BlockOptionFragment()
 
         val args = Bundle().apply {
             putString(BlockOptionFragment.ARG_TITLE, "Block")
@@ -5676,24 +5703,219 @@ class FunctionFragment : Fragment(),
     }
 
     private fun createThread() {
-        //get contact
-        // search for evey one that has user
-        // create thread with that
-
-        val requestGetContact: RequestGetContact = RequestGetContact
-            .Builder()
-            .build()
-
-        fucCallback[ConstantMsgType.CREATE_THREAD] = mainViewModel.getContact(requestGetContact)
 
 
-        val pos = 0
-        changeIconSend(pos)
-        changeFunOneState(pos, Method.RUNNING)
-        changeFunTwoState(pos, Method.RUNNING)
-        changeFunThreeState(pos, Method.RUNNING)
-        changeFunFourState(pos, Method.RUNNING)
+        if (!contactList.isNullOrEmpty()) {
 
+
+            createThreadNow()
+
+        } else {
+
+            val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
+            changeIconSend(pos)
+            changeFunOneState(pos, Method.RUNNING)
+
+            val requestGetContact: RequestGetContact = RequestGetContact
+                .Builder()
+                .build()
+
+            fucCallback[ConstantMsgType.CREATE_THREAD] = mainViewModel.getContact(requestGetContact)
+
+        }
+
+
+    }
+
+    private fun createThreadNow() {
+
+        val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
+
+        deactiveFunction(pos)
+
+        changeFunOneState(pos, Method.DONE)
+
+        val contacts = getRandomContactsWithUser(count = getRandomCount())
+
+        if (!contacts.isNullOrEmpty()) {
+
+
+            var requestBuilder: RequestCreateThread.Builder? = null
+
+            val createThreadOptionFragment = CreateThreadOptionFragment()
+
+            val arg = Bundle().apply {
+
+                putString(
+                    CreateThreadOptionFragment.MODE_KEY,
+                    CreateThreadOptionFragment.MODE_NORMAL
+                )
+            }
+
+            createThreadOptionFragment.arguments = arg
+
+
+            val createThreadJob = Runnable {
+
+                createThreadOptionFragment.dismiss()
+
+                changeIconSend(pos)
+
+                changeFunOneState(pos, Method.DONE)
+
+                changeFunTwoState(pos, Method.RUNNING)
+
+                val request = requestBuilder
+                    ?.title("Test App ${Date().time}")
+                    ?.withDescription("created for test")
+                    ?.build()
+
+                showToast("$request")
+
+                fucCallback[ConstantMsgType.CREATE_THREAD] =
+                    mainViewModel.createThread(request)
+
+            }
+
+
+            createThreadOptionFragment.setListener(object :
+                CreateThreadOptionFragment.ICreateThreadOption {
+
+                override fun onSelected(threadType: Int, inviteeType: Int) {
+
+                    val invitees = createInviteeFromContactList(ArrayList(contacts), inviteeType)
+
+                    if (invitees.isNullOrEmpty()) {
+                        deactiveFunction(pos)
+                        showNoContactToast()
+                        return
+                    }
+                    if (threadType == ThreadType.Constants.NORMAL) {
+                        val invitee = invitees[0]
+                        invitees.clear()
+                        invitees.add(invitee)
+                    }
+                    requestBuilder = RequestCreateThread.Builder(threadType, invitees)
+
+                    createThreadJob.run()
+
+                }
+            })
+
+            createThreadOptionFragment.show(childFragmentManager, "CREATE_THREAD_OPTION")
+
+        } else {
+            deactiveFunction(pos)
+            showNoContactToast()
+        }
+
+
+    }
+
+
+    private fun createPublicThreadNow(uniqueName: String?) {
+
+        val pos = getPositionOf(ConstantMsgType.CREATE_PUBLIC_THREAD)
+
+        deactiveFunction(pos)
+
+        changeFunOneState(pos, Method.DONE)
+
+        changeFunTwoState(pos, Method.DONE)
+
+        val contacts = getRandomContactsWithUser(count = getRandomCount())
+
+        if (!contacts.isNullOrEmpty()) {
+
+            var requestBuilder: RequestCreatePublicThread.Builder? = null
+
+            val createThreadOptionFragment = CreateThreadOptionFragment()
+
+            val arg = Bundle().apply {
+
+                putString(
+                    CreateThreadOptionFragment.MODE_KEY,
+                    CreateThreadOptionFragment.MODE_PUBLIC
+                )
+            }
+
+            createThreadOptionFragment.arguments = arg
+
+            val createThreadJob = Runnable {
+
+                createThreadOptionFragment.dismiss()
+
+                changeIconSend(pos)
+
+                changeFunOneState(pos, Method.DONE)
+
+                changeFunTwoState(pos, Method.DONE)
+
+                changeFunThreeState(pos, Method.RUNNING)
+
+                val request = requestBuilder
+                    ?.title("Test App ${Date().time}")
+                    ?.withDescription("created for test")
+                    ?.build()
+
+                fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] =
+                    mainViewModel.createPublicThread(request)
+
+            }
+
+            createThreadOptionFragment.setListener(object :
+                CreateThreadOptionFragment.ICreateThreadOption {
+
+                override fun onSelected(threadType: Int, inviteeType: Int) {
+
+                    val invitees = createInviteeFromContactList(ArrayList(contacts), inviteeType)
+
+                    if (invitees.isNullOrEmpty()) {
+                        deactiveFunction(pos)
+                        showNoContactToast()
+                        return
+                    }
+
+                    requestBuilder =
+                        RequestCreatePublicThread.Builder(threadType, invitees, uniqueName)
+
+                    createThreadJob.run()
+
+                }
+            })
+
+            createThreadOptionFragment.show(childFragmentManager, "CREATE_THREAD_OPTION")
+
+
+        } else {
+            deactiveFunction(pos)
+            showNoContactToast()
+        }
+
+    }
+
+
+    private fun getRandomContactWithLinkedUser(): Contact? =
+        if (contactList.filter { contact -> contact.isHasUser }.isNullOrEmpty())
+            null
+        else contactList.filter { contact -> contact.isHasUser }.shuffled()[0]
+
+
+    private fun getRandomContactsWithUser() =
+        if (contactList.filter { contact -> contact.isHasUser }.isNullOrEmpty())
+            null
+        else contactList.filter { contact -> contact.isHasUser }.shuffled()
+
+    private fun getRandomContactsWithUser(count: Int = 2): List<Contact>? {
+
+        return if (contactList.filter { contact -> contact.isHasUser }.isNullOrEmpty())
+            null else {
+            val randomContacts = contactList.filter { contact -> contact.isHasUser }.shuffled()
+
+            if (randomContacts.size < count - 1) randomContacts
+            else randomContacts.subList(0, count)
+
+        }
     }
 
 
@@ -5979,14 +6201,15 @@ class FunctionFragment : Fragment(),
      * <p>
      * int CHANNEL = 8;
      */
-    private fun handleGetContactForCreateThread(contactList: ArrayList<Contact>?) {
+    private fun handleGetContactForCreateThread() {
 
-        val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
 
         var choose = 0
 
-        if (contactList != null) {
-            for (contact: Contact in contactList) {
+        if (!contactList.isNullOrEmpty()) {
+
+            for (contact: Contact in contactList.shuffled()) {
+
                 if (contact.isHasUser) {
                     val contactId = contact.id
                     val inviteList = ArrayList<Invitee>()
@@ -5994,10 +6217,7 @@ class FunctionFragment : Fragment(),
 
                     choose++
 
-                    createThreadChannel(inviteList)
-                    createThreadChannelGroup(inviteList)
-                    createThreadPublicGroup(inviteList)
-                    createThreadOwnerGroup(inviteList)
+
 
                     break
                 }
@@ -6007,14 +6227,14 @@ class FunctionFragment : Fragment(),
 
         if (choose == 0) {
 
-            showNoContactToast()
-
-            deactiveFunction(pos)
-
-            changeFunOneState(pos, Method.DEACTIVE)
-            changeFunTwoState(pos, Method.DEACTIVE)
-            changeFunThreeState(pos, Method.DEACTIVE)
-            changeFunFourState(pos, Method.DEACTIVE)
+//            showNoContactToast()
+//
+//            deactiveFunction(pos)
+//
+//            changeFunOneState(pos, Method.DEACTIVE)
+//            changeFunTwoState(pos, Method.DEACTIVE)
+//            changeFunThreeState(pos, Method.DEACTIVE)
+//            changeFunFourState(pos, Method.DEACTIVE)
 
 
         }
@@ -6158,6 +6378,8 @@ class FunctionFragment : Fragment(),
         // if the sent type come then its sent
 
     }
+
+    fun getRandomCount() = Random.nextInt(1, 20)
 
     private fun replyMessage() {
         val pos = getPositionOf(ConstantMsgType.REPLY_MESSAGE)

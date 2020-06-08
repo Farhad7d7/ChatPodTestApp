@@ -3,11 +3,14 @@ package ir.fanap.chattestapp.application.ui
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.view.ViewPager
+import com.fanap.podchat.notification.PodNotificationManager
 import kotlinx.android.synthetic.main.activity_main_bubble.*
 import ir.fanap.chattestapp.R
 
 
 class MainActivity : AppCompatActivity() {
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

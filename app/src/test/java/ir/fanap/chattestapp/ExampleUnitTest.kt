@@ -3,6 +3,7 @@ package ir.fanap.chattestapp
 import org.junit.Test
 
 import org.junit.Assert.*
+import kotlin.random.Random
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -17,9 +18,18 @@ class ExampleUnitTest {
 
 
     @Test
-    fun listTest(){
+    fun randomNumbers() {
 
-        val list=ArrayList<String>()
+        val num = Random.nextInt(1,20)
+        print(num)
+
+
+    }
+
+    @Test
+    fun listTest() {
+
+        val list = ArrayList<String>()
 
         list.add("s1")
 
@@ -30,7 +40,7 @@ class ExampleUnitTest {
         list.add("s3")
 
 
-        list.add(0,"s11")
+        list.add(0, "s11")
 
         print(list)
 

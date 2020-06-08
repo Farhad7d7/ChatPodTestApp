@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".application.ui.function.CreateThreadOptionFragment">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        app:cardBackgroundColor="@color/gery_inactive"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp"
+        app:cardMaxElevation="8dp"
+        app:cardUseCompatPadding="true">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ScrollView
+                android:id="@+id/scrollView4"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/btnDone"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp">
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/grey"
+                        android:textSize="24sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Normal Thread" />
+
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Thread Type:"
+                        android:textColor="@color/grey"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+                    <TextView
+                        android:id="@+id/tvThreadType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grey_light"
+                        android:textSize="18sp"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintStart_toEndOf="@+id/textView9"
+                        app:layout_constraintTop_toTopOf="@+id/textView9"
+                        tools:text="Normal" />
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Invitee Type"
+                        android:textColor="@color/grey"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/btnChannel" />
+
+                    <TextView
+                        android:id="@+id/tvInviteeType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grey_light"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView12"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintStart_toEndOf="@+id/textView12"
+                        app:layout_constraintTop_toTopOf="@+id/textView12"
+                        tools:text="Contact Id" />
+
+                    <Button
+                        android:id="@+id/btnNormalThread"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Normal"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+                    <Button
+                        android:visibility="gone"
+                        android:id="@+id/btnPublicGroup"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Public Group"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+                    <Button
+                        android:id="@+id/btnOwnerGroup"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Owner group"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/btnNormalThread" />
+
+                    <Button
+
+                        android:visibility="gone"
+                        android:id="@+id/btnChannelGroup"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Channel group"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/btnNormalThread" />
+
+                    <Button
+                        android:id="@+id/btnChannel"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Channel"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/btnOwnerGroup" />
+
+                    <Button
+                        android:visibility="gone"
+                        android:id="@+id/btnSSOId"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="SSO id"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+                    <Button
+                        android:layout_marginTop="8dp"
+                        android:id="@+id/btnContactId"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:text="Contact id"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+                    <Button
+                        android:id="@+id/btnCellphoneNumber"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="CellphoneNumber"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/btnContactId" />
+
+                    <Button
+                        android:id="@+id/btnUsername"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Username"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/btnCellphoneNumber" />
+
+                    <Button
+                        android:id="@+id/btnUserId"
+                        style="@style/main_button_style"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="8dp"
+                        android:text="User Id"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline28"
+                        app:layout_constraintTop_toBottomOf="@+id/btnUsername" />
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/guideline27"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_end="16dp" />
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/guideline28"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="16dp" />
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/guideline30"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_end="16dp" />
+
+                    <!-- Thread Type States Can Change Here -->
+
+
+<!--                    <android.support.constraint.Group-->
+<!--                        tools:visibility="invisible"-->
+<!--                        app:constraint_referenced_ids="btnNormalThread,btnOwnerGroup,btnChannel"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"/>-->
+<!--                    <android.support.constraint.Group-->
+<!--                        tools:visibility="visible"-->
+<!--                        app:constraint_referenced_ids="btnChannelGroup,btnPublicGroup"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"/>-->
+
+                </android.support.constraint.ConstraintLayout>
+            </ScrollView>
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/grey_active"
+                android:shadowColor="@color/blue_grey_active"
+                android:shadowRadius="16"
+                android:text="Cancel"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:id="@+id/btnDone"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@color/green_inactive"
+                android:text="Done"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/btnCancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:targetApi="lollipop" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
+</android.support.constraint.ConstraintLayout>

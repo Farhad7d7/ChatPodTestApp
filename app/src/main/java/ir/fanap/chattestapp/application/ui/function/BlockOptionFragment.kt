@@ -1,4 +1,4 @@
-package ir.fanap.chattestapp.application.ui
+package ir.fanap.chattestapp.application.ui.function
 
 import android.annotation.SuppressLint
 import android.os.Bundle
