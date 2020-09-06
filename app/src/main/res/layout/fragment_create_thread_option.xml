@@ -24,7 +24,7 @@
                 android:id="@+id/scrollView4"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/btnDone"
+                app:layout_constraintBottom_toTopOf="@+id/btn_Done"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="0dp">
 
@@ -256,7 +256,7 @@
                 tools:targetApi="lollipop" />
 
             <Button
-                android:id="@+id/btnDone"
+                android:id="@+id/btn_Done"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="16dp"

@@ -613,6 +613,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getHistory(requestGetHistory: RequestGetHistory): String {
+        requestGetHistory.count=10;
         return chat.getHistory(requestGetHistory, null)
     }
 
@@ -649,6 +650,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {
+        requestCreateThread.count=10;
         return chat.createThreadWithMessage(requestCreateThread)
     }
 
@@ -658,6 +660,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun getContact(requestGetContact: RequestGetContact): String {
+        requestGetContact.count=10
         return chat.getContacts(requestGetContact, null)
     }
 
@@ -684,10 +687,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getThreads(requestThread: RequestThread): String {
+        requestThread.count=10
         return chat.getThreads(requestThread, null)
     }
 
     fun getBlockList(requestBlockList: RequestBlockList): String {
+        requestBlockList.count=10
         return chat.getBlockList(requestBlockList, null)
     }
 
@@ -716,15 +721,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getParticipant(requestThreadParticipant: RequestThreadParticipant): String {
+        requestThreadParticipant.count=10
         return chat.getThreadParticipants(requestThreadParticipant, null)
     }
 
     fun clearHistory(requestClearHistory: RequestClearHistory): String {
+
         return chat.clearHistory(requestClearHistory)
     }
 
     fun getAdminList(requestGetAdmin: RequestGetAdmin): String {
-
+        requestGetAdmin.count=10
         return chat.getAdminList(requestGetAdmin)
     }
 
@@ -739,18 +746,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getDeliverMessageList(request: RequestDeliveredMessageList): String {
-
+        request.count=10
         return chat.getMessageDeliveredList(request)
 
     }
 
     fun getSeenMessageList(request: RequestSeenMessageList): String {
-
+        request.count=10
         return chat.getMessageSeenList(request)
     }
 
     fun searchContact(searchContact: RequestSearchContact): String {
-
         return chat.searchContact(searchContact)
     }
 

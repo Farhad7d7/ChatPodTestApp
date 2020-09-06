@@ -44,7 +44,9 @@ class MethodList {
                 "35 Get Current User Roles",
                 "36 Update Chat Profile",
                 "37 Is Public Thread Name Available",
-                "38 Create Public THRD"
+                "38 Create Public THRD",
+                "39 Get History With MsgType",
+                "40 Add Participant With ..."
             )
 
 
@@ -88,7 +90,9 @@ class MethodList {
                 "Get Contacts", //35
                 "Update Bio",
                 "Is name available", //37
-                "Get Contacts" //38
+                "Get Contacts", //38
+                "Get Threads",//39
+                "Get Threads" //40
 
             )
 
@@ -132,7 +136,9 @@ class MethodList {
                 "Create Group", //35
                 "Get User Info",
                 "",// 37
-                "Is Public Name Available" // 38
+                "Is Public Name Available", // 38
+                "Get History By Msg Type", // 39
+                "Create Public Group " //40
             )
 
         val methodFuncThree: MutableList<String> =
@@ -168,15 +174,18 @@ class MethodList {
                 "Get MSG Seen List",//28
                 "Get MSG Deliver List",//29
                 "",//30
-                "",
+                "", //31
                 "Pin Thread",//32
                 "Pin Message",//33
                 "Get Mention List",//
                 "Get Current User Roles",//35
                 "",
                 "", // 37
-                "Create Public THRD" // 38
+                "Create Public THRD",// 38
+                "",// 39
+                "Add Participant to Gp" //40
             )
+
 
         val methodFuncFour: MutableList<String> =
             arrayListOf(
@@ -216,9 +225,11 @@ class MethodList {
                 "Unpin Message",//33
                 "",//34
                 "",//35
-                "",
+                "", //36
                 "", // 37
-                "" // 38
+                "",// 38
+                "",// 39
+                "" //40
             )
     }
 }

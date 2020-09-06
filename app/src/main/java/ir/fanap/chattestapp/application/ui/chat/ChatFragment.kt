@@ -1,12 +1,5 @@
 package ir.fanap.chattestapp.application.ui.chat
 
-import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.AppCompatImageView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import ir.fanap.chattestapp.R
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProvider
@@ -15,12 +8,21 @@ import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.AppCompatImageView
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
-import android.widget.*
+import android.widget.ProgressBar
+import android.widget.ScrollView
+import android.widget.TextView
+import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
@@ -30,9 +32,10 @@ import com.fanap.podchat.util.InviteType
 import com.fanap.podchat.util.TextMessageType
 import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
-import ir.fanap.chattestapp.application.ui.log.SpecificLogFragment
+import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
+import ir.fanap.chattestapp.application.ui.log.SpecificLogFragment
 import ir.fanap.chattestapp.application.ui.util.ChooseFileBottomSheetDialog
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
 import ir.fanap.chattestapp.application.ui.util.IPickFile
@@ -1541,6 +1544,13 @@ class ChatFragment : Fragment(), TestListener {
 
     }
 
+    //sand box / group
+    //    public static int TEST_THREAD_ID = 5182;
+    //    private static final String TEST_THREAD_HASH = "X6NO3WJRWTUMN8";
+    //    main server / p2p
+    var TEST_THREAD_ID = 8919
+    private val TEST_THREAD_HASH = "9JKSQQUYFMC8P9"
+
     private fun handleSendFileMessage(response: ChatResponse<ResultThread>?) {
 
 
@@ -1691,8 +1701,7 @@ class ChatFragment : Fragment(), TestListener {
                     }
 
                 fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = mainViewModel.createThread(
-                    ThreadType.Constants.NORMAL, list, "nothing", ""
-                    , "", ""
+                    ThreadType.Constants.NORMAL, list, "nothing", "", "", ""
                 )
 
                 choose++
@@ -1711,8 +1720,7 @@ class ChatFragment : Fragment(), TestListener {
             val list = Array(1) { Invitee(inviteList[0].id, 1) }
 
             val uniqueId = mainViewModel.createThread(
-                ThreadType.Constants.NORMAL, list, "nothing", ""
-                , "", ""
+                ThreadType.Constants.NORMAL, list, "nothing", "", "", ""
             )
 
             fucCallback[ConstantMsgType.SEND_FILE_MESSAGE] = uniqueId
@@ -1746,7 +1754,8 @@ class ChatFragment : Fragment(), TestListener {
                     Array(1) {
                         Invitee(
                             contact.id.toString(),
-                            InviteType.Constants.TO_BE_USER_CONTACT_ID)
+                            InviteType.Constants.TO_BE_USER_CONTACT_ID
+                        )
                     }
 
 
@@ -1754,9 +1763,11 @@ class ChatFragment : Fragment(), TestListener {
                     .Builder(activity, fileUri).build()
 
                 val request = RequestCreateThreadWithFile
-                    .Builder(ThreadType.Constants.NORMAL,
-                    list.asList(), requestUploadFile,
-                    TextMessageType.Constants.POD_SPACE_FILE).build()
+                    .Builder(
+                        ThreadType.Constants.NORMAL,
+                        list.asList(), requestUploadFile,
+                        TextMessageType.Constants.POD_SPACE_FILE
+                    ).build()
 
 
                 val uniqueIds =

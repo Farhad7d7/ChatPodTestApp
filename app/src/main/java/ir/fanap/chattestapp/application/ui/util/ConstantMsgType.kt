@@ -53,6 +53,8 @@ class ConstantMsgType {
         const val EDIT_MESSAGE = "EDIT_MESSAGE"
         const val EDIT_MESSAGE_ID = "EDIT_MESSAGE_ID"
         const val GET_HISTORY = "GET_HISTORY"
+        const val GET_HISTORYWITHMSGTYPE = "GET_HISTORYWITHMSGTYPE"
+        const val ADD_PARTICIPANTBYTYPE = "ADD_PARTICIPANTBYTYPE" //types = id , user id ,core userid
         const val SEND_FILE_MESSAGE = "SEND_FILE_MESSAGE"
         const val CREATE_THREAD_WITH_FILE = "CREATE_THREAD_WITH_FILE"
         const val REPLY_FILE_MESSAGE = "REPLY_FILE_MESSAGE"
