@@ -70,6 +70,7 @@ class ConstantMsgType {
         const val SPAM_THREAD = "SPAM_THREAD"
     }
 
+
     @StringDef(
         UPDATE_CONTACT,
         SPAM_THREAD,

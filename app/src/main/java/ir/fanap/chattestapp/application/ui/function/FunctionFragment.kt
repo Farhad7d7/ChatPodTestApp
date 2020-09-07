@@ -1885,9 +1885,11 @@ class FunctionFragment : Fragment(),
 
             val position = getPositionOf(ConstantMsgType.SPAM_THREAD)
 
-            changeFunTwoState(position, Method.DONE)
+            changeFunOneState(position, Method.DONE)
 
-            changeFunThreeState(position, Method.RUNNING)
+          //  changeFunTwoState(position, Method.RUNNING)
+
+            changeIconReceive(position)
 
             requestSpamThread(chatResponse)
         }
@@ -3208,7 +3210,7 @@ class FunctionFragment : Fragment(),
         var requestDeleteMessage = RequestDeleteMessage
             .Builder()
             .messageIds(deleteListIds)
-            .deleteForAll(false)
+            .deleteForAll(true)
             .build()
 
 
@@ -3224,6 +3226,23 @@ class FunctionFragment : Fragment(),
         }
 
 
+    }
+
+    override fun onRemoveRoleFromUser(response: ChatResponse<ResultSetAdmin>?) {
+        super.onRemoveRoleFromUser(response)
+
+        if (fucCallback[ConstantMsgType.REMOVE_ADMIN_ROLES] == response?.uniqueId) {
+
+            val removeAdminPosition = getPositionOf(ConstantMsgType.REMOVE_ADMIN_ROLES)
+
+            changeFunThreeState(removeAdminPosition, Method.DONE)
+
+            changeIconReceive(removeAdminPosition)
+
+            methods[removeAdminPosition].methodNameFlag = true
+
+        }
+        
     }
 
     override fun onGetThreadParticipant(response: ChatResponse<ResultParticipant>?) {
@@ -3528,6 +3547,7 @@ class FunctionFragment : Fragment(),
         val addAdmin = RequestSetAdmin
             .Builder(chatResponse.subjectId, requestRoles)
             .build()
+
 
         fucCallback[ConstantMsgType.REMOVE_ADMIN_ROLES] = mainViewModel.removeAdminRoles(addAdmin)
 
@@ -4005,7 +4025,7 @@ class FunctionFragment : Fragment(),
 
 
             showToast("SENDING SPAM REQUEST")
-//            fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
+           fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
 
 
         } else {

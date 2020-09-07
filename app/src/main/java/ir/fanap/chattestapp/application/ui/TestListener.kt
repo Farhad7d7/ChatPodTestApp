@@ -124,6 +124,11 @@ interface TestListener {
 
     }
 
+    fun onRemoveRoleFromUser(response: ChatResponse<ResultSetAdmin>?) {
+
+
+    }
+
     fun onUnPinThread(response: ChatResponse<ResultPinThread>?) {
 
 

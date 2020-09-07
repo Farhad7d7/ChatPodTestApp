@@ -111,6 +111,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             }
 
+            override fun onRemoveRoleFromUser(outputSetRoleToUser: ChatResponse<ResultSetAdmin>?) {
+                super.onRemoveRoleFromUser(outputSetRoleToUser)
+                testListener.onRemoveRoleFromUser(outputSetRoleToUser)
+            }
+
             override fun onGetCurrentUserRoles(response: ChatResponse<ResultCurrentUserRoles>?) {
                 super.onGetCurrentUserRoles(response)
 

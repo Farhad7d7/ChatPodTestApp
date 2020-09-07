@@ -138,7 +138,7 @@ class MethodList {
                 "",// 37
                 "Is Public Name Available", // 38
                 "Get History By Msg Type", // 39
-                "Create Public Group " //40
+                "Select Type And GetContact" //40
             )
 
         val methodFuncThree: MutableList<String> =
