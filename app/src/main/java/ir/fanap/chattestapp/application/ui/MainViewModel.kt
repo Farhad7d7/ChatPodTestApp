@@ -778,6 +778,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteMultipleMessage(requestDeleteMessage: RequestDeleteMessage): ArrayList<String> {
 
         return ArrayList(chat.deleteMultipleMessage(requestDeleteMessage, null))
+
     }
 
     fun spamThread(requestSpam: RequestSpam): String {

@@ -3242,7 +3242,7 @@ class FunctionFragment : Fragment(),
             methods[removeAdminPosition].methodNameFlag = true
 
         }
-        
+
     }
 
     override fun onGetThreadParticipant(response: ChatResponse<ResultParticipant>?) {

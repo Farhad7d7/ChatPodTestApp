@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.ContextCompat.getSystemService
 import android.support.v7.widget.RecyclerView
 import android.text.Html
@@ -12,17 +13,35 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import ir.fanap.chattestapp.R
+import ir.fanap.chattestapp.application.ui.function.FunctionAdapter
 
 
-class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>(),
+class LogAdapter(
+    var logs: MutableList<String>,
+    private val listener: ViewHolderListener,
+    private val context: Context
+) :
+    RecyclerView.Adapter<LogAdapter.ViewHolder>(),
     Filterable {
 
+
+    interface ViewHolderListener {
+        fun onItemShowParedLog(pos: Int, lastSelected: Int)
+    }
+
+
     var filteredLogs: MutableList<String> = logs
+    var selectedItemPosation = -1
+
+    fun refreshList(logs: MutableList<String>) {
+
+        this.logs = logs
+        selectedItemPosation = -1
+        notifyDataSetChanged()
+
+    }
 
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
@@ -32,12 +51,15 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
         var beautifyText: String
 
+
         beautifyText = logText.replace("{", "{<br>")
         beautifyText = beautifyText.replace("[", "[<br>")
         beautifyText = beautifyText.replace("}", "<br>}")
         beautifyText = beautifyText.replace("]", "<br>]")
         beautifyText = beautifyText.replace(",", ",<br>")
         beautifyText = beautifyText.replace("\n", "<br>")
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
@@ -58,9 +80,20 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 //            beautifyText =beautifyText.replace("]","\n\t]")
 //            beautifyText =beautifyText.replace(",",",\n")
 
+
             viewHolder.textViewLog.text = Html.fromHtml(beautifyText)
 
         }
+
+        var colorValue = ContextCompat.getColor(context, R.color.white)
+        if (selectedItemPosation != -1) {
+
+            if (selectedItemPosation == position)
+                colorValue = ContextCompat.getColor(context, R.color.green_inactive)
+
+        }
+        viewHolder.la_parent.setBackgroundColor(colorValue)
+
 
         viewHolder.logNum.text = "#${(position + 1)}"
 
@@ -73,6 +106,16 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
                 text = viewHolder.textViewLog.text.toString()
             )
         }
+        viewHolder.itemView.setOnClickListener(View.OnClickListener {
+
+            listener.onItemShowParedLog(
+                position,
+                selectedItemPosation
+            )
+
+            selectedItemPosation = position
+
+        })
 
     }
 
@@ -132,6 +175,7 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
         var textViewLog: TextView = itemView.findViewById(R.id.textView_log)
         var logNum: TextView = itemView.findViewById(R.id.tvLogNum)
         val btnCopy: FloatingActionButton = itemView.findViewById(R.id.btnCopy)
+        val la_parent: LinearLayout = itemView.findViewById(R.id.la_parent)
     }
 
 
