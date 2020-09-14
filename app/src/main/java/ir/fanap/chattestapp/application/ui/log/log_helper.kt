@@ -123,7 +123,8 @@ fun refactorLog(logName: String, log: String, gson: Gson): ArrayList<LogClass> {
 fun createReadableLog(uniqueId: String, logName: String, log: String): LogClass {
 
 
-    var beautyName = logName.replace("Error", changeWordColor(logName, "#f44336"))
+    var beautyName = logName
+//    var beautyName = logName.replace("Error", changeWordColor(logName, "#f44336"))
 
 
     var beautyLog = log.replace("{", "{<br>")

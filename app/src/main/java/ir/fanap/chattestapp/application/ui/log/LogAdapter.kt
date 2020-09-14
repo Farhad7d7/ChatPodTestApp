@@ -16,10 +16,11 @@ import android.view.ViewGroup
 import android.widget.*
 import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.application.ui.function.FunctionAdapter
+import ir.fanap.chattestapp.bussines.model.LogClass
 
 
 class LogAdapter(
-    var logs: MutableList<String>,
+    var logs: MutableList<LogClass>,
     private val listener: ViewHolderListener,
     private val context: Context
 ) :
@@ -28,26 +29,40 @@ class LogAdapter(
 
 
     interface ViewHolderListener {
-        fun onItemShowParedLog(pos: Int, lastSelected: Int)
+        fun onItemShowPairedLog(pos: Int, lastSelected: Int, log: LogClass)
     }
 
 
-    var filteredLogs: MutableList<String> = logs
+    var filteredLogs: MutableList<LogClass> = logs
     var selectedItemPosation = -1
 
-    fun refreshList(logs: MutableList<String>) {
-
+    fun refreshList(logs: MutableList<LogClass>) {
         this.logs = logs
-        selectedItemPosation = -1
-        notifyDataSetChanged()
-
+        setLastSelected(-1)
+        setIsFirstForFilter()
     }
 
+    fun refreshForFilter(logs: MutableList<LogClass>,position: Int) {
+        this.logs = logs
+        setLastSelected(position)
+    }
+
+    fun setLastSelected(position: Int) {
+        selectedItemPosation = position
+        notifyDataSetChanged()
+    }
+
+
+    fun setIsFirstForFilter() {
+        isFirstSelected = true
+    }
+
+    var isFirstSelected = true;
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
 
-        val logText = logs[position]
+        val logText = logs[position].shoinglog
 
         var beautifyText: String
 
@@ -100,20 +115,25 @@ class LogAdapter(
 
         viewHolder.btnCopy.setOnClickListener {
 
-
             setClipboard(
                 context = viewHolder.itemView.context,
                 text = viewHolder.textViewLog.text.toString()
             )
+
         }
         viewHolder.itemView.setOnClickListener(View.OnClickListener {
+            var pos = position
+            if (!isFirstSelected) {
+                if (pos > selectedItemPosation && selectedItemPosation != -1)
+                    pos = pos - 1
+            } else
+                isFirstSelected = false
 
-            listener.onItemShowParedLog(
-                position,
-                selectedItemPosation
+            listener.onItemShowPairedLog(
+                pos,
+                selectedItemPosation,
+                logs[position]
             )
-
-            selectedItemPosation = position
 
         })
 
@@ -134,7 +154,7 @@ class LogAdapter(
         return object : Filter() {
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
 
-                filteredLogs = results?.values as MutableList<String>
+                filteredLogs = results?.values as MutableList<LogClass>
                 notifyDataSetChanged()
             }
 
@@ -143,9 +163,9 @@ class LogAdapter(
                 if (charString.isEmpty()) {
                     filteredLogs = logs
                 } else {
-                    var filteredLogsLst: MutableList<String> = mutableListOf()
+                    var filteredLogsLst: MutableList<LogClass> = mutableListOf()
                     for (row in logs) {
-                        if (row.toLowerCase().contains(charString.toLowerCase())) {
+                        if (row.log.toLowerCase().contains(charString.toLowerCase())) {
                             filteredLogsLst.add(row)
                         }
                     }

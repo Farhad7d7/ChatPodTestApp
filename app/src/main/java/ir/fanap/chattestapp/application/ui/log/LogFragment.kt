@@ -14,18 +14,20 @@ import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.support.annotation.StringDef
 import android.util.Log
+import android.widget.Toast
 import com.fanap.podchat.mainmodel.ChatMessage
 import com.fanap.podchat.util.ChatMessageType
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.bussines.model.LogClass
+import kotlin.math.log
 
 
 class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
 
     private lateinit var mainViewModel: MainViewModel
-    private var logs: MutableList<String> = mutableListOf()
+    private var logs: MutableList<LogClass> = mutableListOf()
     private lateinit var logAdapter: LogAdapter
     private lateinit var searchView: SearchView
     private var selected = SelectedFilterType.FILTER_ALL;
@@ -253,7 +255,6 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
     override fun onLogEventWithName(logName: String, json: String) {
         super.onLogEventWithName(logName, json)
 
-
         if (logName.isEmpty()) return
 
         val gson: Gson = GsonBuilder().setPrettyPrinting().create()
@@ -262,68 +263,79 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
         if (chatMessage.type == ChatMessageType.Constants.PING) return
 
+        var logs: ArrayList<LogClass> = refactorLog(logName = logName!!, log = json!!, gson = gson)
 
-        var jsonS = json.replace("\"type\"", "<font color='#03a9f4'>type</font>")
+        addNewLogToList(logs.get(0))
 
-
-//
-//
-//        if (logName == "Error") {
-//
-//            val ln = "\n\n  <font color='#EE0000'> <<< <b>$logName</b> >>> </font> \n\n $jsonS"
-//
-//            logs.add(ln)
-//
-//        } else {
-//
-//            val logText =
-//                "\n\n <font color='#4caf50' size=8> <<< <b>$logName</b> >>> </font> \n\n $jsonS"
-//
-//            logs.add(logText)
-//
-//        }
-
-
-        //  resetLogs(refactorLog(logName = logName!!, log = json!!, gson = gson), logName);
-
-//        activity?.runOnUiThread {
-//            logAdapter.notifyItemInserted(logs.size - 1)
-//
-//            logAdapter.notifyDataSetChanged()
-//        }
     }
 
 
-    fun checkFilterState() {
-
-        //if filter state change needs to refresh data
+    fun addNewLogToList(it: LogClass) {
 
         when (selected) {
 
             SelectedFilterType.FILTER_ALL -> {
 
+                var test = prepareNormal(it)
+                if (test != null)
+                    logs.add(test)
+
             }
 
             SelectedFilterType.FILTER_ERRORS -> {
+
+                var test = prepareErrorItem(it)
+                if (test != null)
+                    logs.add(test)
 
             }
 
             SelectedFilterType.FILTER_REQUEST -> {
 
+                var test = prepareRequestItem(it)
+                if (test != null)
+                    logs.add(test)
+
             }
 
             SelectedFilterType.FILTER_RESPONSE -> {
 
+                var test = prepareResponseItem(it)
+                if (test != null)
+                    logs.add(test)
+
             }
+
+            SelectedFilterType.FILTER_OTHERS -> {
+
+                var test = prepareOthers(it)
+                if (test != null)
+                    logs.add(test)
+
+            }
+
             else -> {
+
+                var test = prepareNormal(it)
+                if (test != null)
+                    logs.add(test)
+
             }
 
         }
 
+        activity?.runOnUiThread {
+            logAdapter.notifyItemInserted(logs.size - 1)
+
+            logAdapter.notifyDataSetChanged()
+        }
+
     }
 
+    //if filter state change needs to refresh data
     fun refreshWithFilter() {
-        var temp: MutableList<String> = mutableListOf()
+
+        var temp: MutableList<LogClass> = mutableListOf()
 
         mainViewModel.listOfLogs.forEach()
         {
@@ -333,7 +345,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                 SelectedFilterType.FILTER_ALL -> {
 
                     var test = prepareNormal(it)
-                    if (test != "-1")
+                    if (test != null)
                         temp.add(test)
 
                 }
@@ -341,7 +353,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                 SelectedFilterType.FILTER_ERRORS -> {
 
                     var test = prepareErrorItem(it)
-                    if (test != "-1")
+                    if (test != null)
                         temp.add(test)
 
                 }
@@ -349,7 +361,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                 SelectedFilterType.FILTER_REQUEST -> {
 
                     var test = prepareRequestItem(it)
-                    if (test != "-1")
+                    if (test != null)
                         temp.add(test)
 
                 }
@@ -357,7 +369,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                 SelectedFilterType.FILTER_RESPONSE -> {
 
                     var test = prepareResponseItem(it)
-                    if (test != "-1")
+                    if (test != null)
                         temp.add(test)
 
                 }
@@ -365,7 +377,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                 SelectedFilterType.FILTER_OTHERS -> {
 
                     var test = prepareOthers(it)
-                    if (test != "-1")
+                    if (test != null)
                         temp.add(test)
 
                 }
@@ -373,139 +385,117 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                 else -> {
 
                     var test = prepareNormal(it)
-                    if (test != "-1")
+                    if (test != null)
                         temp.add(test)
 
                 }
 
             }
 
-            Log.e(tag, it.logName + "--" + it.uniqueId)
-
         }
 
-        isFirstSelected = true
         logs = temp;
         logAdapter.refreshList(temp);
     }
 
-    fun prepareRequestItem(logClass: LogClass): String {
+    fun prepareRequestItem(logClass: LogClass): LogClass? {
 
-        var temp: String = "-1";
-
-        if (logClass.logName.startsWith("SEND")) {
-            temp = logClass.logName;
+        if (logClass.logName.startsWith("SEND") || logClass.logName.startsWith("GET")) {
+            return prepareNormal(logClass)
         }
 
-        return temp
+        return null
 
     }
 
-    fun prepareResponseItem(logClass: LogClass): String {
-
-        var temp: String = "-1";
+    fun prepareResponseItem(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("RECEIVE")) {
-            temp = logClass.logName;
+            return prepareNormal(logClass)
         }
 
-        return temp
+        return null
 
     }
 
-    fun prepareErrorItem(logClass: LogClass): String {
-
-        var temp: String = "-1";
+    fun prepareErrorItem(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("Error")) {
-            temp = logClass.logName;
+            return prepareNormal(logClass)
         }
 
-        return temp
+        return null
 
     }
 
-    fun prepareNormal(logClass: LogClass): String {
-
-        return logClass.logName;
-
-    }
-
-    fun prepareOthers(logClass: LogClass): String {
+    fun prepareNormal(logClass: LogClass): LogClass? {
 
         var temp: String = "-1";
+        var jsonS = logClass.getJSon()
+        var logName = logClass.logName;
+
+        if (logName.startsWith("Error")) {
+            temp = "\n\n  <font color='#EE0000'> <<< <b>$logName</b> >>> </font> \n\n $jsonS"
+        } else
+            temp = "\n\n <font color='#4caf50' size=8> <<< <b>$logName</b> >>> </font> \n\n $jsonS"
+
+        logClass.shoinglog = temp
+        return logClass;
+
+    }
+
+    fun prepareOthers(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("Error") ||
             logClass.logName.startsWith("SEND") ||
+            logClass.logName.startsWith("GET") ||
             logClass.logName.startsWith("RECEIVE")
         ) {
-            return temp;
-        } else
-            temp = logClass.logName;
-
-        return temp;
+            return null;
+        } else {
+            return prepareNormal(logClass)
+        }
 
     }
 
 
-    override fun onItemShowParedLog(pos: Int, lastSelected: Int) {
+    override fun onItemShowPairedLog(pos: Int, lastSelected: Int, log: LogClass) {
 
-        if (pos == lastSelected)
-            return
-        if (pos == lastSelected + 1 && lastSelected != -1)
+        if (pos == lastSelected || selected == SelectedFilterType.FILTER_ALL)
             return
 
 
-        logs = removeLastSelected(pos, lastSelected)
+        if (lastSelected != -1)
+            logs.removeAt(lastSelected)
 
-        logs = prepareAddParedItems(pos, lastSelected)
+        val log = findPairedItem(log)
+        if (log != null) {
 
-        logAdapter.refreshList(logs)
-        if (pos != 0)
-            recyclerView.scrollToPosition(pos - 1)
+            logs.add(pos, log)
+
+            logAdapter.refreshForFilter(logs,pos)
+            recyclerView.scrollToPosition(pos)
+        } else {
+            logAdapter.setLastSelected(-1)
+            Toast.makeText(context, "NOt Found !!!", Toast.LENGTH_SHORT).show()
+        }
 
     }
 
-    fun removeLastSelected(pos: Int, lastSelected: Int): MutableList<String> {
 
-        var temp: MutableList<String> = mutableListOf()
-        var trackerPos = 0;
+    // fing paired log
+    fun findPairedItem(log: LogClass): LogClass? {
 
-        logs.forEach() {
-            if (lastSelected != trackerPos)
-                temp.add(it)
-
-            trackerPos++;
+        for (item in mainViewModel.listOfLogs) {
+            if (item.uniqueId == log.uniqueId)
+                if (item.logName != log.logName) {
+                    prepareNormal(item)?.let {
+                        return  it
+                    }
+                    break
+                }
         }
-
-        return temp;
-
-    }
-
-    var isFirstSelected = true;
-    fun prepareAddParedItems(pos: Int, lastSelected: Int): MutableList<String> {
-
-        var temp: MutableList<String> = mutableListOf()
-        var trackerPos = 0;
-        var selectedPos=pos;
-        if (!isFirstSelected) {
-//            selectedPos = selectedPos - 1
-        }else
-            isFirstSelected = false
-
-        logs.forEach() {
-
-            if (selectedPos == trackerPos)
-                temp.add("paredreq")
-
-
-            temp.add(it)
-
-            trackerPos++;
-        }
-
-        return temp;
-
+        return null;
     }
 
 }
