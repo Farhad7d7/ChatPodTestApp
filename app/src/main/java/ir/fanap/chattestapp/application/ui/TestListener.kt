@@ -25,7 +25,9 @@ interface TestListener {
     fun onSeen(response: ChatResponse<ResultMessage>?) {}
     fun onDeliver(response: ChatResponse<ResultMessage>?) {}
     fun onThreadRemoveParticipant(response: ChatResponse<ResultParticipant>?) {
+
     }
+
 
     fun onThreadAddParticipant(response: ChatResponse<ResultAddParticipant>?) {
 

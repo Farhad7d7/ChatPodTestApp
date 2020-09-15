@@ -1470,12 +1470,30 @@ class FunctionFragment : Fragment(),
     override fun onClearHistory(chatResponse: ChatResponse<ResultClearHistory>?) {
         super.onClearHistory(chatResponse)
 
-        val position = 22
-        val jObj = gson.toJson(chatResponse)
+        if (fucCallback[ConstantMsgType.CLEAR_HISTORY] == chatResponse?.uniqueId) {
+
+            val position =  getPositionOf(ConstantMsgType.CLEAR_HISTORY)
+            val jObj = gson.toJson(chatResponse)
 //        addLogsOfFunctionAtPosition(jObj,position)
-        methods[position].methodNameFlag = true
-        changeIconReceive(position)
-        changeFunTwoState(position, Method.DONE)
+            methods[position].methodNameFlag = true
+            changeIconReceive(position)
+            changeFunTwoState(position, Method.DONE)
+
+        }
+
+
+        // response 1 for spam thread
+        if (fucCallback[ConstantMsgType.SPAM_THREAD] == chatResponse?.uniqueId) {
+
+            val position = getPositionOf(ConstantMsgType.SPAM_THREAD)
+
+            changeFunTwoState(position, Method.DONE)
+            changeFunThreeState(position, Method.DONE)
+            changeIconReceive(position)
+
+
+        }
+
     }
 
 
@@ -1613,6 +1631,17 @@ class FunctionFragment : Fragment(),
 
         }
 
+        // response 3 for spam thread
+        if (fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId) {
+
+            val position = getPositionOf(ConstantMsgType.SPAM_THREAD)
+
+            changeFunTwoState(position, Method.DONE)
+            changeFunThreeState(position, Method.DONE)
+            changeIconReceive(position)
+
+
+        }
 //        addLogsOfFunctionAtPosition(jObj,getPositionOf(ConstantMsgType.GET_BLOCK_LIST))
 
     }
@@ -1886,10 +1915,8 @@ class FunctionFragment : Fragment(),
             val position = getPositionOf(ConstantMsgType.SPAM_THREAD)
 
             changeFunOneState(position, Method.DONE)
-
-          //  changeFunTwoState(position, Method.RUNNING)
-
-            changeIconReceive(position)
+            changeFunTwoState(position, Method.RUNNING)
+            changeFunThreeState(position, Method.RUNNING)
 
             requestSpamThread(chatResponse)
         }
@@ -3002,6 +3029,19 @@ class FunctionFragment : Fragment(),
         changeIconReceive(pos)
 
         changeFunThreeState(pos, Method.DONE)
+
+
+        // response 2 for spam thread
+        if (fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId) {
+
+            val position = getPositionOf(ConstantMsgType.SPAM_THREAD)
+
+            changeFunTwoState(position, Method.DONE)
+            changeFunThreeState(position, Method.DONE)
+            changeIconReceive(position)
+
+
+        }
     }
 
     override fun onUpdateContact(response: ChatResponse<ResultUpdateContact>?) {
@@ -4000,10 +4040,14 @@ class FunctionFragment : Fragment(),
         }
     }
 
+    // After sending the spam request, we will receive 3 responses from the server
+    // on clear history
+    // on leave thread or on thread leave participant
+    // on block
+    
     private fun requestSpamThread(response: ChatResponse<ResultThreads>?) {
 
         var targetThreadId = -1L
-
 
 
         for (thread in response?.result?.threads!!.filter { t -> !t.isGroup }) {

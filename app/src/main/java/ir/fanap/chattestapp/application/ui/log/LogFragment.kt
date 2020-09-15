@@ -208,7 +208,6 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
     }
 
-
 //    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
 //        super.onCreateOptionsMenu(menu, inflater)
 //        menu?.clear()
@@ -242,7 +241,6 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         return super.onOptionsItemSelected(item)
     }
 
-
     override fun onLogEvent(log: String) {
         super.onLogEvent(log)
 //        logs.add(log)
@@ -268,7 +266,6 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         addNewLogToList(logs.get(0))
 
     }
-
 
     fun addNewLogToList(it: LogClass) {
 
@@ -339,7 +336,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
         mainViewModel.listOfLogs.forEach()
         {
-
+//            addNewLogToList(it)
             when (selected) {
 
                 SelectedFilterType.FILTER_ALL -> {
@@ -458,7 +455,6 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
     }
 
-
     override fun onItemShowPairedLog(pos: Int, lastSelected: Int, log: LogClass) {
 
         if (pos == lastSelected || selected == SelectedFilterType.FILTER_ALL)
@@ -482,7 +478,6 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
     }
 
-
     // fing paired log
     fun findPairedItem(log: LogClass): LogClass? {
 
@@ -495,6 +490,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                     break
                 }
         }
+
         return null;
     }
 

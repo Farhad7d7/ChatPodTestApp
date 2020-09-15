@@ -104,12 +104,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             }
 
+
             override fun onChatProfileUpdated(response: ChatResponse<ResultUpdateProfile>?) {
                 super.onChatProfileUpdated(response)
 
                 testListener.onChatProfileUpdated(response)
 
             }
+//            onThreadLeaveParticipant
+
 
             override fun onRemoveRoleFromUser(outputSetRoleToUser: ChatResponse<ResultSetAdmin>?) {
                 super.onRemoveRoleFromUser(outputSetRoleToUser)

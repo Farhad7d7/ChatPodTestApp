@@ -129,7 +129,7 @@ class MethodList {
                 "Send Text MSG",//28
                 "Send Text MSG",//29
                 "",//30
-                "", // 31
+                "Spam Thread", // 31
                 "Create Thread", //32
                 "Create Group & Send Message", //33 Pin/Unpin Message
                 "Find Mentioned Threads",//34
@@ -174,7 +174,7 @@ class MethodList {
                 "Get MSG Seen List",//28
                 "Get MSG Deliver List",//29
                 "",//30
-                "", //31
+                "on block , on Clear History , on Leave Participant", //31
                 "Pin Thread",//32
                 "Pin Message",//33
                 "Get Mention List",//
