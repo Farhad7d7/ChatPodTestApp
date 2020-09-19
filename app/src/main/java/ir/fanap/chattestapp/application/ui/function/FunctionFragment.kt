@@ -24,6 +24,12 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.fanap.podchat.chat.RoleType
+import com.fanap.podchat.chat.bot.request_model.CreateBotRequest
+import com.fanap.podchat.chat.bot.request_model.DefineBotCommandRequest
+import com.fanap.podchat.chat.bot.request_model.StartAndStopBotRequest
+import com.fanap.podchat.chat.bot.result_model.CreateBotResult
+import com.fanap.podchat.chat.bot.result_model.DefineBotCommandResult
+import com.fanap.podchat.chat.bot.result_model.StartStopBotResult
 import com.fanap.podchat.chat.mention.model.RequestGetMentionList
 import com.fanap.podchat.chat.pin.pin_message.model.RequestPinMessage
 import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
@@ -66,7 +72,9 @@ import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import rx.subjects.PublishSubject
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.random.Random
@@ -323,7 +331,7 @@ class FunctionFragment : Fragment(),
         imageCloseSearchResult.setOnClickListener {
             closeSearchResult()
         }
-
+        
     }
 
     private fun showPreviousSearchResult() {
@@ -801,6 +809,7 @@ class FunctionFragment : Fragment(),
             38 -> {
 
                 createPublicThread()
+
             }
             39 -> {
 
@@ -810,7 +819,18 @@ class FunctionFragment : Fragment(),
             40 -> {
 
                 AddParticipantByType()
+            }
+            41 -> {
 
+                createBot()
+            }
+            42 -> {
+
+                addBotToThread()
+            }
+            43 -> {
+
+                getThreadBotList()
             }
 
 
@@ -833,7 +853,7 @@ class FunctionFragment : Fragment(),
 
     //types = id , user id ,core userid
     private fun AddParticipantByType() {
-        Log.e("testtest", "AddParticipantByType")
+
         val pos = getPositionOf(ConstantMsgType.ADD_PARTICIPANTBYTYPE)
         changeIconSend(pos)
         changeFunOneState(pos, Method.RUNNING)
@@ -843,6 +863,48 @@ class FunctionFragment : Fragment(),
 
         fucCallback[ConstantMsgType.ADD_PARTICIPANTBYTYPE] =
             mainViewModel.getThreads(requestGetThread)
+
+    }
+
+
+    private fun createBot() {
+
+
+        val pos = getPositionOf(ConstantMsgType.CREATE_BOT)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
+
+        val requestCreateBot = CreateBotRequest.Builder("${Date().time}BOT").build()
+
+        fucCallback[ConstantMsgType.CREATE_BOT] =
+            mainViewModel.createBot(requestCreateBot)
+
+    }
+
+    private fun addBotToThread() {
+
+        val pos = getPositionOf(ConstantMsgType.ADD_BOT)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
+
+        val requestCreateBot = CreateBotRequest.Builder("${Date().time}BOT").build()
+
+        fucCallback[ConstantMsgType.ADD_BOT] =
+            mainViewModel.createBot(requestCreateBot)
+
+    }
+
+    private fun getThreadBotList() {
+
+
+        val pos = getPositionOf(ConstantMsgType.GET_BOT_LIST)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
+
+        val requestCreateBot = CreateBotRequest.Builder("${Date().time}BOT").build()
+
+        fucCallback[ConstantMsgType.GET_BOT_LIST] =
+            mainViewModel.createBot(requestCreateBot)
 
     }
 
@@ -1472,7 +1534,7 @@ class FunctionFragment : Fragment(),
 
         if (fucCallback[ConstantMsgType.CLEAR_HISTORY] == chatResponse?.uniqueId) {
 
-            val position =  getPositionOf(ConstantMsgType.CLEAR_HISTORY)
+            val position = getPositionOf(ConstantMsgType.CLEAR_HISTORY)
             val jObj = gson.toJson(chatResponse)
 //        addLogsOfFunctionAtPosition(jObj,position)
             methods[position].methodNameFlag = true
@@ -1536,6 +1598,219 @@ class FunctionFragment : Fragment(),
 
     }
 
+
+    override fun onBotCommandsDefined(response: ChatResponse<DefineBotCommandResult>?) {
+        super.onBotCommandsDefined(response)
+
+        if (fucCallback[ConstantMsgType.CREATE_BOT] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CREATE_BOT)
+
+            changeFunTwoState(pos, Method.DONE)
+
+            changeFunThreeState(pos, Method.RUNNING)
+
+            prepareGetBotCommandsList(response?.result)
+
+        }
+
+
+        if (fucCallback[ConstantMsgType.ADD_BOT] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.ADD_BOT)
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+            val requestThread: RequestThread = RequestThread.Builder().build()
+            requestThread.count = 10;
+            fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.getThreads(requestThread)
+
+        }
+    }
+
+
+    override fun onBotCreated(response: ChatResponse<CreateBotResult>?) {
+        super.onBotCreated(response)
+
+
+        if (fucCallback[ConstantMsgType.CREATE_BOT] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CREATE_BOT)
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+            prepareAddCommandToBot(response?.result, response?.uniqueId)
+
+        }
+
+
+        if (fucCallback[ConstantMsgType.ADD_BOT] == response?.uniqueId) {
+
+            prepareAddCommandToBot(response?.result, response?.uniqueId)
+
+        }
+
+
+        if (fucCallback[ConstantMsgType.GET_BOT_LIST] == response?.uniqueId) {
+
+
+            val pos = getPositionOf(ConstantMsgType.GET_BOT_LIST)
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+
+            val requestThread: RequestThread = RequestThread.Builder().build()
+            requestThread.count = 10;
+            fucCallback[ConstantMsgType.GET_BOT_LIST] = mainViewModel.getThreads(requestThread)
+            fucCallback["botName"] = response?.result?.thingVO?.name.toString()
+
+        }
+
+
+    }
+
+
+    override fun onBotStarted(response: ChatResponse<StartStopBotResult>?) {
+        super.onBotStarted(response)
+
+        if (fucCallback[ConstantMsgType.ADD_BOT] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.ADD_BOT)
+
+            changeFunThreeState(pos, Method.DONE)
+            changeFunFourState(pos, Method.RUNNING)
+            prepareStopBot()
+
+        }
+    }
+
+
+    override fun onBotStopped(response: ChatResponse<StartStopBotResult>?) {
+        super.onBotStopped(response)
+
+        if (fucCallback[ConstantMsgType.ADD_BOT] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.ADD_BOT)
+
+            changeFunFourState(pos, Method.DONE)
+            changeIconReceive(pos)
+
+        }
+    }
+
+
+    private fun prepareAddCommandToBot(response: CreateBotResult?, uniqueId: String?) {
+
+        val commands: MutableList<String> = java.util.ArrayList()
+        commands.add("/command1")
+        commands.add("/command2")
+
+        val request = DefineBotCommandRequest.Builder(response?.thingVO?.name, commands)
+            .build()
+
+
+
+
+        if (fucCallback[ConstantMsgType.CREATE_BOT] == uniqueId) {
+
+            fucCallback[ConstantMsgType.CREATE_BOT] =
+                mainViewModel.defineBotCommand(request)
+
+        }
+
+        if (fucCallback[ConstantMsgType.ADD_BOT] == uniqueId) {
+
+            fucCallback[ConstantMsgType.ADD_BOT] =
+                mainViewModel.defineBotCommand(request)
+
+
+            fucCallback["botName"] = response?.thingVO?.name.toString()
+        }
+    }
+
+    private fun prepareGetBotCommandsList(response: DefineBotCommandResult?) {
+
+
+        val position = getPositionOf(ConstantMsgType.CREATE_BOT)
+
+        changeFunTwoState(position, Method.DONE)
+        changeFunThreeState(position, Method.DONE)
+        changeIconReceive(position)
+
+
+    }
+    private fun prepareStopBot() {
+
+        var threadId = fucCallback["threadID"]?.toLong()
+        var botName = fucCallback["botName"]
+
+        val request = StartAndStopBotRequest.Builder(
+            threadId!!,
+            botName
+        ).build()
+
+        fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.stopBot(request);
+
+    }
+
+    private fun handleGetThread(response: ResultThreads?, uniqueId: String?) {
+
+        if (response != null) {
+            if (response.getContentCount() > 0) {
+
+                //step 1 find a group
+                var selectedThread: Thread? = null
+                var threads: List<Thread> = response.threads
+                for (item in threads) {
+                    if (item.isGroup) {
+                        selectedThread = item
+                        break
+                    }
+                }
+
+                //step 2 add participant to finded group
+                if (selectedThread != null) {
+                    var botName = fucCallback["botName"]
+                    var request: RequestAddParticipants = RequestAddParticipants
+                        .newBuilder()
+                        .threadId(selectedThread?.id)
+                        .withUserNames(
+                            arrayListOf(botName)
+                        )
+                        .build()
+
+
+                    if (fucCallback[ConstantMsgType.ADD_BOT] == uniqueId) {
+
+                        fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.addParticipant(request)
+
+                    }
+
+                    if (fucCallback[ConstantMsgType.GET_BOT_LIST] == uniqueId) {
+
+                        fucCallback[ConstantMsgType.GET_BOT_LIST] = mainViewModel.addParticipant(
+                            request
+                        )
+
+                    }
+
+                    fucCallback["threadID"] = selectedThread?.id.toString()
+
+                }
+
+
+            }
+
+
+        }
+
+    }
 
     private fun handleOnGetAdminList(response: ResultParticipant?) {
 
@@ -1813,7 +2088,14 @@ class FunctionFragment : Fragment(),
             "CREATE_PUBLIC_THREAD" -> 38
 
             "GET_HISTORYWITHMSGTYPE" -> 39
+
             "ADD_PARTICIPANTBYTYPE" -> 40
+
+            "CREATE_BOT" -> 41
+
+            "ADD_BOT" -> 42
+
+            "GET_BOT_LIST" -> 43
 
             else -> -1
         }
@@ -2060,10 +2342,27 @@ class FunctionFragment : Fragment(),
 
         }
 
+        if (fucCallback[ConstantMsgType.ADD_BOT] == chatResponse?.uniqueId) {
+
+            val position = getPositionOf(ConstantMsgType.ADD_BOT)
+
+            handleGetThread(chatResponse?.result, chatResponse?.uniqueId);
+
+        }
+
+        if (fucCallback[ConstantMsgType.GET_BOT_LIST] == chatResponse?.uniqueId) {
+
+            val position = getPositionOf(ConstantMsgType.ADD_BOT)
+
+            handleGetThread(chatResponse?.result, chatResponse?.uniqueId);
+
+        }
+
 
     }
 
     private fun selectTypeIdDialog(chatResponse: ChatResponse<ResultThreads>?) {
+
         var threadId: Long = chatResponse?.result?.threads!![0].id;
         val selectTypeAddParticipantDialog = SelelctTypeAddParticipant()
         selectTypeAddParticipantDialog.setThreadId(threadId)
@@ -2080,15 +2379,19 @@ class FunctionFragment : Fragment(),
         })
 
         selectTypeAddParticipantDialog.show(childFragmentManager, "ADD_PARTICIPANTBYTYPE")
+
     }
 
     private fun getContactsForAddParticipant() {
+
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.ADD_PARTICIPANTBYTYPE] =
             mainViewModel.getContact(requestGetContact)
+
     }
 
     private fun prepareGetHistoryByType(chatResponse: ChatResponse<ResultThreads>?) {
+
         var threadId: Long = chatResponse?.result?.threads!![0].id;
 
 
@@ -3024,12 +3327,16 @@ class FunctionFragment : Fragment(),
     override fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
         super.onLeaveThread(response)
 
-        val pos = 14
 
-        changeIconReceive(pos)
+        if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
 
-        changeFunThreeState(pos, Method.DONE)
+            val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
+            changeIconReceive(position)
+
+            changeFunThreeState(position, Method.DONE)
+
+        }
 
         // response 2 for spam thread
         if (fucCallback[ConstantMsgType.SPAM_THREAD] == response?.uniqueId) {
@@ -3074,7 +3381,7 @@ class FunctionFragment : Fragment(),
                 contactList.forEach { contact ->
                     if (contact.userId == blocked?.contactVO?.userId) {
                         contactList.remove(contact)
-                        contactList.add(blocked.contactVO)
+                        contactList.add(blocked.contactVO!!)
                     }
                 }
             } catch (e: Exception) {
@@ -4044,7 +4351,7 @@ class FunctionFragment : Fragment(),
     // on clear history
     // on leave thread or on thread leave participant
     // on block
-    
+
     private fun requestSpamThread(response: ChatResponse<ResultThreads>?) {
 
         var targetThreadId = -1L
@@ -4069,7 +4376,7 @@ class FunctionFragment : Fragment(),
 
 
             showToast("SENDING SPAM REQUEST")
-           fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
+            fucCallback[ConstantMsgType.SPAM_THREAD] = mainViewModel.spamThread(requestSpam)
 
 
         } else {
@@ -4551,17 +4858,19 @@ class FunctionFragment : Fragment(),
     }
 
     fun handleAddParticipantByType(contactList: ArrayList<Contact>?) {
+
         var threadId = fucCallback["ADD_PARTICIPANT_THREADID"].toString().toLong()
         var selectedType = fucCallback["ADD_PARTICIPANT_SELECTEDTYPE"].toString().toInt()
-        var request: RequestAddParticipants? =null;
+        var request: RequestAddParticipants? = null;
         if (contactList != null) {
             when (selectedType) {
                 1 -> {// add participant by userid 1
                     request = RequestAddParticipants
                         .newBuilder()
                         .threadId(threadId)
-                        .withCoreUserIds( prepareGetthreeContact_UserId(contactList)
-                         )
+                        .withCoreUserIds(
+                            prepareGetthreeContact_UserId(contactList)
+                        )
                         .build()
 
                 }
@@ -4569,7 +4878,8 @@ class FunctionFragment : Fragment(),
                     request = RequestAddParticipants
                         .newBuilder()
                         .threadId(threadId)
-                        .withContactIds(prepareGetthreeContact_ContactId(contactList)
+                        .withContactIds(
+                            prepareGetthreeContact_ContactId(contactList)
                         )
                         .build()
 
@@ -4578,16 +4888,18 @@ class FunctionFragment : Fragment(),
                     request = RequestAddParticipants
                         .newBuilder()
                         .threadId(threadId)
-                        .withUserNames(prepareGetthreeContact_UserName(contactList)
+                        .withUserNames(
+                            prepareGetthreeContact_UserName(contactList)
                         )
                         .build()
 
                 }
-                else ->  { // add participant by userid by default 1
+                else -> { // add participant by userid by default 1
                     request = RequestAddParticipants
                         .newBuilder()
                         .threadId(threadId)
-                        .withContactIds( prepareGetthreeContact_UserId(contactList)
+                        .withContactIds(
+                            prepareGetthreeContact_UserId(contactList)
                         )
                         .build()
                 }
@@ -4598,7 +4910,7 @@ class FunctionFragment : Fragment(),
 
     }
 
-    private fun prepareGetthreeContact_ContactId(contactList: ArrayList<Contact>?) : List<Long> {
+    private fun prepareGetthreeContact_ContactId(contactList: ArrayList<Contact>?): List<Long> {
         var intList: MutableList<Long> = ArrayList()
         var choose = 0
         if (contactList != null) {
@@ -4616,7 +4928,7 @@ class FunctionFragment : Fragment(),
         return intList.toList();
     }
 
-    private fun prepareGetthreeContact_UserId(contactList: ArrayList<Contact>?) : List<Long>{
+    private fun prepareGetthreeContact_UserId(contactList: ArrayList<Contact>?): List<Long> {
         var intList: MutableList<Long> = ArrayList()
         var choose = 0
         if (contactList != null) {
@@ -4631,10 +4943,10 @@ class FunctionFragment : Fragment(),
                 }
             }
         }
-      return intList.toList();
+        return intList.toList();
     }
 
-    private fun prepareGetthreeContact_UserName(contactList: ArrayList<Contact>?) : List<String>{
+    private fun prepareGetthreeContact_UserName(contactList: ArrayList<Contact>?): List<String> {
         var intList: MutableList<String> = ArrayList()
         var choose = 0
         if (contactList != null) {
@@ -5368,12 +5680,61 @@ class FunctionFragment : Fragment(),
 
         if (fucCallback[ConstantMsgType.ADD_PARTICIPANTBYTYPE] == response?.uniqueId) {
 
-            val position = 40
+            val position = getPositionOf(ConstantMsgType.ADD_PARTICIPANTBYTYPE)
             changeIconReceive(position)
             changeFunThreeState(position, Method.DONE)
 
 
         }
+
+        if (fucCallback[ConstantMsgType.ADD_BOT] == response?.uniqueId) {
+
+            val position = getPositionOf(ConstantMsgType.ADD_BOT)
+
+            changeFunTwoState(position, Method.DONE)
+            changeFunThreeState(position, Method.RUNNING)
+
+            handleStartBot(response)
+
+        }
+
+        if (fucCallback[ConstantMsgType.GET_BOT_LIST] == response?.uniqueId) {
+
+            val position = getPositionOf(ConstantMsgType.GET_BOT_LIST)
+
+            changeFunTwoState(position, Method.DONE)
+            changeFunThreeState(position, Method.RUNNING)
+
+            getThreadBotList(response)
+
+        }
+
+    }
+
+    private fun handleStartBot(response: ChatResponse<ResultAddParticipant>?) {
+
+        var threadId = fucCallback["threadID"]?.toLong()
+        var botName = fucCallback["botName"]
+
+        val request = StartAndStopBotRequest.Builder(
+            threadId!!,
+            botName
+        ).build()
+
+        fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.startBot(request);
+
+    }
+
+    private fun getThreadBotList(response: ChatResponse<ResultAddParticipant>?) {
+
+        var threadId = fucCallback["threadID"]?.toLong()
+        var botName = fucCallback["botName"]
+
+        val pos = getPositionOf(ConstantMsgType.GET_BOT_LIST)
+
+        changeFunThreeState(pos, Method.DONE)
+        changeIconReceive(pos)
+       // fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.getThreadBotList(null);
 
     }
 

@@ -46,7 +46,10 @@ class MethodList {
                 "37 Is Public Thread Name Available",
                 "38 Create Public THRD",
                 "39 Get History With MsgType",
-                "40 Add Participant With ..."
+                "40 Add Participant With ...",
+                "41 Create Bot",
+                "42 Add Bot",
+                "43 Get Bot List"
             )
 
 
@@ -92,7 +95,10 @@ class MethodList {
                 "Is name available", //37
                 "Get Contacts", //38
                 "Get Threads",//39
-                "Get Threads" //40
+                "Get Threads", //40
+                "Create Bot", //41
+                "Create Bot & Add Bot Commnads", //42
+                "Create Bot" //43
 
             )
 
@@ -138,7 +144,10 @@ class MethodList {
                 "",// 37
                 "Is Public Name Available", // 38
                 "Get History By Msg Type", // 39
-                "Select Type And GetContact" //40
+                "Select Type And GetContact", //40
+                "Add Bot Commnads", //41
+                "Create Group & Add Bot", //42
+                "Create Group & Add Bot"//43
             )
 
         val methodFuncThree: MutableList<String> =
@@ -183,7 +192,10 @@ class MethodList {
                 "", // 37
                 "Create Public THRD",// 38
                 "",// 39
-                "Add Participant to Gp" //40
+                "Add Participant to Gp", //40
+                "Get Bot Command List", //41
+                "Start Bot & Send Msg", //42
+                "Get Thread Bot List" //43
             )
 
 
@@ -229,7 +241,10 @@ class MethodList {
                 "", // 37
                 "",// 38
                 "",// 39
-                "" //40
+                "",//40
+                "",//41
+                "Stop",//42
+                "" //43
             )
     }
 }

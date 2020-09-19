@@ -68,6 +68,9 @@ class ConstantMsgType {
         const val REMOVE_ADMIN_ROLES = "REMOVE_ADMIN_ROLES"
         const val DELETE_MULTIPLE_MESSAGE = "DELETE_MULTIPLE_MESSAGE"
         const val SPAM_THREAD = "SPAM_THREAD"
+        const val CREATE_BOT = "CREATE_BOT"
+        const val ADD_BOT = "ADD_BOT"
+        const val GET_BOT_LIST = "GET_BOT_LIST"
     }
 
 
@@ -122,7 +125,10 @@ class ConstantMsgType {
         PIN_UN_PIN_THREAD,
         PIN_UN_PIN_MESSAGE,
         GET_CURRENT_USER_ROLES,
-        UPDATE_CHAT_PROFILE
+        UPDATE_CHAT_PROFILE,
+        CREATE_BOT,
+        ADD_BOT,
+        GET_BOT_LIST
     )
 
     @Retention(AnnotationRetention.SOURCE)

@@ -273,7 +273,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             SelectedFilterType.FILTER_ALL -> {
 
-                var test = prepareNormal(it)
+                var test = getItemsNormal(it)
                 if (test != null)
                     logs.add(test)
 
@@ -281,7 +281,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             SelectedFilterType.FILTER_ERRORS -> {
 
-                var test = prepareErrorItem(it)
+                var test = getErrorItems(it)
                 if (test != null)
                     logs.add(test)
 
@@ -289,7 +289,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             SelectedFilterType.FILTER_REQUEST -> {
 
-                var test = prepareRequestItem(it)
+                var test = getRequestItems(it)
                 if (test != null)
                     logs.add(test)
 
@@ -297,7 +297,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             SelectedFilterType.FILTER_RESPONSE -> {
 
-                var test = prepareResponseItem(it)
+                var test = getResponseItems(it)
                 if (test != null)
                     logs.add(test)
 
@@ -305,7 +305,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             SelectedFilterType.FILTER_OTHERS -> {
 
-                var test = prepareOthers(it)
+                var test = getOtherItems(it)
                 if (test != null)
                     logs.add(test)
 
@@ -313,7 +313,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             else -> {
 
-                var test = prepareNormal(it)
+                var test = getItemsNormal(it)
                 if (test != null)
                     logs.add(test)
 
@@ -341,7 +341,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 SelectedFilterType.FILTER_ALL -> {
 
-                    var test = prepareNormal(it)
+                    var test = getItemsNormal(it)
                     if (test != null)
                         temp.add(test)
 
@@ -349,7 +349,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 SelectedFilterType.FILTER_ERRORS -> {
 
-                    var test = prepareErrorItem(it)
+                    var test = getErrorItems(it)
                     if (test != null)
                         temp.add(test)
 
@@ -357,7 +357,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 SelectedFilterType.FILTER_REQUEST -> {
 
-                    var test = prepareRequestItem(it)
+                    var test = getRequestItems(it)
                     if (test != null)
                         temp.add(test)
 
@@ -365,7 +365,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 SelectedFilterType.FILTER_RESPONSE -> {
 
-                    var test = prepareResponseItem(it)
+                    var test = getResponseItems(it)
                     if (test != null)
                         temp.add(test)
 
@@ -373,7 +373,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 SelectedFilterType.FILTER_OTHERS -> {
 
-                    var test = prepareOthers(it)
+                    var test = getOtherItems(it)
                     if (test != null)
                         temp.add(test)
 
@@ -381,7 +381,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 else -> {
 
-                    var test = prepareNormal(it)
+                    var test = getItemsNormal(it)
                     if (test != null)
                         temp.add(test)
 
@@ -395,37 +395,37 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         logAdapter.refreshList(temp);
     }
 
-    fun prepareRequestItem(logClass: LogClass): LogClass? {
+    fun getRequestItems(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("SEND") || logClass.logName.startsWith("GET")) {
-            return prepareNormal(logClass)
+            return getItemsNormal(logClass)
         }
 
         return null
 
     }
 
-    fun prepareResponseItem(logClass: LogClass): LogClass? {
+    fun getResponseItems(logClass: LogClass): LogClass? {
 
-        if (logClass.logName.startsWith("RECEIVE")) {
-            return prepareNormal(logClass)
+        if (logClass.logName.startsWith("RECEIVE")  || logClass.logName.startsWith("ON")) {
+            return getItemsNormal(logClass)
         }
 
         return null
 
     }
 
-    fun prepareErrorItem(logClass: LogClass): LogClass? {
+    fun getErrorItems(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("Error")) {
-            return prepareNormal(logClass)
+            return getItemsNormal(logClass)
         }
 
         return null
 
     }
 
-    fun prepareNormal(logClass: LogClass): LogClass? {
+    fun getItemsNormal(logClass: LogClass): LogClass? {
 
         var temp: String = "-1";
         var jsonS = logClass.getJSon()
@@ -441,20 +441,23 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
     }
 
-    fun prepareOthers(logClass: LogClass): LogClass? {
+    // getFilterByOthers
+    fun getOtherItems(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("Error") ||
             logClass.logName.startsWith("SEND") ||
             logClass.logName.startsWith("GET") ||
+            logClass.logName.startsWith("ON") ||
             logClass.logName.startsWith("RECEIVE")
         ) {
             return null;
         } else {
-            return prepareNormal(logClass)
+            return getItemsNormal(logClass)
         }
 
     }
-
+  // call when click a log from list
+    //this method for find paired item with a log of response or requests
     override fun onItemShowPairedLog(pos: Int, lastSelected: Int, log: LogClass) {
 
         if (pos == lastSelected || selected == SelectedFilterType.FILTER_ALL)
@@ -484,7 +487,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         for (item in mainViewModel.listOfLogs) {
             if (item.uniqueId == log.uniqueId)
                 if (item.logName != log.logName) {
-                    prepareNormal(item)?.let {
+                    getItemsNormal(item)?.let {
                         return  it
                     }
                     break
@@ -497,6 +500,10 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 }
 
 class SelectedFilterType {
+
+
+
+   //filter types
     companion object {
         const val FILTER_ALL = "FILTER_ALL"
         const val FILTER_ERRORS = "FILTER_ERRORS"
