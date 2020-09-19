@@ -273,7 +273,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             SelectedFilterType.FILTER_ALL -> {
 
-                var test = getItemsNormal(it)
+                var test = getItemNormal(it)
                 if (test != null)
                     logs.add(test)
 
@@ -313,7 +313,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             else -> {
 
-                var test = getItemsNormal(it)
+                var test = getItemNormal(it)
                 if (test != null)
                     logs.add(test)
 
@@ -341,7 +341,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 SelectedFilterType.FILTER_ALL -> {
 
-                    var test = getItemsNormal(it)
+                    var test = getItemNormal(it)
                     if (test != null)
                         temp.add(test)
 
@@ -381,7 +381,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 else -> {
 
-                    var test = getItemsNormal(it)
+                    var test = getItemNormal(it)
                     if (test != null)
                         temp.add(test)
 
@@ -398,7 +398,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
     fun getRequestItems(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("SEND") || logClass.logName.startsWith("GET")) {
-            return getItemsNormal(logClass)
+            return getItemNormal(logClass)
         }
 
         return null
@@ -408,7 +408,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
     fun getResponseItems(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("RECEIVE")  || logClass.logName.startsWith("ON")) {
-            return getItemsNormal(logClass)
+            return getItemNormal(logClass)
         }
 
         return null
@@ -418,14 +418,14 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
     fun getErrorItems(logClass: LogClass): LogClass? {
 
         if (logClass.logName.startsWith("Error")) {
-            return getItemsNormal(logClass)
+            return getItemNormal(logClass)
         }
 
         return null
 
     }
 
-    fun getItemsNormal(logClass: LogClass): LogClass? {
+    fun getItemNormal(logClass: LogClass): LogClass? {
 
         var temp: String = "-1";
         var jsonS = logClass.getJSon()
@@ -452,7 +452,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         ) {
             return null;
         } else {
-            return getItemsNormal(logClass)
+            return getItemNormal(logClass)
         }
 
     }
@@ -487,7 +487,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         for (item in mainViewModel.listOfLogs) {
             if (item.uniqueId == log.uniqueId)
                 if (item.logName != log.logName) {
-                    getItemsNormal(item)?.let {
+                    getItemNormal(item)?.let {
                         return  it
                     }
                     break
