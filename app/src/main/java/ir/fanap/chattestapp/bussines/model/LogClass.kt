@@ -4,12 +4,14 @@ import android.os.Parcel
 import android.os.Parcelable
 import java.util.ArrayList
 
-data class LogClass(val uniqueId:String,val logName: String, val log: String) : Parcelable {
+data class LogClass(val uniqueId: String, val logName: String, var log: String) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
         parcel.readString()
     )
+
+    var shoinglog: String = ""
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(uniqueId)
@@ -19,6 +21,10 @@ data class LogClass(val uniqueId:String,val logName: String, val log: String) : 
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    fun getJSon(): String {
+        return log.replace("\"type\"", "<font color='#03a9f4'>type</font>")
     }
 
     companion object CREATOR : Parcelable.Creator<LogClass> {

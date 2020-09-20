@@ -7,17 +7,92 @@
         android:layout_height="match_parent">
 
 
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
 
+        <RadioButton
+            android:id="@+id/rdb_others"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:textColor="@color/radio_flat_text_selector"
+            android:padding="@dimen/normal_padding"
+            android:button="@android:color/transparent"
+            android:layout_weight="0.33"
+            android:checked="true"
+            android:gravity="center|center_horizontal"
+            android:text="سایر" />
 
-        <android.support.v7.widget.RecyclerView
-                android:verticalScrollbarPosition="right"
-                android:scrollbars="vertical"
-                android:scrollbarThumbVertical="@drawable/progress_bar_log"
-                android:id="@+id/recyclerV_funcLog"
-                android:layout_margin="4dp"
-                android:background="@android:color/transparent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+        <RadioButton
+            android:id="@+id/rdb_errors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:textColor="@color/radio_flat_text_selector"
+            android:padding="@dimen/normal_padding"
+            android:button="@android:color/transparent"
+            android:layout_weight="0.33"
+            android:checked="true"
+            android:gravity="center|center_horizontal"
+            android:text="خطاها" />
+
+        <RadioButton
+            android:id="@+id/rdb_response"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:textColor="@color/radio_flat_text_selector"
+            android:button="@android:color/transparent"
+            android:padding="@dimen/normal_padding"
+            android:layout_weight="0.33"
+            android:gravity="center|center_horizontal"
+            android:text="دریافت " />
+
+        <RadioButton
+            android:id="@+id/rdb_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:gravity="center|center_horizontal"
+            android:background="@drawable/radio_flat_selector"
+            android:textColor="@color/radio_flat_text_selector"
+            android:padding="@dimen/normal_padding"
+            android:button="@android:color/transparent"
+            android:text="درخواست" />
+
+        <RadioButton
+            android:id="@+id/rdb_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:textColor="@color/radio_flat_text_selector"
+            android:padding="@dimen/normal_padding"
+            android:button="@android:color/transparent"
+            android:layout_weight="0.33"
+            android:checked="true"
+            android:gravity="center|center_horizontal"
+            android:text="همه" />
+
+    </RadioGroup>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerV_funcLog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radioGroup"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="@android:color/transparent"
+        android:scrollbarThumbVertical="@drawable/progress_bar_log"
+        android:scrollbars="vertical"
+        android:verticalScrollbarPosition="right" />
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fActionButton"
@@ -31,15 +106,14 @@
     />
 
     <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabGoTop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fabSize="mini"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_arrow_upward_black_24dp"
-            android:layout_centerHorizontal="true"
-
-    />
+        android:id="@+id/fabGoTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radioGroup"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_arrow_upward_black_24dp"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        app:fabSize="mini" />
 
     <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"

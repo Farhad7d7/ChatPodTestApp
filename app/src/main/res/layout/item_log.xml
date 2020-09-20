@@ -2,73 +2,76 @@
 
 
 <!--changed-->
-<android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:cardCornerRadius="8dp"
-        android:layout_margin="4dp"
-        app:cardElevation="4dp"
-        app:cardMaxElevation="4dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    app:cardMaxElevation="4dp">
 
 
     <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:id="@+id/la_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <View
-                android:layout_width="match_parent"
-                android:background="@drawable/line_round_corner"
-                android:layout_height="4dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/line_round_corner" />
 
         <TextView
-                android:id="@+id/tvLogNum"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:textColor="@color/colorAccent"
-                android:layout_height="wrap_content"/>
+            android:id="@+id/tvLogNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/colorAccent"
+            android:textSize="18sp" />
 
-        <TextView android:layout_width="match_parent"
-                  android:gravity="center"
-                  android:textSize="18sp"
-                  android:textColor="@color/blue_active"
-                  android:text="@string/log_start"
-                  android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/log_start"
+            android:textColor="@color/blue_active"
+            android:textSize="18sp" />
 
 
-        <TextView android:text="Log text"
-                  android:layout_margin="8dp"
-                  android:padding="4dp"
-                  android:textColor="@color/grey"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/textView_log"/>
+        <TextView
+            android:id="@+id/textView_log"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:padding="4dp"
+            android:text="Log text"
+            android:textColor="@color/grey" />
 
-        <TextView android:layout_width="match_parent"
-                  android:gravity="center"
-                  android:textSize="18sp"
-                  android:textColor="@color/blue_active"
-                  android:text="@string/log_end"
-                  android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/log_end"
+            android:textColor="@color/blue_active"
+            android:textSize="18sp" />
 
 
         <android.support.design.widget.FloatingActionButton
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="8dp"
-                android:layout_width="wrap_content"
-                app:fabSize="mini"
-                app:backgroundTint="@color/blue_active"
-                android:id="@+id/btnCopy"
-                android:src="@drawable/ic_content_copy"
-                android:layout_height="wrap_content"/>
+            android:id="@+id/btnCopy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_content_copy"
+            app:backgroundTint="@color/blue_active"
+            app:fabSize="mini" />
 
         <View
-                android:layout_width="match_parent"
-                android:background="@drawable/line_round_corner"
-                android:layout_height="4dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/line_round_corner" />
 
     </LinearLayout>
 

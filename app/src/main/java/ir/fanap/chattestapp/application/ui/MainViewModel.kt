@@ -12,6 +12,12 @@ import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
+import com.fanap.podchat.chat.bot.request_model.CreateBotRequest
+import com.fanap.podchat.chat.bot.request_model.DefineBotCommandRequest
+import com.fanap.podchat.chat.bot.request_model.StartAndStopBotRequest
+import com.fanap.podchat.chat.bot.result_model.CreateBotResult
+import com.fanap.podchat.chat.bot.result_model.DefineBotCommandResult
+import com.fanap.podchat.chat.bot.result_model.StartStopBotResult
 import com.fanap.podchat.chat.mention.model.RequestGetMentionList
 import com.fanap.podchat.chat.pin.pin_message.model.RequestPinMessage
 import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
@@ -104,11 +110,45 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             }
 
+            override fun onBotCreated(response: ChatResponse<CreateBotResult>?) {
+                super.onBotCreated(response)
+
+                    testListener.onBotCreated(response)
+            }
+
+            override fun onBotCommandsDefined(response: ChatResponse<DefineBotCommandResult>?) {
+                super.onBotCommandsDefined(response)
+
+                    testListener.onBotCommandsDefined(response)
+
+            }
+
+            override fun onBotStarted(response: ChatResponse<StartStopBotResult>?) {
+                super.onBotStarted(response)
+
+                    testListener.onBotStarted(response)
+
+            }
+
+            override fun onBotStopped(response: ChatResponse<StartStopBotResult>?) {
+                super.onBotStopped(response)
+
+                    testListener.onBotStopped(response)
+            }
+
             override fun onChatProfileUpdated(response: ChatResponse<ResultUpdateProfile>?) {
                 super.onChatProfileUpdated(response)
 
                 testListener.onChatProfileUpdated(response)
 
+
+            }
+//            onThreadLeaveParticipant
+
+
+            override fun onRemoveRoleFromUser(outputSetRoleToUser: ChatResponse<ResultSetAdmin>?) {
+                super.onRemoveRoleFromUser(outputSetRoleToUser)
+                testListener.onRemoveRoleFromUser(outputSetRoleToUser)
             }
 
             override fun onGetCurrentUserRoles(response: ChatResponse<ResultCurrentUserRoles>?) {
@@ -573,7 +613,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun uploadImage(activity: FragmentActivity?, uri: Uri): String {
 
         val req = RequestUploadImage.Builder(activity, uri)
-            .build();
+            .build()   
 
         return chat.uploadImage(req)
     }
@@ -586,7 +626,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ): String {
 
         val req = RequestUploadImage.Builder(activity, uri)
-            .build();
+            .build()   
 
         return chat.uploadImageProgress(req, progress)
     }
@@ -613,6 +653,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getHistory(requestGetHistory: RequestGetHistory): String {
+        requestGetHistory
         return chat.getHistory(requestGetHistory, null)
     }
 
@@ -649,6 +690,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {
+        requestCreateThread      
         return chat.createThreadWithMessage(requestCreateThread)
     }
 
@@ -658,6 +700,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun getContact(requestGetContact: RequestGetContact): String {
+
         return chat.getContacts(requestGetContact, null)
     }
 
@@ -683,11 +726,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.deleteMessage(requestDeleteMessage, null)
     }
 
+    fun createBot(request: CreateBotRequest): String {
+        return chat.createBot(request)
+    }
+
+    fun defineBotCommand(request: DefineBotCommandRequest): String {
+        return chat.addBotCommand(request)
+    }
+
+    fun startBot(request: StartAndStopBotRequest): String {
+        return chat.startBot(request)
+    }
+
+    fun getThreadBotList(request: StartAndStopBotRequest): String {
+    //    return chat.startBot(request)
+        return ""
+    }
+
+    fun stopBot(request: StartAndStopBotRequest): String {
+        return chat.stopBot(request)
+    }
+
     fun getThreads(requestThread: RequestThread): String {
+
         return chat.getThreads(requestThread, null)
     }
 
     fun getBlockList(requestBlockList: RequestBlockList): String {
+
         return chat.getBlockList(requestBlockList, null)
     }
 
@@ -716,10 +782,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getParticipant(requestThreadParticipant: RequestThreadParticipant): String {
+          
         return chat.getThreadParticipants(requestThreadParticipant, null)
     }
 
     fun clearHistory(requestClearHistory: RequestClearHistory): String {
+
         return chat.clearHistory(requestClearHistory)
     }
 
@@ -750,7 +818,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun searchContact(searchContact: RequestSearchContact): String {
-
         return chat.searchContact(searchContact)
     }
 
@@ -767,6 +834,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteMultipleMessage(requestDeleteMessage: RequestDeleteMessage): ArrayList<String> {
 
         return ArrayList(chat.deleteMultipleMessage(requestDeleteMessage, null))
+
     }
 
     fun spamThread(requestSpam: RequestSpam): String {

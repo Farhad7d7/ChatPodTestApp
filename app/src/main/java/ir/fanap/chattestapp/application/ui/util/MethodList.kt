@@ -44,7 +44,12 @@ class MethodList {
                 "35 Get Current User Roles",
                 "36 Update Chat Profile",
                 "37 Is Public Thread Name Available",
-                "38 Create Public THRD"
+                "38 Create Public THRD",
+                "39 Get History With MsgType",
+                "40 Add Participant With ...",
+                "41 Create Bot",
+                "42 Add Bot",
+                "43 Get Bot List"
             )
 
 
@@ -88,7 +93,12 @@ class MethodList {
                 "Get Contacts", //35
                 "Update Bio",
                 "Is name available", //37
-                "Get Contacts" //38
+                "Get Contacts", //38
+                "Get Threads",//39
+                "Get Threads", //40
+                "Create Bot", //41
+                "Create Bot & Add Bot Commnads", //42
+                "Create Bot" //43
 
             )
 
@@ -125,14 +135,19 @@ class MethodList {
                 "Send Text MSG",//28
                 "Send Text MSG",//29
                 "",//30
-                "", // 31
+                "Spam Thread", // 31
                 "Create Thread", //32
                 "Create Group & Send Message", //33 Pin/Unpin Message
                 "Find Mentioned Threads",//34
                 "Create Group", //35
                 "Get User Info",
                 "",// 37
-                "Is Public Name Available" // 38
+                "Is Public Name Available", // 38
+                "Get History By Msg Type", // 39
+                "Select Type And GetContact", //40
+                "Add Bot Commnads", //41
+                "Create Group & Add Bot", //42
+                "Create Group & Add Bot"//43
             )
 
         val methodFuncThree: MutableList<String> =
@@ -168,15 +183,21 @@ class MethodList {
                 "Get MSG Seen List",//28
                 "Get MSG Deliver List",//29
                 "",//30
-                "",
+                "on block , on Clear History , on Leave Participant", //31
                 "Pin Thread",//32
                 "Pin Message",//33
                 "Get Mention List",//
                 "Get Current User Roles",//35
                 "",
                 "", // 37
-                "Create Public THRD" // 38
+                "Create Public THRD",// 38
+                "",// 39
+                "Add Participant to Gp", //40
+                "Get Bot Command List", //41
+                "Start Bot & Send Msg", //42
+                "Get Thread Bot List" //43
             )
+
 
         val methodFuncFour: MutableList<String> =
             arrayListOf(
@@ -216,9 +237,14 @@ class MethodList {
                 "Unpin Message",//33
                 "",//34
                 "",//35
-                "",
+                "", //36
                 "", // 37
-                "" // 38
+                "",// 38
+                "",// 39
+                "",//40
+                "",//41
+                "Stop",//42
+                "" //43
             )
     }
 }

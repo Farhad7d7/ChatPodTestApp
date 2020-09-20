@@ -91,7 +91,7 @@ class CreateThreadOptionFragment : FullViewDialogFragment() {
 
         btnCancel.setOnClickListener { dialog?.dismiss() }
 
-        btnDone.setOnClickListener {
+        btn_Done.setOnClickListener {
 
             runScaleAnim(it, onEnd = {
 

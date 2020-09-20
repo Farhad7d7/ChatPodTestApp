@@ -53,6 +53,8 @@ class ConstantMsgType {
         const val EDIT_MESSAGE = "EDIT_MESSAGE"
         const val EDIT_MESSAGE_ID = "EDIT_MESSAGE_ID"
         const val GET_HISTORY = "GET_HISTORY"
+        const val GET_HISTORYWITHMSGTYPE = "GET_HISTORYWITHMSGTYPE"
+        const val ADD_PARTICIPANTBYTYPE = "ADD_PARTICIPANTBYTYPE" //types = id , user id ,core userid
         const val SEND_FILE_MESSAGE = "SEND_FILE_MESSAGE"
         const val CREATE_THREAD_WITH_FILE = "CREATE_THREAD_WITH_FILE"
         const val REPLY_FILE_MESSAGE = "REPLY_FILE_MESSAGE"
@@ -66,7 +68,11 @@ class ConstantMsgType {
         const val REMOVE_ADMIN_ROLES = "REMOVE_ADMIN_ROLES"
         const val DELETE_MULTIPLE_MESSAGE = "DELETE_MULTIPLE_MESSAGE"
         const val SPAM_THREAD = "SPAM_THREAD"
+        const val CREATE_BOT = "CREATE_BOT"
+        const val ADD_BOT = "ADD_BOT"
+        const val GET_BOT_LIST = "GET_BOT_LIST"
     }
+
 
     @StringDef(
         UPDATE_CONTACT,
@@ -119,7 +125,10 @@ class ConstantMsgType {
         PIN_UN_PIN_THREAD,
         PIN_UN_PIN_MESSAGE,
         GET_CURRENT_USER_ROLES,
-        UPDATE_CHAT_PROFILE
+        UPDATE_CHAT_PROFILE,
+        CREATE_BOT,
+        ADD_BOT,
+        GET_BOT_LIST
     )
 
     @Retention(AnnotationRetention.SOURCE)
