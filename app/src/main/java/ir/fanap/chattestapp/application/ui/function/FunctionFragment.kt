@@ -68,6 +68,7 @@ import ir.fanap.chattestapp.application.ui.util.TokenFragment
 import ir.fanap.chattestapp.bussines.model.LogClass
 import ir.fanap.chattestapp.bussines.model.Method
 import kotlinx.android.synthetic.main.fragment_function.*
+import kotlinx.android.synthetic.main.fragment_log.*
 import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
 import rx.android.schedulers.AndroidSchedulers
@@ -93,6 +94,7 @@ class FunctionFragment : Fragment(),
 
     private lateinit var buttonConnect: Button
     private lateinit var switchCompat_sandBox: SwitchCompat
+    private lateinit var switchCompat_cachState: SwitchCompat
     private lateinit var recyclerView: RecyclerView
     private lateinit var mainViewModel: MainViewModel
     private lateinit var appCompatImageView_noResponse: AppCompatImageView
@@ -124,6 +126,7 @@ class FunctionFragment : Fragment(),
     private lateinit var textView_log: TextView
     private lateinit var functionAdapter: FunctionAdapter
     private var mainServer = false
+    private var isCacheable = false
     private val faker: Faker = Faker()
 
 
@@ -331,7 +334,7 @@ class FunctionFragment : Fragment(),
         imageCloseSearchResult.setOnClickListener {
             closeSearchResult()
         }
-        
+
     }
 
     private fun showPreviousSearchResult() {
@@ -1219,9 +1222,21 @@ class FunctionFragment : Fragment(),
         buttonConnect.setOnClickListener { connect() }
 
         mainServer = switchCompat_sandBox.isChecked
+        isCacheable = switchCompat_cachState.isChecked
 
         switchCompat_sandBox.setOnCheckedChangeListener { _, isChecked ->
             mainServer = isChecked
+        }
+
+        switchCompat_cachState.setOnCheckedChangeListener { _, isChecked ->
+            if (chatReady) {
+                isCacheable = isChecked
+                mainViewModel.isCachable(isChecked)
+            } else {
+                switchCompat_cachState.setChecked(!isChecked);
+
+
+            }
         }
 
 
@@ -1269,6 +1284,7 @@ class FunctionFragment : Fragment(),
         recyclerView.isNestedScrollingEnabled = true
         textView_state = view.findViewById(R.id.textView_state)
         switchCompat_sandBox = view.findViewById(R.id.switchCompat_sandBox)
+        switchCompat_cachState = view.findViewById(R.id.switchCompat_cachState)
         avLoadingIndicatorView = view.findViewById(R.id.AVLoadingIndicatorView)
         bottom_sheet_log = view.findViewById(R.id.bottom_sheet_log)
         textView_log = view.findViewById(R.id.textView_log)
@@ -1745,6 +1761,7 @@ class FunctionFragment : Fragment(),
 
 
     }
+
     private fun prepareStopBot() {
 
         var threadId = fucCallback["threadID"]?.toLong()
@@ -4558,6 +4575,8 @@ class FunctionFragment : Fragment(),
             )
 
         }
+
+
     }
 
     private fun changeFourthIconReceive(position: Int) {
@@ -5734,7 +5753,7 @@ class FunctionFragment : Fragment(),
 
         changeFunThreeState(pos, Method.DONE)
         changeIconReceive(pos)
-       // fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.getThreadBotList(null);
+        // fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.getThreadBotList(null);
 
     }
 

@@ -14,12 +14,15 @@ import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.support.annotation.StringDef
 import android.util.Log
+import android.widget.RadioButton
 import android.widget.Toast
 import com.fanap.podchat.mainmodel.ChatMessage
 import com.fanap.podchat.util.ChatMessageType
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.bussines.model.LogClass
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import kotlin.math.log
 
 
@@ -30,6 +33,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
     private var logs: MutableList<LogClass> = mutableListOf()
     private lateinit var logAdapter: LogAdapter
     private lateinit var searchView: SearchView
+    private lateinit var rdb_cache: RadioButton
     private var selected = SelectedFilterType.FILTER_ALL;
 
 
@@ -68,7 +72,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         val linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
 
-
+        rdb_cache = view.findViewById(R.id.rdb_cache)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
@@ -176,6 +180,9 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
                 R.id.rdb_others -> {
                     selected = SelectedFilterType.FILTER_OTHERS;
                 }
+                R.id.rdb_cache -> {
+                    selected = SelectedFilterType.FILTER_CACHE;
+                }
 
                 else -> {
 
@@ -185,6 +192,12 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
             refreshWithFilter()
         }
 
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
 
     }
 
@@ -311,6 +324,14 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             }
 
+            SelectedFilterType.FILTER_CACHE -> {
+
+                var test = getCacheItems(it)
+                if (test != null)
+                    logs.add(test)
+
+            }
+
             else -> {
 
                 var test = getItemNormal(it)
@@ -379,6 +400,14 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
                 }
 
+                SelectedFilterType.FILTER_CACHE -> {
+
+                    var test = getCacheItems(it)
+                    if (test != null)
+                        temp.add(test)
+
+                }
+
                 else -> {
 
                     var test = getItemNormal(it)
@@ -407,7 +436,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
     fun getResponseItems(logClass: LogClass): LogClass? {
 
-        if (logClass.logName.startsWith("RECEIVE")  || logClass.logName.startsWith("ON")) {
+        if (logClass.logName.startsWith("RECEIVE") || logClass.logName.startsWith("ON")) {
             return getItemNormal(logClass)
         }
 
@@ -423,6 +452,15 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
         return null
 
+    }
+
+    fun getCacheItems(logClass: LogClass): LogClass? {
+
+        if (logClass.logName.startsWith("CACHE")  ||logClass.logName.endsWith("CACHE")) {
+            return getItemNormal(logClass)
+        }
+
+        return null
     }
 
     fun getItemNormal(logClass: LogClass): LogClass? {
@@ -448,6 +486,8 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
             logClass.logName.startsWith("SEND") ||
             logClass.logName.startsWith("GET") ||
             logClass.logName.startsWith("ON") ||
+            logClass.logName.startsWith("CACHE") ||
+            logClass.logName.endsWith("CACHE") ||
             logClass.logName.startsWith("RECEIVE")
         ) {
             return null;
@@ -456,7 +496,8 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
         }
 
     }
-  // call when click a log from list
+
+    // call when click a log from list
     //this method for find paired item with a log of response or requests
     override fun onItemShowPairedLog(pos: Int, lastSelected: Int, log: LogClass) {
 
@@ -472,7 +513,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 
             logs.add(pos, log)
 
-            logAdapter.refreshForFilter(logs,pos)
+            logAdapter.refreshForFilter(logs, pos)
             recyclerView.scrollToPosition(pos)
         } else {
             logAdapter.setLastSelected(-1)
@@ -488,7 +529,7 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
             if (item.uniqueId == log.uniqueId)
                 if (item.logName != log.logName) {
                     getItemNormal(item)?.let {
-                        return  it
+                        return it
                     }
                     break
                 }
@@ -502,14 +543,14 @@ class LogFragment : Fragment(), TestListener, LogAdapter.ViewHolderListener {
 class SelectedFilterType {
 
 
-
-   //filter types
+    //filter types
     companion object {
         const val FILTER_ALL = "FILTER_ALL"
         const val FILTER_ERRORS = "FILTER_ERRORS"
         const val FILTER_REQUEST = "FILTER_REQUEST"
         const val FILTER_RESPONSE = "FILTER_RESPONSE"
         const val FILTER_OTHERS = "FILTER_OTHERS"
+        const val FILTER_CACHE = "FILTER_CACHE"
     }
 
     @StringDef(
@@ -517,7 +558,8 @@ class SelectedFilterType {
         SelectedFilterType.FILTER_ERRORS,
         SelectedFilterType.FILTER_REQUEST,
         SelectedFilterType.FILTER_REQUEST,
-        SelectedFilterType.FILTER_OTHERS
+        SelectedFilterType.FILTER_OTHERS,
+        SelectedFilterType.FILTER_CACHE
     )
 
     @Retention(AnnotationRetention.SOURCE)

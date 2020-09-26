@@ -29,6 +29,19 @@
             android:text="سایر" />
 
         <RadioButton
+            android:id="@+id/rdb_cache"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:textColor="@color/radio_flat_text_selector"
+            android:padding="@dimen/normal_padding"
+            android:button="@android:color/transparent"
+            android:layout_weight="0.33"
+            android:checked="true"
+            android:gravity="center|center_horizontal"
+            android:text="cache
+" />
+        <RadioButton
             android:id="@+id/rdb_errors"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,6 +77,7 @@
             android:padding="@dimen/normal_padding"
             android:button="@android:color/transparent"
             android:text="درخواست" />
+
 
         <RadioButton
             android:id="@+id/rdb_all"

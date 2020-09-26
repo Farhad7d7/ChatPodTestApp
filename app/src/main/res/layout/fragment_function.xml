@@ -10,6 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switchCompat_cachState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:checked="true"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintStart_toStartOf="@+id/switchCompat_sandBox"
+            app:layout_constraintTop_toBottomOf="@+id/switchCompat_sandBox" />
+
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_Connect"
             android:layout_width="0dp"
@@ -22,16 +32,16 @@
             android:text="Connect"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline3"
-            app:layout_constraintVertical_bias="0.782"
+            app:layout_constraintTop_toBottomOf="@+id/switchCompat_cachState"
             tools:targetApi="lollipop" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="8dp"
             android:gravity="center_vertical"
             android:text="MainServer"
             android:textColor="@color/colorAccent"
@@ -41,13 +51,27 @@
             app:layout_constraintTop_toTopOf="@+id/switchCompat_sandBox"
             app:layout_constraintVertical_bias="0.25" />
 
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:gravity="center_vertical"
+            android:text="Cacheable"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/switchCompat_cachState"
+            app:layout_constraintStart_toEndOf="@+id/switchCompat_sandBox"
+            app:layout_constraintTop_toTopOf="@+id/switchCompat_cachState"
+            app:layout_constraintVertical_bias="0.25" />
+
 
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/switchCompat_sandBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:checked="true"
-            android:layout_marginStart="24dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline5" />
@@ -57,13 +81,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView2"
+            app:layout_constraintEnd_toStartOf="@+id/AVLoadingIndicatorView"
+            app:layout_constraintHorizontal_bias="0.918"
             app:layout_constraintStart_toStartOf="@+id/guideline4"
-            app:layout_constraintTop_toTopOf="@+id/textView2"
-            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintTop_toTopOf="@+id/textView14"
             tools:text="connecting" />
 
         <android.support.v7.widget.RecyclerView
@@ -93,13 +119,11 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginStart="8dp"
             android:visibility="gone"
             app:indicatorColor="@color/blue_active"
             app:indicatorName="BallPulseIndicator"
             app:layout_constraintBottom_toBottomOf="@+id/textView_state"
             app:layout_constraintEnd_toEndOf="@+id/button_Connect"
-            app:layout_constraintStart_toEndOf="@+id/textView_state"
             app:layout_constraintTop_toTopOf="@+id/textView_state"
             app:layout_constraintVertical_bias="0.5"
             tools:visibility="visible" />
