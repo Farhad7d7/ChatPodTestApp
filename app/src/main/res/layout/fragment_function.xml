@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:checked="true"
+            android:checked="false"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="@+id/switchCompat_sandBox"
             app:layout_constraintTop_toBottomOf="@+id/switchCompat_sandBox" />
