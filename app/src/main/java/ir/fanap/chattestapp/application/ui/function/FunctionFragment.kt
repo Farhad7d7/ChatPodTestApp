@@ -1148,9 +1148,7 @@ class FunctionFragment : Fragment(),
 
         bottomSheetLog = BottomSheetBehavior.from(bottom_sheet_log)
 
-
-
-
+        
         bottomSheetLog.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(view: View, p1: Float) {
 
