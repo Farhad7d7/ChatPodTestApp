@@ -68,14 +68,11 @@ import ir.fanap.chattestapp.application.ui.util.TokenFragment
 import ir.fanap.chattestapp.bussines.model.LogClass
 import ir.fanap.chattestapp.bussines.model.Method
 import kotlinx.android.synthetic.main.fragment_function.*
-import kotlinx.android.synthetic.main.fragment_log.*
 import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import rx.subjects.PublishSubject
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.random.Random
@@ -1148,7 +1145,7 @@ class FunctionFragment : Fragment(),
 
         bottomSheetLog = BottomSheetBehavior.from(bottom_sheet_log)
 
-        
+
         bottomSheetLog.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(view: View, p1: Float) {
 
@@ -4476,11 +4473,44 @@ class FunctionFragment : Fragment(),
     }
 
     private fun requestLeaveThread(response: ChatResponse<ResultThread>?) {
-        val threadId = response?.result?.thread?.id
 
-        val requeLeaveThread = RequestLeaveThread.Builder(threadId!!.toLong()).build()
+        val leaveThreadOptionFragment = LeaveThreadOptionFragment()
 
-        fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.leaveThread(requeLeaveThread)
+        val arg = Bundle().apply {
+
+            putString(
+                CreateThreadOptionFragment.MODE_KEY,
+                CreateThreadOptionFragment.MODE_NORMAL
+            )
+        }
+
+        leaveThreadOptionFragment.arguments = arg
+
+        leaveThreadOptionFragment.setListener(object :
+            LeaveThreadOptionFragment.ICreateThreadOption {
+
+            override fun onSelected(leaveType: Int) {
+
+                val threadId = response?.result?.thread?.id
+                var requeLeaveThread =
+                    RequestLeaveThread.Builder(threadId!!.toLong()).build()
+
+                if (leaveType == 0) {
+                    requeLeaveThread =
+                        RequestLeaveThread.Builder(threadId!!.toLong()).shouldKeepHistory().build()
+
+                    Log.e("test", "leave thread with keep history threadid = $threadId")
+                } else
+                    Log.e("test", "leave thread with clear history threadid = $threadId")
+                fucCallback[ConstantMsgType.LEAVE_THREAD] =
+                    mainViewModel.leaveThread(requeLeaveThread)
+
+            }
+        })
+
+        leaveThreadOptionFragment.show(childFragmentManager, "LEAVE_THREAD_OPTION")
+
+
     }
 
     private fun requestForwardMessage(response: ChatResponse<ResultThread>?) {
