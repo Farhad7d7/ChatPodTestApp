@@ -833,6 +833,15 @@ class FunctionFragment : Fragment(),
                 getThreadBotList()
             }
 
+            44 -> {
+
+                safeLeaveThread()
+            }
+            45 -> {
+
+                closeThread()
+            }
+
 
         }
     }
@@ -891,6 +900,30 @@ class FunctionFragment : Fragment(),
 
         fucCallback[ConstantMsgType.ADD_BOT] =
             mainViewModel.createBot(requestCreateBot)
+
+    }
+
+    private fun safeLeaveThread() {
+        val pos = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
+
+
+        val requestGetContact = RequestGetContact.Builder().build()
+
+        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = mainViewModel.getContact(requestGetContact)
+
+    }
+
+    private fun closeThread() {
+        val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
+
+
+        val requestGetContact = RequestGetContact.Builder().build()
+
+        fucCallback[ConstantMsgType.CLOSE_THREAD] = mainViewModel.getContact(requestGetContact)
 
     }
 
@@ -2108,6 +2141,10 @@ class FunctionFragment : Fragment(),
             "ADD_BOT" -> 42
 
             "GET_BOT_LIST" -> 43
+
+            "SAFE_LEAVE_THREAD" -> 44
+
+            "CLOSE_THREAD" -> 45
 
             else -> -1
         }
@@ -4311,13 +4348,35 @@ class FunctionFragment : Fragment(),
 
         if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
 
-            val pos = 14
+            val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
             changeFunTwoState(pos, Method.DONE)
             changeFunThreeState(pos, Method.RUNNING)
 
 
             requestLeaveThread(response)
+
+        }
+
+        if (fucCallback[ConstantMsgType.CLOSE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+
+            changeFunTwoState(pos, Method.DONE)
+            changeFunThreeState(pos, Method.RUNNING)
+
+            requestcloseThread(response)
+
+        }
+
+        if (fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+
+            changeFunTwoState(pos, Method.DONE)
+            changeFunThreeState(pos, Method.RUNNING)
+
+            requestSafeLeaveThread(response)
 
         }
 
@@ -4470,6 +4529,18 @@ class FunctionFragment : Fragment(),
         val threadId = response!!.result.thread.id
         val requestMuteThread = RequestMuteThread.Builder(threadId).build()
         fucCallback[ConstantMsgType.MUTE_THREAD] = mainViewModel.muteThread(requestMuteThread)
+    }
+
+    fun requestSafeLeaveThread(response: ChatResponse<ResultThread>?) {
+        val po = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+        changeFunThreeState(po, Method.DONE)
+        changeIconReceive(po)
+    }
+
+    fun requestcloseThread(response: ChatResponse<ResultThread>?) {
+        val po = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+        changeFunThreeState(po, Method.DONE)
+        changeIconReceive(po)
     }
 
     private fun requestLeaveThread(response: ChatResponse<ResultThread>?) {
@@ -4901,6 +4972,127 @@ class FunctionFragment : Fragment(),
             changeFunThreeState(pos, Method.RUNNING)
 
             handleAddParticipantByType(contactList)
+        }
+
+        if (fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] == response?.uniqueId) {
+
+
+            val pos = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+            handleSafeLeave(contactList)
+        }
+
+        if (fucCallback[ConstantMsgType.CLOSE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+            handleCLoseThread(contactList)
+        }
+    }
+
+    fun handleSafeLeave(contactList: ArrayList<Contact>?) {
+
+        val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
+
+
+        if (contactList != null) {
+            var choose = 0
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 2))
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(ThreadType.Constants.OWNER_GROUP, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    choose++
+                    if (uniqueId?.get(0) != null) {
+                        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = uniqueId[0]
+                    }
+                    break
+                }
+            }
+
+            if (choose == 0) {
+
+                showNoContactToast()
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+
+            }
+
+        } else {
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
+            changeFunTwoState(pos, Method.DEACTIVE)
+        }
+    }
+
+    fun handleCLoseThread(contactList: ArrayList<Contact>?) {
+
+        val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
+
+
+        if (contactList != null) {
+            var choose = 0
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 2))
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(ThreadType.Constants.OWNER_GROUP, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    choose++
+                    if (uniqueId?.get(0) != null) {
+                        fucCallback[ConstantMsgType.CLOSE_THREAD] = uniqueId[0]
+                    }
+                    break
+                }
+            }
+
+            if (choose == 0) {
+
+                showNoContactToast()
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+
+            }
+
+        } else {
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
+            changeFunTwoState(pos, Method.DEACTIVE)
         }
     }
 

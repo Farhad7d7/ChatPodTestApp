@@ -71,6 +71,8 @@ class ConstantMsgType {
         const val CREATE_BOT = "CREATE_BOT"
         const val ADD_BOT = "ADD_BOT"
         const val GET_BOT_LIST = "GET_BOT_LIST"
+        const val SAFE_LEAVE_THREAD = "SAFE_LEAVE_THREAD"
+        const val CLOSE_THREAD = "CLOSE_THREAD"
     }
 
 
@@ -128,7 +130,9 @@ class ConstantMsgType {
         UPDATE_CHAT_PROFILE,
         CREATE_BOT,
         ADD_BOT,
-        GET_BOT_LIST
+        GET_BOT_LIST,
+        SAFE_LEAVE_THREAD,
+        CLOSE_THREAD
     )
 
     @Retention(AnnotationRetention.SOURCE)
