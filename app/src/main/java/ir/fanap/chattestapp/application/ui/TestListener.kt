@@ -6,6 +6,7 @@ import com.fanap.podchat.chat.bot.result_model.StartStopBotResult
 import com.fanap.podchat.chat.pin.pin_message.model.ResultPinMessage
 import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
+import com.fanap.podchat.chat.thread.respone.CloseThreadResult
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
@@ -27,9 +28,9 @@ interface TestListener {
     fun onSent(response: ChatResponse<ResultMessage>?) {}
     fun onSeen(response: ChatResponse<ResultMessage>?) {}
     fun onDeliver(response: ChatResponse<ResultMessage>?) {}
-    fun onThreadRemoveParticipant(response: ChatResponse<ResultParticipant>?) {
+    fun onThreadClosed(response: ChatResponse<CloseThreadResult>?) { }
 
-    }
+    fun onThreadRemoveParticipant(response: ChatResponse<ResultParticipant>?) { }
 
 
     fun onThreadAddParticipant(response: ChatResponse<ResultAddParticipant>?) {

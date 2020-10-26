@@ -26,6 +26,9 @@ import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
 import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
 import com.fanap.podchat.chat.thread.public_thread.RequestCreatePublicThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
+import com.fanap.podchat.chat.thread.request.CloseThreadRequest
+import com.fanap.podchat.chat.thread.request.SafeLeaveRequest
+import com.fanap.podchat.chat.thread.respone.CloseThreadResult
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
@@ -116,6 +119,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 super.onBotCreated(response)
 
                 testListener.onBotCreated(response)
+            }
+
+            override fun onThreadClosed(response: ChatResponse<CloseThreadResult>?) {
+                super.onThreadClosed(response)
+
+                testListener.onThreadClosed(response)
             }
 
             override fun onBotCommandsDefined(response: ChatResponse<DefineBotCommandResult>?) {
@@ -674,6 +683,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun muteThread(requestMuteThread: RequestMuteThread): String {
         return chat.muteThread(requestMuteThread, null)
+    }
+
+    fun closeThread(requestCloseThread:  CloseThreadRequest): String {
+        return chat.closeThread(requestCloseThread)
+    }
+
+    fun safeLeaveThread(requestSafeLeave: SafeLeaveRequest): String {
+
+        return chat.safeLeaveThread(requestSafeLeave)
     }
 
     fun unMuteThread(requestMuteThread: RequestMuteThread): String {

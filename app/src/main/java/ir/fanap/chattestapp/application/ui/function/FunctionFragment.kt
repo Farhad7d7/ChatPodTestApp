@@ -38,6 +38,8 @@ import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
 import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
 import com.fanap.podchat.chat.thread.public_thread.RequestCreatePublicThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
+import com.fanap.podchat.chat.thread.request.CloseThreadRequest
+import com.fanap.podchat.chat.thread.respone.CloseThreadResult
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
@@ -3398,6 +3400,15 @@ class FunctionFragment : Fragment(),
 
 
         }
+
+        // response 2 for spam thread
+        if (fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] == response?.uniqueId) {
+
+            val po = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+            changeFunThreeState(po, Method.DONE)
+            changeIconReceive(po)
+
+        }
     }
 
     override fun onUpdateContact(response: ChatResponse<ResultUpdateContact>?) {
@@ -4156,6 +4167,20 @@ class FunctionFragment : Fragment(),
 
     }
 
+    override fun onThreadClosed(response: ChatResponse<CloseThreadResult>?) {
+        super.onThreadClosed(response)
+
+
+        if (fucCallback[ConstantMsgType.CLOSE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+            changeFunThreeState(pos, Method.DONE)
+            changeIconReceive(pos)
+
+        }
+
+    }
+
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
         super.onCreateThread(response)
 
@@ -4384,6 +4409,7 @@ class FunctionFragment : Fragment(),
             val threadId = response?.result?.thread?.id
             fucCallback[ConstantMsgType.FORWARD_MESSAGE_THREAD_ID] = threadId.toString()
         }
+
         if (fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] == response?.uniqueId) {
 
             fucCallback.remove(ConstantMsgType.REPLY_MESSAGE_THREAD_ID)
@@ -4532,15 +4558,21 @@ class FunctionFragment : Fragment(),
     }
 
     fun requestSafeLeaveThread(response: ChatResponse<ResultThread>?) {
-        val po = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
-        changeFunThreeState(po, Method.DONE)
-        changeIconReceive(po)
+
+
+        val threadId = response!!.result.thread.id
+        val requestMuteThread = RequestMuteThread.Builder(threadId).build()
+        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = mainViewModel.muteThread(requestMuteThread)
+
+
     }
 
     fun requestcloseThread(response: ChatResponse<ResultThread>?) {
-        val po = getPositionOf(ConstantMsgType.CLOSE_THREAD)
-        changeFunThreeState(po, Method.DONE)
-        changeIconReceive(po)
+
+        val threadId = response!!.result.thread.id
+        val requestCloseThread = CloseThreadRequest.Builder(threadId).build()
+        fucCallback[ConstantMsgType.CLOSE_THREAD] = mainViewModel.closeThread(requestCloseThread)
+
     }
 
     private fun requestLeaveThread(response: ChatResponse<ResultThread>?) {

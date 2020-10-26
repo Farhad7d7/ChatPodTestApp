@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 ext {
 
 //    chatSdkVersion = "0.8.3.0"
-    chatSdkVersion = "0.9.0.0.200"
+    chatSdkVersion = "0.9.2.0-beta"
 }
 
 android {
