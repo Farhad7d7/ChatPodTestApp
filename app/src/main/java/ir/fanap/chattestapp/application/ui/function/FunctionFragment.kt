@@ -39,6 +39,7 @@ import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
 import com.fanap.podchat.chat.thread.public_thread.RequestCreatePublicThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
 import com.fanap.podchat.chat.thread.request.CloseThreadRequest
+import com.fanap.podchat.chat.thread.request.SafeLeaveRequest
 import com.fanap.podchat.chat.thread.respone.CloseThreadResult
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
@@ -90,6 +91,8 @@ class FunctionFragment : Fragment(),
     private var contactBIdType: Int = 0
     private var chatReady: Boolean = false
     var TEST_THREAD_ID: Long = 10955L
+    var contactIdForOwner: Long = 0
+    private var isKeepHistory = false
 
     private lateinit var buttonConnect: Button
     private lateinit var switchCompat_sandBox: SwitchCompat
@@ -3375,17 +3378,27 @@ class FunctionFragment : Fragment(),
 //        methods[position].funcThreeFlag = true
     }
 
+    private fun getThreadAfterLeave(result: ResultLeaveThread?){
+        val threadId = result?.threadId
+        val requestGetHistory = RequestGetHistory.Builder(threadId!!).build()
+        fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.getHistory(requestGetHistory)
+    }
     override fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
         super.onLeaveThread(response)
 
 
         if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
 
-            val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
-            changeIconReceive(position)
+            if(isKeepHistory){
+                getThreadAfterLeave(response?.result)
+            }else{
+                val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
-            changeFunThreeState(position, Method.DONE)
+                changeIconReceive(position)
+
+                changeFunThreeState(position, Method.DONE)
+            }
 
         }
 
@@ -3547,6 +3560,14 @@ class FunctionFragment : Fragment(),
         if (fucCallback[ConstantMsgType.GET_HISTORY] == response?.uniqueId) {
             val position = 19
             changeIconReceive(position)
+            changeFunThreeState(position, Method.DONE)
+        }
+
+        if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
+            val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
+
+            changeIconReceive(position)
+
             changeFunThreeState(position, Method.DONE)
         }
 
@@ -4561,8 +4582,8 @@ class FunctionFragment : Fragment(),
 
 
         val threadId = response!!.result.thread.id
-        val requestMuteThread = RequestMuteThread.Builder(threadId).build()
-        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = mainViewModel.muteThread(requestMuteThread)
+        val request = SafeLeaveRequest.Builder(threadId,contactIdForOwner).build()
+        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = mainViewModel.safeLeaveThread(request)
 
 
     }
@@ -4601,10 +4622,12 @@ class FunctionFragment : Fragment(),
                 if (leaveType == 0) {
                     requeLeaveThread =
                         RequestLeaveThread.Builder(threadId!!.toLong()).shouldKeepHistory().build()
-
+                        isKeepHistory = true
                     Log.e("test", "leave thread with keep history threadid = $threadId")
-                } else
+                } else {
+                    isKeepHistory = false
                     Log.e("test", "leave thread with clear history threadid = $threadId")
+                }
                 fucCallback[ConstantMsgType.LEAVE_THREAD] =
                     mainViewModel.leaveThread(requeLeaveThread)
 
@@ -5054,6 +5077,8 @@ class FunctionFragment : Fragment(),
                     choose++
                     if (uniqueId?.get(0) != null) {
                         fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = uniqueId[0]
+                        if(choose == 1)
+                            contactIdForOwner = contactId
                     }
                     break
                 }
