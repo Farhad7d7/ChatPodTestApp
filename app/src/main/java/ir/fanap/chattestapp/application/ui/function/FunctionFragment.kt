@@ -5120,11 +5120,12 @@ class FunctionFragment : Fragment(),
                         RequestThreadInnerMessage.Builder(
                             TextMessageType.Constants.TEXT
                         ).message(faker.music().genre()).build()
-                    val requestCreateThread: RequestCreateThread =
-                        RequestCreateThread.Builder(ThreadType.Constants.OWNER_GROUP, inviteList)
+                    val requestCreateThread: RequestCreateThread.Builder =
+                        RequestCreateThread.Builder(ThreadType.Constants.NORMAL, inviteList)
                             .message(requestThreadInnerMessage)
-                            .build()
-                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+
+
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread.build())
                     choose++
                     if (uniqueId?.get(0) != null) {
                         fucCallback[ConstantMsgType.CLOSE_THREAD] = uniqueId[0]
