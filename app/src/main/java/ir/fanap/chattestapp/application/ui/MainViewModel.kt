@@ -81,10 +81,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         chat.setNetworkStateConfig(networkStateConfig)
 
-//        chat.isCacheables(true)
-
         chat.isLoggable(true)
 
+        chat.isSentryLogActive(true)
+
+        chat.isSentryResponseLogActive(true)
 
         chat.addListener(object : ChatListener {
 
