@@ -38,6 +38,9 @@ import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
 import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
 import com.fanap.podchat.chat.thread.public_thread.RequestCreatePublicThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
+import com.fanap.podchat.chat.thread.request.CloseThreadRequest
+import com.fanap.podchat.chat.thread.request.SafeLeaveRequest
+import com.fanap.podchat.chat.thread.respone.CloseThreadResult
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
@@ -72,9 +75,7 @@ import kotlinx.android.synthetic.main.search_contacts_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_log_bottom_sheet.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import rx.subjects.PublishSubject
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.random.Random
@@ -90,9 +91,12 @@ class FunctionFragment : Fragment(),
     private var contactBIdType: Int = 0
     private var chatReady: Boolean = false
     var TEST_THREAD_ID: Long = 10955L
+    var contactIdForOwner: Long = 0
+    private var isKeepHistory = false
 
     private lateinit var buttonConnect: Button
     private lateinit var switchCompat_sandBox: SwitchCompat
+    private lateinit var switchCompat_cachState: SwitchCompat
     private lateinit var recyclerView: RecyclerView
     private lateinit var mainViewModel: MainViewModel
     private lateinit var appCompatImageView_noResponse: AppCompatImageView
@@ -124,6 +128,7 @@ class FunctionFragment : Fragment(),
     private lateinit var textView_log: TextView
     private lateinit var functionAdapter: FunctionAdapter
     private var mainServer = false
+    private var isCacheable = false
     private val faker: Faker = Faker()
 
 
@@ -331,7 +336,7 @@ class FunctionFragment : Fragment(),
         imageCloseSearchResult.setOnClickListener {
             closeSearchResult()
         }
-        
+
     }
 
     private fun showPreviousSearchResult() {
@@ -833,6 +838,15 @@ class FunctionFragment : Fragment(),
                 getThreadBotList()
             }
 
+            44 -> {
+
+                safeLeaveThread()
+            }
+            45 -> {
+
+                closeThread()
+            }
+
 
         }
     }
@@ -891,6 +905,30 @@ class FunctionFragment : Fragment(),
 
         fucCallback[ConstantMsgType.ADD_BOT] =
             mainViewModel.createBot(requestCreateBot)
+
+    }
+
+    private fun safeLeaveThread() {
+        val pos = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
+
+
+        val requestGetContact = RequestGetContact.Builder().build()
+
+        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = mainViewModel.getContact(requestGetContact)
+
+    }
+
+    private fun closeThread() {
+        val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
+
+
+        val requestGetContact = RequestGetContact.Builder().build()
+
+        fucCallback[ConstantMsgType.CLOSE_THREAD] = mainViewModel.getContact(requestGetContact)
 
     }
 
@@ -1146,8 +1184,6 @@ class FunctionFragment : Fragment(),
         bottomSheetLog = BottomSheetBehavior.from(bottom_sheet_log)
 
 
-
-
         bottomSheetLog.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(view: View, p1: Float) {
 
@@ -1219,9 +1255,21 @@ class FunctionFragment : Fragment(),
         buttonConnect.setOnClickListener { connect() }
 
         mainServer = switchCompat_sandBox.isChecked
+        isCacheable = switchCompat_cachState.isChecked
 
         switchCompat_sandBox.setOnCheckedChangeListener { _, isChecked ->
             mainServer = isChecked
+        }
+
+        switchCompat_cachState.setOnCheckedChangeListener { _, isChecked ->
+            if (chatReady) {
+                isCacheable = isChecked
+                mainViewModel.isCachable(isChecked)
+            } else {
+                switchCompat_cachState.setChecked(!isChecked);
+
+
+            }
         }
 
 
@@ -1269,6 +1317,7 @@ class FunctionFragment : Fragment(),
         recyclerView.isNestedScrollingEnabled = true
         textView_state = view.findViewById(R.id.textView_state)
         switchCompat_sandBox = view.findViewById(R.id.switchCompat_sandBox)
+        switchCompat_cachState = view.findViewById(R.id.switchCompat_cachState)
         avLoadingIndicatorView = view.findViewById(R.id.AVLoadingIndicatorView)
         bottom_sheet_log = view.findViewById(R.id.bottom_sheet_log)
         textView_log = view.findViewById(R.id.textView_log)
@@ -1745,6 +1794,7 @@ class FunctionFragment : Fragment(),
 
 
     }
+
     private fun prepareStopBot() {
 
         var threadId = fucCallback["threadID"]?.toLong()
@@ -2096,6 +2146,10 @@ class FunctionFragment : Fragment(),
             "ADD_BOT" -> 42
 
             "GET_BOT_LIST" -> 43
+
+            "SAFE_LEAVE_THREAD" -> 44
+
+            "CLOSE_THREAD" -> 45
 
             else -> -1
         }
@@ -3324,17 +3378,27 @@ class FunctionFragment : Fragment(),
 //        methods[position].funcThreeFlag = true
     }
 
+    private fun getThreadAfterLeave(result: ResultLeaveThread?){
+        val threadId = result?.threadId
+        val requestGetHistory = RequestGetHistory.Builder(threadId!!).build()
+        fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.getHistory(requestGetHistory)
+    }
     override fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
         super.onLeaveThread(response)
 
 
         if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
 
-            val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
-            changeIconReceive(position)
+            if(isKeepHistory){
+                getThreadAfterLeave(response?.result)
+            }else{
+                val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
-            changeFunThreeState(position, Method.DONE)
+                changeIconReceive(position)
+
+                changeFunThreeState(position, Method.DONE)
+            }
 
         }
 
@@ -3347,6 +3411,15 @@ class FunctionFragment : Fragment(),
             changeFunThreeState(position, Method.DONE)
             changeIconReceive(position)
 
+
+        }
+
+        // response 2 for spam thread
+        if (fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] == response?.uniqueId) {
+
+            val po = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+            changeFunThreeState(po, Method.DONE)
+            changeIconReceive(po)
 
         }
     }
@@ -3487,6 +3560,14 @@ class FunctionFragment : Fragment(),
         if (fucCallback[ConstantMsgType.GET_HISTORY] == response?.uniqueId) {
             val position = 19
             changeIconReceive(position)
+            changeFunThreeState(position, Method.DONE)
+        }
+
+        if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
+            val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
+
+            changeIconReceive(position)
+
             changeFunThreeState(position, Method.DONE)
         }
 
@@ -4107,6 +4188,20 @@ class FunctionFragment : Fragment(),
 
     }
 
+    override fun onThreadClosed(response: ChatResponse<CloseThreadResult>?) {
+        super.onThreadClosed(response)
+
+
+        if (fucCallback[ConstantMsgType.CLOSE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+            changeFunThreeState(pos, Method.DONE)
+            changeIconReceive(pos)
+
+        }
+
+    }
+
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
         super.onCreateThread(response)
 
@@ -4299,7 +4394,7 @@ class FunctionFragment : Fragment(),
 
         if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
 
-            val pos = 14
+            val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
             changeFunTwoState(pos, Method.DONE)
             changeFunThreeState(pos, Method.RUNNING)
@@ -4309,10 +4404,33 @@ class FunctionFragment : Fragment(),
 
         }
 
+        if (fucCallback[ConstantMsgType.CLOSE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+
+            changeFunTwoState(pos, Method.DONE)
+            changeFunThreeState(pos, Method.RUNNING)
+
+            requestcloseThread(response)
+
+        }
+
+        if (fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+
+            changeFunTwoState(pos, Method.DONE)
+            changeFunThreeState(pos, Method.RUNNING)
+
+            requestSafeLeaveThread(response)
+
+        }
+
         if (fucCallback[ConstantMsgType.FORWARD_MESSAGE] == response?.uniqueId) {
             val threadId = response?.result?.thread?.id
             fucCallback[ConstantMsgType.FORWARD_MESSAGE_THREAD_ID] = threadId.toString()
         }
+
         if (fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] == response?.uniqueId) {
 
             fucCallback.remove(ConstantMsgType.REPLY_MESSAGE_THREAD_ID)
@@ -4460,12 +4578,65 @@ class FunctionFragment : Fragment(),
         fucCallback[ConstantMsgType.MUTE_THREAD] = mainViewModel.muteThread(requestMuteThread)
     }
 
+    fun requestSafeLeaveThread(response: ChatResponse<ResultThread>?) {
+
+
+        val threadId = response!!.result.thread.id
+        val request = SafeLeaveRequest.Builder(threadId,contactIdForOwner).build()
+        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = mainViewModel.safeLeaveThread(request)
+
+
+    }
+
+    fun requestcloseThread(response: ChatResponse<ResultThread>?) {
+
+        val threadId = response!!.result.thread.id
+        val requestCloseThread = CloseThreadRequest.Builder(threadId).build()
+        fucCallback[ConstantMsgType.CLOSE_THREAD] = mainViewModel.closeThread(requestCloseThread)
+
+    }
+
     private fun requestLeaveThread(response: ChatResponse<ResultThread>?) {
-        val threadId = response?.result?.thread?.id
 
-        val requeLeaveThread = RequestLeaveThread.Builder(threadId!!.toLong()).build()
+        val leaveThreadOptionFragment = LeaveThreadOptionFragment()
 
-        fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.leaveThread(requeLeaveThread)
+        val arg = Bundle().apply {
+
+            putString(
+                CreateThreadOptionFragment.MODE_KEY,
+                CreateThreadOptionFragment.MODE_NORMAL
+            )
+        }
+
+        leaveThreadOptionFragment.arguments = arg
+
+        leaveThreadOptionFragment.setListener(object :
+            LeaveThreadOptionFragment.ICreateThreadOption {
+
+            override fun onSelected(leaveType: Int) {
+
+                val threadId = response?.result?.thread?.id
+                var requeLeaveThread =
+                    RequestLeaveThread.Builder(threadId!!.toLong()).build()
+
+                if (leaveType == 0) {
+                    requeLeaveThread =
+                        RequestLeaveThread.Builder(threadId!!.toLong()).shouldKeepHistory().build()
+                        isKeepHistory = true
+                    Log.e("test", "leave thread with keep history threadid = $threadId")
+                } else {
+                    isKeepHistory = false
+                    Log.e("test", "leave thread with clear history threadid = $threadId")
+                }
+                fucCallback[ConstantMsgType.LEAVE_THREAD] =
+                    mainViewModel.leaveThread(requeLeaveThread)
+
+            }
+        })
+
+        leaveThreadOptionFragment.show(childFragmentManager, "LEAVE_THREAD_OPTION")
+
+
     }
 
     private fun requestForwardMessage(response: ChatResponse<ResultThread>?) {
@@ -4558,6 +4729,8 @@ class FunctionFragment : Fragment(),
             )
 
         }
+
+
     }
 
     private fun changeFourthIconReceive(position: Int) {
@@ -4854,6 +5027,130 @@ class FunctionFragment : Fragment(),
             changeFunThreeState(pos, Method.RUNNING)
 
             handleAddParticipantByType(contactList)
+        }
+
+        if (fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] == response?.uniqueId) {
+
+
+            val pos = getPositionOf(ConstantMsgType.SAFE_LEAVE_THREAD)
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+            handleSafeLeave(contactList)
+        }
+
+        if (fucCallback[ConstantMsgType.CLOSE_THREAD] == response?.uniqueId) {
+
+            val pos = getPositionOf(ConstantMsgType.CLOSE_THREAD)
+
+            changeFunOneState(pos, Method.DONE)
+
+            changeFunTwoState(pos, Method.RUNNING)
+
+            handleCLoseThread(contactList)
+        }
+    }
+
+    fun handleSafeLeave(contactList: ArrayList<Contact>?) {
+
+        val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
+
+
+        if (contactList != null) {
+            var choose = 0
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 2))
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(ThreadType.Constants.OWNER_GROUP, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    choose++
+                    if (uniqueId?.get(0) != null) {
+                        fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = uniqueId[0]
+                        if(choose == 1)
+                            contactIdForOwner = contactId
+                    }
+                    break
+                }
+            }
+
+            if (choose == 0) {
+
+                showNoContactToast()
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+
+            }
+
+        } else {
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
+            changeFunTwoState(pos, Method.DEACTIVE)
+        }
+    }
+
+    fun handleCLoseThread(contactList: ArrayList<Contact>?) {
+
+        val pos = getPositionOf(ConstantMsgType.LEAVE_THREAD)
+
+
+        if (contactList != null) {
+            var choose = 0
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 2))
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder(
+                            TextMessageType.Constants.TEXT
+                        ).message(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread.Builder =
+                        RequestCreateThread.Builder(ThreadType.Constants.NORMAL, inviteList)
+                            .message(requestThreadInnerMessage)
+
+
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread.build())
+                    choose++
+                    if (uniqueId?.get(0) != null) {
+                        fucCallback[ConstantMsgType.CLOSE_THREAD] = uniqueId[0]
+                    }
+                    break
+                }
+            }
+
+            if (choose == 0) {
+
+                showNoContactToast()
+
+                deactiveFunction(pos)
+
+                changeFunTwoState(pos, Method.DEACTIVE)
+
+
+            }
+
+        } else {
+            showNoContactToast()
+
+            deactiveFunction(pos)
+
+            changeFunTwoState(pos, Method.DEACTIVE)
         }
     }
 
@@ -5734,7 +6031,7 @@ class FunctionFragment : Fragment(),
 
         changeFunThreeState(pos, Method.DONE)
         changeIconReceive(pos)
-       // fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.getThreadBotList(null);
+        // fucCallback[ConstantMsgType.ADD_BOT] = mainViewModel.getThreadBotList(null);
 
     }
 

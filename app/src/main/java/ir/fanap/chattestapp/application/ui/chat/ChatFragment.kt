@@ -8,7 +8,9 @@ import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.support.v4.app.Fragment
@@ -24,6 +26,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
+import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
@@ -42,6 +45,7 @@ import ir.fanap.chattestapp.application.ui.util.IPickFile
 import ir.fanap.chattestapp.application.ui.util.SmartHashMap
 import ir.fanap.chattestapp.bussines.model.LogClass
 import kotlinx.android.synthetic.main.fragment_chat.*
+import retrofit2.Retrofit
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
@@ -1210,7 +1214,26 @@ class ChatFragment : Fragment(), TestListener {
 
         }
 
+        var f = getErrorFile(this.activity!!);
+    }
 
+    fun getErrorFile(activity: Activity): File {
+        val appDirectory = getApplicationDirectory(activity)
+        val file = File("$appDirectory/error.txt")
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+        return file
+    }
+
+
+
+    fun getApplicationDirectory(activity: Activity): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            activity.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!.absolutePath
+        } else {
+            return ""
+        }
     }
 
 

@@ -17,6 +17,11 @@ class SmartArrayList<T> : ArrayList<T>() {
 
 
 
+
+
+
     val onInsertObserver: BehaviorSubject<T> = BehaviorSubject.create()
+
+
 
 }

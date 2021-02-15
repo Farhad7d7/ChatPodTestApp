@@ -26,6 +26,9 @@ import com.fanap.podchat.chat.pin.pin_thread.model.ResultPinThread
 import com.fanap.podchat.chat.thread.public_thread.RequestCheckIsNameAvailable
 import com.fanap.podchat.chat.thread.public_thread.RequestCreatePublicThread
 import com.fanap.podchat.chat.thread.public_thread.ResultIsNameAvailable
+import com.fanap.podchat.chat.thread.request.CloseThreadRequest
+import com.fanap.podchat.chat.thread.request.SafeLeaveRequest
+import com.fanap.podchat.chat.thread.respone.CloseThreadResult
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
@@ -58,6 +61,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var chat: Chat = Chat.init(application)
     private lateinit var testListener: TestListener
     var observable: PublishSubject<String> = PublishSubject.create()
+
     var observableLog: PublishSubject<String> = PublishSubject.create()
 
     var tokenHandler: TokenHandler? = null
@@ -72,14 +76,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .setDisConnectionThreshold(2)
             .setInterval(5000)
             .setConnectTimeout(3500)
+
             .build()
 
         chat.setNetworkStateConfig(networkStateConfig)
 
-//        chat.isCacheables(true)
-
         chat.isLoggable(true)
 
+        chat.isSentryLogActive(true)
+
+        chat.isSentryResponseLogActive(true)
 
         chat.addListener(object : ChatListener {
 
@@ -113,27 +119,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             override fun onBotCreated(response: ChatResponse<CreateBotResult>?) {
                 super.onBotCreated(response)
 
-                    testListener.onBotCreated(response)
+                testListener.onBotCreated(response)
+            }
+
+            override fun onThreadClosed(response: ChatResponse<CloseThreadResult>?) {
+                super.onThreadClosed(response)
+
+                testListener.onThreadClosed(response)
             }
 
             override fun onBotCommandsDefined(response: ChatResponse<DefineBotCommandResult>?) {
                 super.onBotCommandsDefined(response)
 
-                    testListener.onBotCommandsDefined(response)
+                testListener.onBotCommandsDefined(response)
 
             }
 
             override fun onBotStarted(response: ChatResponse<StartStopBotResult>?) {
                 super.onBotStarted(response)
 
-                    testListener.onBotStarted(response)
+                testListener.onBotStarted(response)
 
             }
 
             override fun onBotStopped(response: ChatResponse<StartStopBotResult>?) {
                 super.onBotStopped(response)
 
-                    testListener.onBotStopped(response)
+                testListener.onBotStopped(response)
             }
 
             override fun onChatProfileUpdated(response: ChatResponse<ResultUpdateProfile>?) {
@@ -603,6 +615,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.uploadFile(requestUploadFile)
     }
 
+    var isCachaeble = false;
+
+    fun isCachable(boolean: Boolean) {
+
+        chat.isCacheables(boolean)
+
+        isCachaeble=boolean
+
+    }
+
     fun uploadFileProgress(
         requestUploadFile: RequestUploadFile,
         progress: ProgressHandler.onProgressFile
@@ -613,7 +635,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun uploadImage(activity: FragmentActivity?, uri: Uri): String {
 
         val req = RequestUploadImage.Builder(activity, uri)
-            .build()   
+            .build()
 
         return chat.uploadImage(req)
     }
@@ -626,7 +648,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ): String {
 
         val req = RequestUploadImage.Builder(activity, uri)
-            .build()   
+            .build()
 
         return chat.uploadImageProgress(req, progress)
     }
@@ -653,7 +675,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getHistory(requestGetHistory: RequestGetHistory): String {
-        requestGetHistory
         return chat.getHistory(requestGetHistory, null)
     }
 
@@ -663,6 +684,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun muteThread(requestMuteThread: RequestMuteThread): String {
         return chat.muteThread(requestMuteThread, null)
+    }
+
+    fun closeThread(requestCloseThread:  CloseThreadRequest): String {
+        return chat.closeThread(requestCloseThread)
+    }
+
+    fun safeLeaveThread(requestSafeLeave: SafeLeaveRequest): String {
+
+        return chat.safeLeaveThread(requestSafeLeave)
     }
 
     fun unMuteThread(requestMuteThread: RequestMuteThread): String {
@@ -690,7 +720,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {
-        requestCreateThread      
+
         return chat.createThreadWithMessage(requestCreateThread)
     }
 
@@ -739,7 +769,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getThreadBotList(request: StartAndStopBotRequest): String {
-    //    return chat.startBot(request)
+        //    return chat.startBot(request)
         return ""
     }
 
@@ -782,7 +812,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getParticipant(requestThreadParticipant: RequestThreadParticipant): String {
-          
+
         return chat.getThreadParticipants(requestThreadParticipant, null)
     }
 
