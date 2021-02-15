@@ -178,6 +178,17 @@
                         app:layout_constraintStart_toStartOf="@+id/buttonCreateThreadWithFile"
                         app:layout_constraintTop_toTopOf="@+id/buttonCreateThreadWithFile" />
 
+                    <TextView
+                        android:id="@+id/textViewRanTimectwf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/buttonCreateThreadWithFile"
+                        app:layout_constraintStart_toStartOf="@+id/buttonCreateThreadWithFile"
+                        app:layout_constraintTop_toBottomOf="@+id/buttonCreateThreadWithFile" />
 
                     <TextView
                         android:id="@+id/TxtViewCreateThreadWithFile"
@@ -304,6 +315,18 @@
                         app:layout_constraintEnd_toEndOf="@+id/buttonFileMsg"
                         app:layout_constraintStart_toStartOf="@+id/buttonFileMsg"
                         app:layout_constraintTop_toTopOf="@+id/buttonFileMsg" />
+
+                    <TextView
+                        android:id="@+id/textViewRanTimesfm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/progressSendFileMessage"
+                        app:layout_constraintStart_toStartOf="@+id/progressSendFileMessage"
+                        app:layout_constraintTop_toBottomOf="@+id/progressSendFileMessage" />
 
 
                     <TextView
@@ -433,6 +456,20 @@
                         app:layout_constraintStart_toStartOf="@+id/buttonUploadFile"
                         app:layout_constraintTop_toTopOf="@+id/buttonUploadFile" />
 
+
+                    <TextView
+                        android:id="@+id/textViewRanTimesUF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/contentProgressUploadFile"
+                        app:layout_constraintStart_toStartOf="@+id/contentProgressUploadFile"
+                        app:layout_constraintTop_toBottomOf="@+id/contentProgressUploadFile" />
+
+
                     <TextView
                         android:id="@+id/TxtViewUploadFile"
 
@@ -550,6 +587,19 @@
                         app:layout_constraintTop_toTopOf="@+id/buttonReplyFileMsg" />
 
                     <TextView
+                        android:id="@+id/textViewRanTimesRFM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/contentProgressReplyFileMessage"
+                        app:layout_constraintStart_toStartOf="@+id/contentProgressReplyFileMessage"
+                        app:layout_constraintTop_toBottomOf="@+id/contentProgressReplyFileMessage" />
+
+
+                    <TextView
                         android:id="@+id/TxtViewReplyFileMsg"
                         android:layout_width="wrap_content"
                         android:layout_height="20sp"
@@ -664,6 +714,20 @@
                         app:layout_constraintEnd_toEndOf="@+id/buttonUploadImage"
                         app:layout_constraintStart_toStartOf="@+id/buttonUploadImage"
                         app:layout_constraintTop_toTopOf="@+id/buttonUploadImage" />
+
+                    <TextView
+                        android:id="@+id/textViewRanTimesUI"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/contentProgressUploadImage"
+                        app:layout_constraintStart_toStartOf="@+id/contentProgressUploadImage"
+                        app:layout_constraintTop_toBottomOf="@+id/contentProgressUploadImage" />
+
+
 
                     <TextView
                         android:id="@+id/TxtViewUploadImage"
@@ -805,6 +869,19 @@
                         app:layout_constraintEnd_toEndOf="@+id/btnSendLocationMessage"
                         app:layout_constraintStart_toStartOf="@+id/btnSendLocationMessage"
                         app:layout_constraintTop_toTopOf="@+id/btnSendLocationMessage" />
+
+                    <TextView
+                        android:id="@+id/textViewRanTimesSLM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/progressSendLocationMessage"
+                        app:layout_constraintStart_toStartOf="@+id/progressSendLocationMessage"
+                        app:layout_constraintTop_toBottomOf="@+id/progressSendLocationMessage" />
+
 
                     <android.support.constraint.Guideline
                         android:id="@+id/guideline6"

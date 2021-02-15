@@ -119,6 +119,7 @@ class FunctionFragment : Fragment(),
 
     //    private val listOfLogs: ArrayList<LogClass> = ArrayList()
     private var positionLogs: HashMap<Int, ArrayList<LogClass>> = HashMap()
+    private var positionRunTime: HashMap<Int, Long> = HashMap()
 
 
 //    private val logObservable = SmartHashMap(fucCallback)
@@ -139,13 +140,6 @@ class FunctionFragment : Fragment(),
     private val serverName = "chat-server"
     private val sand_appId = "POD-Chat"
     private val typeCode: String? = null
-
-
-    private val threadsList: ArrayList<Thread> = arrayListOf()
-
-    private val contactList: ArrayList<Contact> = arrayListOf()
-
-    private val blockedList: ArrayList<BlockedContact> = arrayListOf()
 
 
     /**
@@ -671,7 +665,10 @@ class FunctionFragment : Fragment(),
 
         positionUniqueIds[position] = ArrayList()
 
-        recyclerView.smoothScrollToPosition(position)
+        try {
+            recyclerView.smoothScrollToPosition(position)
+        } catch (e: Exception) {
+        }
 
 
         when (position) {
@@ -952,25 +949,14 @@ class FunctionFragment : Fragment(),
 
         changeIconSend(pos)
 
-        if (contactList.isNullOrEmpty()) {
+        changeFunOneState(pos, Method.RUNNING)
 
-            changeFunOneState(pos, Method.RUNNING)
+        val requestGetContact: RequestGetContact = RequestGetContact
+            .Builder()
+            .build()
 
-            val requestGetContact: RequestGetContact = RequestGetContact
-                .Builder()
-                .build()
-
-            fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] =
-                mainViewModel.getContact(requestGetContact)
-
-        } else {
-
-            changeFunOneState(pos, Method.DONE)
-
-            changeFunTwoState(pos, Method.RUNNING)
-
-            fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] = createIsNameAvailableRequest()
-        }
+        fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] =
+            mainViewModel.getContact(requestGetContact)
 
 
     }
@@ -1262,14 +1248,8 @@ class FunctionFragment : Fragment(),
         }
 
         switchCompat_cachState.setOnCheckedChangeListener { _, isChecked ->
-            if (chatReady) {
-                isCacheable = isChecked
-                mainViewModel.isCachable(isChecked)
-            } else {
-                switchCompat_cachState.setChecked(!isChecked);
-
-
-            }
+            isCacheable = isChecked
+            mainViewModel.isCachable(isCacheable)
         }
 
 
@@ -1490,7 +1470,6 @@ class FunctionFragment : Fragment(),
             changeFunTwoState(pos, Method.DONE)
 
             createPublicThreadNow(response?.result?.uniqueName)
-
 
         }
 
@@ -1926,12 +1905,6 @@ class FunctionFragment : Fragment(),
     override fun onBlockList(response: ChatResponse<ResultBlockList>?) {
         super.onBlockList(response)
 
-
-        blockedList.clear()
-        blockedList.addAll(response?.result?.contacts!!)
-
-
-
         if (fucCallback[ConstantMsgType.GET_BLOCK_LIST] == response?.uniqueId) {
 
             var position = 5
@@ -1941,17 +1914,14 @@ class FunctionFragment : Fragment(),
 
         }
 
-
-
-
-        if (fucCallback[ConstantMsgType.UNBLOCK_CONTACT] == response.uniqueId) {
+        if (fucCallback[ConstantMsgType.UNBLOCK_CONTACT] == response?.uniqueId) {
 
 
             val pos = getPositionOf(ConstantMsgType.UNBLOCK_CONTACT)
 
             changeFunOneState(pos, Method.DONE)
 
-            unBlockNow()
+            unBlockNow(response?.result?.contacts!!)
 
 
         }
@@ -1968,6 +1938,91 @@ class FunctionFragment : Fragment(),
 
         }
 //        addLogsOfFunctionAtPosition(jObj,getPositionOf(ConstantMsgType.GET_BLOCK_LIST))
+
+    }
+
+    private fun unBlockNow(blockedList: List<BlockedContact>) {
+
+        val pos = getPositionOf(ConstantMsgType.UNBLOCK_CONTACT)
+
+        if (!blockedList.isNullOrEmpty()) {
+
+            val targetContact: BlockedContact = blockedList[0]
+
+            val blockOptionFragment =
+                BlockOptionFragment()
+
+            val requestUnBlockBuilder = RequestUnBlock.Builder()
+
+            deactiveFunction(pos)
+
+            val onBlockJob = Runnable {
+
+                blockOptionFragment.dismiss()
+
+                changeIconSend(pos)
+
+                changeFunOneState(pos, Method.DONE)
+
+                changeFunTwoState(pos, Method.RUNNING)
+
+                val requestUnBlock = requestUnBlockBuilder.build()
+
+                fucCallback[ConstantMsgType.UNBLOCK_CONTACT] = mainViewModel.unBlock(requestUnBlock)
+
+
+            }
+
+
+            val bundle = Bundle().apply {
+                putLong(BlockOptionFragment.USER_ID, targetContact.contactVO?.userId ?: 0)
+                putLong(BlockOptionFragment.CONTACT_ID, targetContact.contactVO?.id ?: 0)
+                putLong(BlockOptionFragment.BLOCK_ID, targetContact.blockId)
+                putString(
+                    BlockOptionFragment.CONTACT_NAME,
+                    "${targetContact.firstName} ${targetContact.lastName}"
+                )
+                putString(
+                    BlockOptionFragment.ARG_TITLE,
+                    "UNBLOCK"
+                )
+
+            }
+
+            blockOptionFragment.arguments = bundle
+
+            blockOptionFragment.setListener(object : BlockOptionFragment.IBlocOption {
+                override fun doWithUserIdSelected(userId: Long) {
+
+                    requestUnBlockBuilder.userId(userId)
+
+                    onBlockJob.run()
+
+                }
+
+                override fun doWithBlockIdSelected(blockId: Long) {
+
+                    requestUnBlockBuilder.blockId(blockId)
+
+                    onBlockJob.run()
+                }
+
+                override fun doWithContactIdSelected(contactId: Long) {
+
+                    requestUnBlockBuilder.contactId(contactId)
+
+                    onBlockJob.run()
+
+                }
+            })
+
+            blockOptionFragment.show(childFragmentManager, "BLOCK_OPTION")
+
+
+        } else {
+            deactiveFunction(pos)
+            showToast("There is no contact in block list")
+        }
 
     }
 
@@ -2213,25 +2268,11 @@ class FunctionFragment : Fragment(),
             changeFunTwoState(position, Method.DONE)
 
             changeIconReceive(position)
-
-            try {
-                val unBlocked = response?.result?.contact
-
-                blockedList.forEach { contact ->
-                    if (contact.blockId == unBlocked?.blockId)
-                        blockedList.remove(contact)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, e.message)
-
-            }
         }
     }
 
     override fun onGetThread(chatResponse: ChatResponse<ResultThreads>?) {
         super.onGetThread(chatResponse)
-
-        updateThreadList(chatResponse)
 
         if (chatResponse?.uniqueId.isNullOrBlank()) return;
 
@@ -2242,7 +2283,7 @@ class FunctionFragment : Fragment(),
 
             changeFunTwoState(pos, Method.DONE)
 
-            blockNow()
+            blockNow(chatResponse?.result?.threads!!)
 
         }
 
@@ -2415,6 +2456,82 @@ class FunctionFragment : Fragment(),
 
     }
 
+    private fun blockNow(threadList: List<Thread>) {
+
+        val pos = getPositionOf(ConstantMsgType.BLOCK_CONTACT)
+
+        val targetContact = mainViewModel.getSavedContact()
+
+        val targetThread = threadList.shuffled()[0]
+
+        val blockOptionFragment =
+            BlockOptionFragment()
+
+        val args = Bundle().apply {
+            putString(BlockOptionFragment.ARG_TITLE, "Block")
+            putLong(BlockOptionFragment.USER_ID, targetContact?.userId ?: 0)
+            putLong(BlockOptionFragment.CONTACT_ID, targetContact?.id ?: 0)
+            putLong(BlockOptionFragment.THREAD_ID, targetThread?.id ?: 0)
+            putString(BlockOptionFragment.THREAD_NAME, targetThread?.title ?: "")
+            putString(
+                BlockOptionFragment.CONTACT_NAME,
+                "${targetContact?.firstName} ${targetContact?.lastName}"
+            )
+        }
+
+        blockOptionFragment.arguments = args
+
+        val requestBlockBuilder = RequestBlock.Builder()
+
+        deactiveFunction(pos)
+
+        val blockJob = Runnable {
+
+            blockOptionFragment.dismiss()
+
+            changeIconSend(pos)
+            changeFunOneState(pos, Method.DONE)
+            changeFunTwoState(pos, Method.DONE)
+            changeFunThreeState(pos, Method.RUNNING)
+
+            val request = requestBlockBuilder.build()
+
+
+            fucCallback[ConstantMsgType.BLOCK_CONTACT] = mainViewModel.blockContact(request)
+
+        }
+
+        blockOptionFragment.setListener(object : BlockOptionFragment.IBlocOption {
+
+            override fun doWithUserIdSelected(userId: Long) {
+
+                requestBlockBuilder.userId(userId)
+
+                blockJob.run()
+
+            }
+
+            override fun doWithThreadIdSelected(threadId: Long) {
+
+                requestBlockBuilder.threadId(threadId)
+
+                blockJob.run()
+            }
+
+            override fun doWithContactIdSelected(contactId: Long) {
+
+                requestBlockBuilder.contactId(contactId)
+
+                blockJob.run()
+            }
+
+        })
+
+        blockOptionFragment.show(childFragmentManager, "BLOCK_OPTION")
+
+
+    }
+
     private fun selectTypeIdDialog(chatResponse: ChatResponse<ResultThreads>?) {
 
         var threadId: Long = chatResponse?.result?.threads!![0].id;
@@ -2477,10 +2594,6 @@ class FunctionFragment : Fragment(),
             mainViewModel.getHistory(requestGetHistory)
     }
 
-    private fun updateThreadList(chatResponse: ChatResponse<ResultThreads>?) {
-        threadsList.clear()
-        threadsList.addAll(chatResponse?.result?.threads!!)
-    }
 
     private fun findAdminThreadsForGetRoles(chatResponse: ChatResponse<ResultThreads>?) {
 
@@ -3378,11 +3491,12 @@ class FunctionFragment : Fragment(),
 //        methods[position].funcThreeFlag = true
     }
 
-    private fun getThreadAfterLeave(result: ResultLeaveThread?){
+    private fun getThreadAfterLeave(result: ResultLeaveThread?) {
         val threadId = result?.threadId
         val requestGetHistory = RequestGetHistory.Builder(threadId!!).build()
         fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.getHistory(requestGetHistory)
     }
+
     override fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
         super.onLeaveThread(response)
 
@@ -3390,9 +3504,9 @@ class FunctionFragment : Fragment(),
         if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
 
 
-            if(isKeepHistory){
+            if (isKeepHistory) {
                 getThreadAfterLeave(response?.result)
-            }else{
+            } else {
                 val position = getPositionOf(ConstantMsgType.LEAVE_THREAD)
 
                 changeIconReceive(position)
@@ -3443,25 +3557,6 @@ class FunctionFragment : Fragment(),
             val position = getPositionOf(ConstantMsgType.BLOCK_CONTACT)
             changeFunThreeState(position, Method.DONE)
             changeIconReceive(position)
-
-            try {
-                val blocked = chatResponse?.result?.contact
-
-                threadsList.forEach { thread ->
-                    if (thread.partner == blocked?.contactVO?.userId)
-                        threadsList.remove(thread)
-                }
-                contactList.forEach { contact ->
-                    if (contact.userId == blocked?.contactVO?.userId) {
-                        contactList.remove(contact)
-                        contactList.add(blocked.contactVO!!)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, e.message)
-            }
-
-
         }
         if (fucCallback[ConstantMsgType.UNBLOCK_CONTACT] == chatResponse?.uniqueId) {
             fucCallback.remove(ConstantMsgType.UNBLOCK_CONTACT)
@@ -4214,7 +4309,6 @@ class FunctionFragment : Fragment(),
 
             changeFunThreeState(pos, Method.DONE)
 
-
         }
 
         if (fucCallback[ConstantMsgType.GET_CURRENT_USER_ROLES] == response?.uniqueId) {
@@ -4582,7 +4676,7 @@ class FunctionFragment : Fragment(),
 
 
         val threadId = response!!.result.thread.id
-        val request = SafeLeaveRequest.Builder(threadId,contactIdForOwner).build()
+        val request = SafeLeaveRequest.Builder(threadId, contactIdForOwner).build()
         fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = mainViewModel.safeLeaveThread(request)
 
 
@@ -4622,7 +4716,7 @@ class FunctionFragment : Fragment(),
                 if (leaveType == 0) {
                     requeLeaveThread =
                         RequestLeaveThread.Builder(threadId!!.toLong()).shouldKeepHistory().build()
-                        isKeepHistory = true
+                    isKeepHistory = true
                     Log.e("test", "leave thread with keep history threadid = $threadId")
                 } else {
                     isKeepHistory = false
@@ -4810,24 +4904,25 @@ class FunctionFragment : Fragment(),
     override fun onGetContact(response: ChatResponse<ResultContact>?) {
         super.onGetContact(response)
 
-        updateContactsList(response)
+        if (response == null || response.result == null) {
+            showToast("No Contact found!")
+            return
+        }
 
+        val contactList = response.result?.contacts
 
 
         if (fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] == response?.uniqueId) {
 
-            fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] = createIsNameAvailableRequest()
+            mainViewModel.keepContact(getRandomContactsWithUser(contactList))
 
+            fucCallback[ConstantMsgType.CREATE_PUBLIC_THREAD] =
+                createIsNameAvailableRequest()
         }
 
         if (fucCallback[ConstantMsgType.GET_CURRENT_USER_ROLES] == response?.uniqueId) {
-
             createGroupForGetUserRoles(contactList)
-
         }
-
-
-
 
         if (fucCallback[ConstantMsgType.PIN_UN_PIN_MESSAGE] == response?.uniqueId) {
 
@@ -4944,7 +5039,7 @@ class FunctionFragment : Fragment(),
         }
 
         if (fucCallback[ConstantMsgType.CREATE_THREAD] == response?.uniqueId) {
-            createThreadNow()
+            createThreadNow(contactList)
         }
 
         if (fucCallback[ConstantMsgType.GET_CONTACT] == response?.uniqueId) {
@@ -4959,18 +5054,11 @@ class FunctionFragment : Fragment(),
             val pos = getPositionOf(ConstantMsgType.BLOCK_CONTACT)
 
             changeFunOneState(pos, Method.DONE)
-
-            if (threadsList.isNullOrEmpty()) {
-
-                changeFunTwoState(pos, Method.RUNNING)
-                val requestThread: RequestThread = RequestThread.Builder().build()
-                requestThread.count = 10;
-                fucCallback[ConstantMsgType.BLOCK_CONTACT] = mainViewModel.getThreads(requestThread)
-
-            } else {
-
-                blockNow()
-            }
+            changeFunTwoState(pos, Method.RUNNING)
+            val requestThread: RequestThread = RequestThread.Builder().build()
+            requestThread.count = 10;
+            mainViewModel.keepContact(getRandomContactsWithUser(response.result.contacts))
+            fucCallback[ConstantMsgType.BLOCK_CONTACT] = mainViewModel.getThreads(requestThread)
         }
 
         if (fucCallback[ConstantMsgType.UPDATE_CONTACT] == response?.uniqueId) {
@@ -5077,7 +5165,7 @@ class FunctionFragment : Fragment(),
                     choose++
                     if (uniqueId?.get(0) != null) {
                         fucCallback[ConstantMsgType.SAFE_LEAVE_THREAD] = uniqueId[0]
-                        if(choose == 1)
+                        if (choose == 1)
                             contactIdForOwner = contactId
                     }
                     break
@@ -5125,7 +5213,8 @@ class FunctionFragment : Fragment(),
                             .message(requestThreadInnerMessage)
 
 
-                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread.build())
+                    val uniqueId =
+                        mainViewModel.createThreadWithMessage(requestCreateThread.build())
                     choose++
                     if (uniqueId?.get(0) != null) {
                         fucCallback[ConstantMsgType.CLOSE_THREAD] = uniqueId[0]
@@ -5259,11 +5348,6 @@ class FunctionFragment : Fragment(),
             }
         }
         return intList.toList()
-    }
-
-    private fun updateContactsList(response: ChatResponse<ResultContact>?) {
-        contactList.clear()
-        contactList.addAll(response?.result?.contacts!!)
     }
 
     private fun createGroupForGetUserRoles(contactList: java.util.ArrayList<Contact>?) {
@@ -6313,96 +6397,6 @@ class FunctionFragment : Fragment(),
         }
     }
 
-    //Response from getContact
-    /**
-     *
-     * */
-    private fun unBlockNow() {
-
-        val pos = getPositionOf(ConstantMsgType.UNBLOCK_CONTACT)
-
-        if (!blockedList.isNullOrEmpty()) {
-
-            val targetContact: BlockedContact = blockedList[0]
-
-            val blockOptionFragment =
-                BlockOptionFragment()
-
-            val requestUnBlockBuilder = RequestUnBlock.Builder()
-
-            deactiveFunction(pos)
-
-            val onBlockJob = Runnable {
-
-                blockOptionFragment.dismiss()
-
-                changeIconSend(pos)
-
-                changeFunOneState(pos, Method.DONE)
-
-                changeFunTwoState(pos, Method.RUNNING)
-
-                val requestUnBlock = requestUnBlockBuilder.build()
-
-                fucCallback[ConstantMsgType.UNBLOCK_CONTACT] = mainViewModel.unBlock(requestUnBlock)
-
-
-            }
-
-
-            val bundle = Bundle().apply {
-                putLong(BlockOptionFragment.USER_ID, targetContact.contactVO?.userId ?: 0)
-                putLong(BlockOptionFragment.CONTACT_ID, targetContact.contactVO?.id ?: 0)
-                putLong(BlockOptionFragment.BLOCK_ID, targetContact.blockId)
-                putString(
-                    BlockOptionFragment.CONTACT_NAME,
-                    "${targetContact.firstName} ${targetContact.lastName}"
-                )
-                putString(
-                    BlockOptionFragment.ARG_TITLE,
-                    "UNBLOCK"
-                )
-
-            }
-
-            blockOptionFragment.arguments = bundle
-
-            blockOptionFragment.setListener(object : BlockOptionFragment.IBlocOption {
-                override fun doWithUserIdSelected(userId: Long) {
-
-                    requestUnBlockBuilder.userId(userId)
-
-                    onBlockJob.run()
-
-                }
-
-                override fun doWithBlockIdSelected(blockId: Long) {
-
-                    requestUnBlockBuilder.blockId(blockId)
-
-                    onBlockJob.run()
-                }
-
-                override fun doWithContactIdSelected(contactId: Long) {
-
-                    requestUnBlockBuilder.contactId(contactId)
-
-                    onBlockJob.run()
-
-                }
-            })
-
-            blockOptionFragment.show(childFragmentManager, "BLOCK_OPTION")
-
-
-        } else {
-            deactiveFunction(pos)
-            showToast("There is no contact in block list")
-        }
-
-    }
-
-
     private fun handleUpdateContact(contactList: ArrayList<Contact>?) {
 
         var selected = false
@@ -6529,160 +6523,12 @@ class FunctionFragment : Fragment(),
         changeFunOneState(position = pos, state = Method.RUNNING)
         var uniqueId: String = ""
 
-        when {
-            contactList.isEmpty() -> {
-
-                val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
-                uniqueId = mainViewModel.getContact(requestGetContact)
-
-            }
-            threadsList.isEmpty() -> {
-                changeFunOneState(position = pos, state = Method.DONE)
-
-                changeFunTwoState(pos, Method.RUNNING)
-                val requestThread: RequestThread = RequestThread.Builder().build()
-                uniqueId = mainViewModel.getThreads(requestThread)
-
-            }
-            else -> {
-                changeFunOneState(pos, Method.DONE)
-                changeFunTwoState(pos, Method.DONE)
-
-
-                blockNow()
-
-            }
-        }
-
-        if (uniqueId.isNotEmpty()) {
-            fucCallback[ConstantMsgType.BLOCK_CONTACT] = uniqueId
-        }
-
-    }
-
-    private fun blockNow() {
-
-        val pos = getPositionOf(ConstantMsgType.BLOCK_CONTACT)
-
-        val targetContact = getBlockableContact()
-
-        val targetThread = getBlockableThread()
-
-        val blockOptionFragment =
-            BlockOptionFragment()
-
-        val args = Bundle().apply {
-            putString(BlockOptionFragment.ARG_TITLE, "Block")
-            putLong(BlockOptionFragment.USER_ID, targetContact?.userId ?: 0)
-            putLong(BlockOptionFragment.CONTACT_ID, targetContact?.id ?: 0)
-            putLong(BlockOptionFragment.THREAD_ID, targetThread?.id ?: 0)
-            putString(BlockOptionFragment.THREAD_NAME, targetThread?.title ?: "")
-            putString(
-                BlockOptionFragment.CONTACT_NAME,
-                "${targetContact?.firstName} ${targetContact?.lastName}"
-            )
-        }
-
-        blockOptionFragment.arguments = args
-
-        val requestBlockBuilder = RequestBlock.Builder()
-
-        deactiveFunction(pos)
-
-        val blockJob = Runnable {
-
-            blockOptionFragment.dismiss()
-
-            changeIconSend(pos)
-            changeFunOneState(pos, Method.DONE)
-            changeFunTwoState(pos, Method.DONE)
-            changeFunThreeState(pos, Method.RUNNING)
-
-            val request = requestBlockBuilder.build()
-
-
-            fucCallback[ConstantMsgType.BLOCK_CONTACT] = mainViewModel.blockContact(request)
-
-        }
-
-        blockOptionFragment.setListener(object : BlockOptionFragment.IBlocOption {
-
-            override fun doWithUserIdSelected(userId: Long) {
-
-                requestBlockBuilder.userId(userId)
-
-                blockJob.run()
-
-            }
-
-            override fun doWithThreadIdSelected(threadId: Long) {
-
-                requestBlockBuilder.threadId(threadId)
-
-                blockJob.run()
-            }
-
-            override fun doWithContactIdSelected(contactId: Long) {
-
-                requestBlockBuilder.contactId(contactId)
-
-                blockJob.run()
-            }
-
-        })
-
-        blockOptionFragment.show(childFragmentManager, "BLOCK_OPTION")
+        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+        uniqueId = mainViewModel.getContact(requestGetContact)
+        fucCallback[ConstantMsgType.BLOCK_CONTACT] = uniqueId
 
 
     }
-
-
-    private fun getBlockableContact(): Contact? {
-
-        if (!contactList.isNullOrEmpty()) {
-
-            val shuffled = contactList.shuffled()
-
-            for (contact: Contact in shuffled) {
-
-                if (contact.isHasUser && !contact.blocked) {
-
-                    return contact
-                }
-            }
-        }
-
-        showNoContactToast()
-
-        return null
-
-    }
-
-    private fun getBlockableThread(): Thread? {
-
-
-        if (!threadsList.isNullOrEmpty()) {
-
-            val shuffled = threadsList.shuffled()
-
-            for (thread in shuffled) {
-
-                if (!thread.isGroup) {
-
-                    return thread
-
-                }
-
-            }
-
-        }
-
-        showToast("There isn't any pv thread")
-
-        return null
-
-    }
-
 
     private fun addContact() {
 
@@ -6714,30 +6560,19 @@ class FunctionFragment : Fragment(),
 
     private fun createThread() {
 
+        val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
+        changeIconSend(pos)
+        changeFunOneState(pos, Method.RUNNING)
 
-        if (!contactList.isNullOrEmpty()) {
+        val requestGetContact: RequestGetContact = RequestGetContact
+            .Builder()
+            .build()
 
-
-            createThreadNow()
-
-        } else {
-
-            val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
-            changeIconSend(pos)
-            changeFunOneState(pos, Method.RUNNING)
-
-            val requestGetContact: RequestGetContact = RequestGetContact
-                .Builder()
-                .build()
-
-            fucCallback[ConstantMsgType.CREATE_THREAD] = mainViewModel.getContact(requestGetContact)
-
-        }
-
+        fucCallback[ConstantMsgType.CREATE_THREAD] = mainViewModel.getContact(requestGetContact)
 
     }
 
-    private fun createThreadNow() {
+    private fun createThreadNow(contactList: java.util.ArrayList<Contact>?) {
 
         val pos = getPositionOf(ConstantMsgType.CREATE_THREAD)
 
@@ -6745,7 +6580,7 @@ class FunctionFragment : Fragment(),
 
         changeFunOneState(pos, Method.DONE)
 
-        val contacts = getRandomContactsWithUser(count = getRandomCount())
+        val contacts = getRandomContactsWithUser(contactList, getRandomCount())
 
         if (!contacts.isNullOrEmpty()) {
 
@@ -6833,9 +6668,9 @@ class FunctionFragment : Fragment(),
 
         changeFunTwoState(pos, Method.DONE)
 
-        val contacts = getRandomContactsWithUser(count = getRandomCount())
+        val contact = mainViewModel.getSavedContact()
 
-        if (!contacts.isNullOrEmpty()) {
+        if (contact != null) {
 
             var requestBuilder: RequestCreatePublicThread.Builder? = null
 
@@ -6878,7 +6713,7 @@ class FunctionFragment : Fragment(),
 
                 override fun onSelected(threadType: Int, inviteeType: Int) {
 
-                    val invitees = createInviteeFromContactList(ArrayList(contacts), inviteeType)
+                    val invitees = createInviteeFromContactList(listOf(contact), inviteeType)
 
                     if (invitees.isNullOrEmpty()) {
                         deactiveFunction(pos)
@@ -6904,26 +6739,31 @@ class FunctionFragment : Fragment(),
 
     }
 
+    private fun getRandomContactsWithUser(
+        contactList: java.util.ArrayList<Contact>?,
+        count: Int = 2
+    ): List<Contact>? {
 
-    private fun getRandomContactWithLinkedUser(): Contact? =
-        if (contactList.filter { contact -> contact.isHasUser }.isNullOrEmpty())
-            null
-        else contactList.filter { contact -> contact.isHasUser }.shuffled()[0]
-
-
-    private fun getRandomContactsWithUser() =
-        if (contactList.filter { contact -> contact.isHasUser }.isNullOrEmpty())
-            null
-        else contactList.filter { contact -> contact.isHasUser }.shuffled()
-
-    private fun getRandomContactsWithUser(count: Int = 2): List<Contact>? {
-
-        return if (contactList.filter { contact -> contact.isHasUser }.isNullOrEmpty())
+        return if (contactList?.filter { contact -> contact.isHasUser }.isNullOrEmpty())
             null else {
-            val randomContacts = contactList.filter { contact -> contact.isHasUser }.shuffled()
+            val randomContacts = contactList?.filter { contact -> contact.isHasUser }?.shuffled()
 
-            if (randomContacts.size < count - 1) randomContacts
+            if (randomContacts?.size!! < count - 1) randomContacts
             else randomContacts.subList(0, count)
+
+        }
+    }
+
+    private fun getRandomContactsWithUser(
+        contactList: java.util.ArrayList<Contact>?
+    ): Contact? {
+
+        return if (contactList?.filter { contact -> contact.isHasUser }.isNullOrEmpty())
+            null else {
+            val randomContacts = contactList?.filter { contact -> contact.isHasUser }?.shuffled()
+
+            if (randomContacts?.size!! > 0) randomContacts[0]
+            else null
 
         }
     }
@@ -7152,7 +6992,7 @@ class FunctionFragment : Fragment(),
                 parIdList.add(targetParticipant.id)
 
                 val requestRemoveParticipant =
-                    RequestRemoveParticipants.Builder(response.subjectId, parIdList)
+                    RemoveParticipantRequest.Builder(response.subjectId, parIdList)
                         .build()
 
                 fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] =
@@ -7170,7 +7010,7 @@ class FunctionFragment : Fragment(),
                 parIdList.add(targetParticipant.id)
 
                 val requestRemoveParticipant =
-                    RequestRemoveParticipants.Builder(response.subjectId, parIdList)
+                    RemoveParticipantRequest.Builder(response.subjectId, parIdList)
                         .build()
 
                 fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] =
@@ -7207,7 +7047,7 @@ class FunctionFragment : Fragment(),
      * <p>
      * int CHANNEL = 8;
      */
-    private fun handleGetContactForCreateThread() {
+    private fun handleGetContactForCreateThread(contactList: ArrayList<Contact>?) {
 
 
         var choose = 0
@@ -7255,19 +7095,9 @@ class FunctionFragment : Fragment(),
         changeIconSend(pos)
         changeFunOneState(pos, Method.RUNNING)
 
-        if (blockedList.isNullOrEmpty()) {
-
-            val requestBlockList = RequestBlockList.Builder().build()
-            fucCallback[ConstantMsgType.UNBLOCK_CONTACT] =
-                mainViewModel.getBlockList(requestBlockList)
-
-        } else {
-
-            changeFunOneState(pos, Method.DONE)
-
-            unBlockNow()
-
-        }
+        val requestBlockList = RequestBlockList.Builder().build()
+        fucCallback[ConstantMsgType.UNBLOCK_CONTACT] =
+            mainViewModel.getBlockList(requestBlockList)
 
     }
 
@@ -7315,12 +7145,18 @@ class FunctionFragment : Fragment(),
         methods[position].methodNameFlag = true
 
 
-
+        val ranTime = System.currentTimeMillis() - positionRunTime[position]!!
+        Log.e(TAG, "Ran $ranTime")
         activity?.runOnUiThread {
-            deactiveFunction(position)
+            deactiveFunction(position,ranTime)
         }
+        positionRunTime.remove(position)
 
 
+    }
+
+    private fun deactiveFunction(pos: Int, ranTime: Long) {
+       functionAdapter.deActivateFunction(pos,ranTime)
     }
 
     private fun deactiveFunction(pos: Int) {
@@ -7348,6 +7184,8 @@ class FunctionFragment : Fragment(),
                 methods[position].log = ""
 
                 functionAdapter.activateFunction(position)
+
+                positionRunTime[position] = System.currentTimeMillis()
 
 
             }

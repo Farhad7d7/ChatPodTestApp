@@ -55,6 +55,8 @@ class Method() {
     var isActive:Boolean=false
     var hasError:Boolean=false
 
+    var ranTime:Long=0
+
 
 
     fun addLog(log: LogClass){

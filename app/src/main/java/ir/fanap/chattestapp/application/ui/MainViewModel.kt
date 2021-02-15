@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.arch.lifecycle.AndroidViewModel
 import android.content.Context
 import android.net.Uri
+import android.support.annotation.Nullable
 import android.support.v4.app.FragmentActivity
 import android.util.Log
 import android.widget.Toast
@@ -32,9 +33,7 @@ import com.fanap.podchat.chat.thread.respone.CloseThreadResult
 import com.fanap.podchat.chat.user.profile.RequestUpdateProfile
 import com.fanap.podchat.chat.user.profile.ResultUpdateProfile
 import com.fanap.podchat.chat.user.user_roles.model.ResultCurrentUserRoles
-import com.fanap.podchat.mainmodel.Invitee
-import com.fanap.podchat.mainmodel.RequestSearchContact
-import com.fanap.podchat.mainmodel.ResultDeleteMessage
+import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.notification.CustomNotificationConfig
 import com.fanap.podchat.requestobject.*
@@ -67,6 +66,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var tokenHandler: TokenHandler? = null
 
     private var chatState: String? = ""
+
+    private var savedContact: Contact? = null
+    private var savedThread: Thread? = null
 
     init {
 
@@ -619,9 +621,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun isCachable(boolean: Boolean) {
 
+        isCachaeble = boolean
         chat.isCacheables(boolean)
 
-        isCachaeble=boolean
 
     }
 
@@ -686,7 +688,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.muteThread(requestMuteThread, null)
     }
 
-    fun closeThread(requestCloseThread:  CloseThreadRequest): String {
+    fun closeThread(requestCloseThread: CloseThreadRequest): String {
         return chat.closeThread(requestCloseThread)
     }
 
@@ -803,7 +805,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.addParticipants(requestAddParticipants, null)
     }
 
-    fun removeParticipant(requestRemoveParticipants: RequestRemoveParticipants): String {
+    fun removeParticipant(requestRemoveParticipants: RemoveParticipantRequest): String {
         return chat.removeParticipants(requestRemoveParticipants, null)
     }
 
@@ -971,5 +973,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
+    fun keepThread(thread: Thread?) {
+        savedThread = thread
+    }
+
+    fun keepContact(contact: Contact?) {
+        savedContact = contact
+    }
+
+    @Nullable
+    fun getSavedThread() = savedThread
+
+    @Nullable
+    fun getSavedContact() = savedContact
+
+    fun clearSavedThread() {
+        savedThread = null
+    }
+
+    fun clearSavedContact() {
+        savedContact = null
+    }
 
 }

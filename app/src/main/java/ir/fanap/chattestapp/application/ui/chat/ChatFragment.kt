@@ -26,7 +26,6 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
-import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.mainmodel.*
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
@@ -45,7 +44,6 @@ import ir.fanap.chattestapp.application.ui.util.IPickFile
 import ir.fanap.chattestapp.application.ui.util.SmartHashMap
 import ir.fanap.chattestapp.bussines.model.LogClass
 import kotlinx.android.synthetic.main.fragment_chat.*
-import retrofit2.Retrofit
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
@@ -68,6 +66,14 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var contextFrag: Context
     private var imageUri: Uri? = null
     private var fileUri: Uri? = null
+
+    private lateinit var textViewRanTimeCreateThreadWithFile: TextView
+    private lateinit var textViewRanTimeSendFileMessage: TextView
+    private lateinit var textViewRanTimeUploadFile: TextView
+    private lateinit var textViewRanTimeReplyFileMessage: TextView
+    private lateinit var textViewRanTimeUploadImage: TextView
+    private lateinit var textViewRanTimeSendLocationMessage: TextView
+
 
     private lateinit var txtViewFileMsg: TextView
     private lateinit var tvReplyFileMessageStatus: TextView
@@ -397,7 +403,8 @@ class ChatFragment : Fragment(), TestListener {
             mainView = constraintSendLocationMessage,
             contentProgress = contentProgressLocationMessage,
             textView = tvSendLocationMessageStatus,
-            progressBar = progressLocationMessage
+            progressBar = progressLocationMessage,
+            ranTime = textViewRanTimeSendLocationMessage
 
         )
 
@@ -621,7 +628,7 @@ class ChatFragment : Fragment(), TestListener {
 
                 hideView(contentProgressUploadFile)
 
-
+                calcRanTime(textViewRanTimeUploadFile)
             }
         } catch (e: Exception) {
             Log.e("MTAG", e.message)
@@ -787,6 +794,13 @@ class ChatFragment : Fragment(), TestListener {
         atach_file = view.findViewById(R.id.atach_file)
         imgViewCheckLocationMessage = view.findViewById(R.id.checkBoxLocationMessage)
 
+        textViewRanTimeCreateThreadWithFile = view.findViewById(R.id.textViewRanTimectwf)
+        textViewRanTimeSendFileMessage = view.findViewById(R.id.textViewRanTimesfm)
+        textViewRanTimeUploadFile = view.findViewById(R.id.textViewRanTimesUF)
+        textViewRanTimeUploadImage = view.findViewById(R.id.textViewRanTimesUI)
+        textViewRanTimeReplyFileMessage = view.findViewById(R.id.textViewRanTimesRFM)
+        textViewRanTimeSendLocationMessage = view.findViewById(R.id.textViewRanTimesSLM)
+
 
 //        circularCard = view.findViewById(R.id.ccv_attachment_reveal)
 //
@@ -894,6 +908,8 @@ class ChatFragment : Fragment(), TestListener {
 
                     setTextOf(tvReplyFileMessageStatus, "Message Sent Successfully")
 
+                    calcRanTime(textViewRanTimeReplyFileMessage)
+
                 }
             } catch (e: Exception) {
                 Log.e("MTAG", e.message)
@@ -965,6 +981,8 @@ class ChatFragment : Fragment(), TestListener {
 
                 changeTextColorToGreen(tvSendFileMessageStatus)
 
+                calcRanTime(textViewRanTimeSendFileMessage)
+
             }
         } catch (e: Exception) {
             Log.e("MTAG", e.message)
@@ -989,6 +1007,8 @@ class ChatFragment : Fragment(), TestListener {
 
                 changeTextColorToGreen(tvCTWFUploadStatus)
 
+                calcRanTime(textViewRanTimeCreateThreadWithFile)
+
             }
         } catch (e: Exception) {
             Log.e("MTAG", e.message)
@@ -1011,12 +1031,25 @@ class ChatFragment : Fragment(), TestListener {
 
                 hideView(contentProgressLocationMessage)
 
+                calcRanTime(textViewRanTimeSendLocationMessage)
+
             } catch (e: Exception) {
                 Log.e("MTAG", e.message)
             }
 
         }
 
+    }
+
+    private fun calcRanTime(tvRanTime: TextView) {
+        try {
+            val startTime: Long = tvRanTime.text.toString().toLong()
+            val ranTime = System.currentTimeMillis() - startTime
+            tvRanTime.text = "$ranTime ms"
+            showView(tvRanTime)
+        } catch (e: Exception) {
+            hideView(tvRanTime)
+        }
     }
 
     private fun prepareReplyWithMessage(response: ChatResponse<ResultMessage>?) {
@@ -1214,7 +1247,7 @@ class ChatFragment : Fragment(), TestListener {
 
         }
 
-        var f = getErrorFile(this.activity!!);
+
     }
 
     fun getErrorFile(activity: Activity): File {
@@ -1225,7 +1258,6 @@ class ChatFragment : Fragment(), TestListener {
         }
         return file
     }
-
 
 
     fun getApplicationDirectory(activity: Activity): String {
@@ -1355,9 +1387,8 @@ class ChatFragment : Fragment(), TestListener {
         mainView: View,
         contentProgress: ProgressBar,
         progressBar: ProgressBar,
-        textView: TextView
-
-
+        textView: TextView,
+        ranTime: TextView
     ) {
 
         try {
@@ -1377,10 +1408,19 @@ class ChatFragment : Fragment(), TestListener {
 
                 changeTextAndColorToGreyOf(textView, "")
 
+                initRanTime(ranTime)
+
+
             }
         } catch (e: Exception) {
         }
 
+    }
+
+    private fun initRanTime(ranTime: TextView) {
+        hideView(ranTime)
+
+        ranTime.text = System.currentTimeMillis().toString()
     }
 
 
@@ -1876,8 +1916,8 @@ class ChatFragment : Fragment(), TestListener {
                 mainView = constraintSendFileMessage,
                 contentProgress = contentProgressFileMessage,
                 textView = tvSendFileMessageStatus,
-                progressBar = progressBarSendFileMessage
-
+                progressBar = progressBarSendFileMessage,
+                ranTime = textViewRanTimeSendFileMessage
             )
 
 
@@ -1921,8 +1961,8 @@ class ChatFragment : Fragment(), TestListener {
                 mainView = constraintCreateThreadWithFile,
                 contentProgress = progressCreateThreadWithFile,
                 textView = tvCTWFUploadStatus,
-                progressBar = progressBarCreateThreadWithFile
-
+                progressBar = progressBarCreateThreadWithFile,
+                ranTime = textViewRanTimeCreateThreadWithFile
             )
 
 
@@ -1972,7 +2012,8 @@ class ChatFragment : Fragment(), TestListener {
                 mainView = constraintUploadFile,
                 contentProgress = contentProgressUploadFile,
                 textView = tvUploadFileStatus,
-                progressBar = progressBarUploadFile
+                progressBar = progressBarUploadFile,
+                ranTime = textViewRanTimeUploadFile
             )
 
 
@@ -2067,8 +2108,8 @@ class ChatFragment : Fragment(), TestListener {
                 mainView = constraintUploadImage,
                 contentProgress = contentProgressUploadImage,
                 progressBar = progressBarUploadImage,
-                textView = tvUploadImageStatus
-
+                textView = tvUploadImageStatus,
+                ranTime = textViewRanTimeUploadImage
             )
 
             showView(contentProgressUploadImage)
@@ -2163,6 +2204,7 @@ class ChatFragment : Fragment(), TestListener {
 
         changeImageViewResourceToDoneAll(imageView_tickFour)
 
+        calcRanTime(textViewRanTimeUploadImage)
 
     }
 
@@ -2204,8 +2246,8 @@ class ChatFragment : Fragment(), TestListener {
             mainView = constraintReplyFileMessage,
             contentProgress = contentProgressReplyFileMessage,
             textView = tvReplyFileMessageStatus,
-            progressBar = progressBarReplyFileMsg
-
+            progressBar = progressBarReplyFileMsg,
+            ranTime = textViewRanTimeReplyFileMessage
         )
 
         showView(contentProgressReplyFileMessage)

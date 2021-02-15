@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import android.view.animation.BounceInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.ImageButton
@@ -35,6 +34,7 @@ class FunctionAdapter(
         viewHolder.textViewFuncTwo.text = methods[position].funcTwo
         viewHolder.textViewFuncThree.text = methods[position].funcThree
         viewHolder.textViewFuncFour.text = methods[position].funcFour
+        viewHolder.txtViewRanTime.text = calcRanTime(position)
         viewHolder.buttonRun.tag = position
         viewHolder.buttonExpand.tag = position
 
@@ -45,9 +45,9 @@ class FunctionAdapter(
 
         viewHolder.buttonExpand.rotation = if (methods[position].isExpanded) 90f else 0f
 
-        viewHolder.buttonRun.scaleX = if(methods[position].isActive) 0.6f else 1f
+        viewHolder.buttonRun.scaleX = if (methods[position].isActive) 0.6f else 1f
 
-        viewHolder.buttonRun.scaleY = if(methods[position].isActive) 0.6f else 1f
+        viewHolder.buttonRun.scaleY = if (methods[position].isActive) 0.6f else 1f
 
 
 
@@ -461,8 +461,6 @@ class FunctionAdapter(
                 viewHolder.progressMethod.visibility = View.INVISIBLE
 
 
-
-
             }
         }
 
@@ -511,6 +509,17 @@ class FunctionAdapter(
 
     }
 
+    private fun calcRanTime(position: Int): String {
+
+        return when (val ranTime = methods[position].ranTime) {
+            0L -> ""
+            else -> (ranTime).toString() + " ms"
+        }
+
+
+
+    }
+
     private fun scaleBackAnim(view: View) {
 
         view.animate()
@@ -542,7 +551,6 @@ class FunctionAdapter(
 
 
     }
-
 
 
     private fun runMethod(
@@ -653,17 +661,21 @@ class FunctionAdapter(
 
 
     fun deActivateFunction(position: Int) {
-
-
         if (methods[position].isActive) {
             methods[position].isActive = false
 //            notifyDataSetChanged()
             notifyItemChanged(position)
-
         }
-
-
     }
+    fun deActivateFunction(position: Int,ranTime: Long) {
+        if (methods[position].isActive) {
+            methods[position].isActive = false
+            methods[position].ranTime = ranTime
+//            notifyDataSetChanged()
+            notifyItemChanged(position)
+        }
+    }
+
 
     fun setErrorState(position: Int, error: Boolean) {
 
@@ -689,6 +701,8 @@ class FunctionAdapter(
         val textViewFuncThree: TextView = itemView.findViewById(R.id.textView_FunThree)
         val textViewFuncFour: TextView = itemView.findViewById(R.id.textView_FunFour)
         val txtViewMethod: TextView = itemView.findViewById(R.id.textView_method)
+        val txtViewRanTime: TextView = itemView.findViewById(R.id.textViewRanTime)
+
         //        val checkBox: AppCompatImageView = itemView.findViewById(R.id.checkBox_test)
         val checkBoxOne: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFirst)
         val checkBoxSec: AppCompatImageView = itemView.findViewById(R.id.imageView_tickSec)
@@ -736,6 +750,15 @@ class FunctionAdapter(
             .inflate(R.layout.item_method_2, viewGroup, false)
         return ViewHolder(v, viewHolderListener)
     }
+
+    fun updateRanTime(position: Int, ranTime: Long) {
+        try {
+            methods[position].ranTime = ranTime
+            notifyDataSetChanged()
+        } catch (e: Exception) {}
+    }
+
+
 
     interface ViewHolderListener {
         fun onIconClicked(clickedViewHolder: ViewHolder)

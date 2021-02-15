@@ -1,8 +1,10 @@
 package ir.fanap.chattestapp
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
@@ -18,9 +20,28 @@ class ExampleUnitTest {
 
 
     @Test
+    fun testCalcRanTime() {
+
+//        assertEquals("1 s", calcRanTime(1000f))
+        assertEquals("500.0 ms", calcRanTime(500f))
+        assertEquals("1500 ms", calcRanTime(1500f))
+        assertEquals("900 ms", calcRanTime(9_00f))
+        assertEquals("1000 ms", calcRanTime(10_000f))
+
+
+    }
+
+    private fun calcRanTime(ranTime: Float): String {
+        return when{
+            ranTime == 0f -> ""
+            else -> (ranTime).toString() + " ms"
+        }
+    }
+
+    @Test
     fun randomNumbers() {
 
-        val num = Random.nextInt(1,20)
+        val num = Random.nextInt(1, 20)
         print(num)
 
 
